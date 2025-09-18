@@ -1,0 +1,116 @@
+replicaCount: 1
+
+image:
+  repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-tls-agent
+  tag: latest@sha256:295b4d25d2cb8afc91ecced32cfb9529cc7d19b75e58a57a08da1f4c80c262b0
+
+  pullPolicy: Always
+
+service:
+  name: wxa4z-support-agent-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+
+route:
+  name: wxa4z-support-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-support-agent-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+env:
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_ML_URL: ""
+  ONPREM_WML_INSTANCE_ID: openshift
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  DEPLOYMENT_TYPE: on-prem
+  # CPD_VERSION, needed for on-prem deployments.Example(5.1)
+  CPD_VERSION: "5.2"
+  LANGFUSE_HOST: "LANGFUSE_HOST"
+  LANGFUSE_TRACING_ENABLED: false
+  TAKE_DUMP_JOB_TEMPLATE: ""
+  SEND_DUMP_JOB_TEMPLATE: ""
+  MODEL_CATALOG_PATH: /opt/app-root/src/model_instruction_catalog/model_catalog.yaml
+  ENABLE_LANGFUSE_TRACES: "false"
+
+secrets:
+  name: wxa4z-support-agent-agent-secrets
+  createSecret: true
+  data:
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud) 
+    CPD_USERNAME: cpadmin
+    # Set this to CPD API Key for On-prem Deployments, For ibm cloud use ibm cloud IAM API key 
+    WATSONX_API_KEY: ""
+    # External App Credential specific to tls-agent
+    AAP_ENDPOINT: ""
+    AAP_USERNAME: ""
+    AAP_PASSWORD: ""
+    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    AGENT_AUTH_TOKEN: ""
+    LANGFUSE_SECRET_KEY: "LANGFUSE_SECRET_KEY"
+    LANGFUSE_PUBLIC_KEY: "LANGFUSE_PUBLIC_KEY"
+    
+imagePullSecrets:
+  - name: wxa4z-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "200m"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+  - ReadWriteOnce
+  enabled: false
+  size: 8Gi
+
+networkPolicy:
+  name: wxa4z-support-agent-network-policy
+  egress:
+  - {}
+  ingress:
+  - {}
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: icr.io/wxa4z-agentic-development/agent-bootstrapper
+    tag: v1-pre-release
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/support-agent-bootstrap-config/support_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: support-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: support-agent-bootstrap-job-sa

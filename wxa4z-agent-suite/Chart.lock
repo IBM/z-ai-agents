@@ -1,0 +1,18 @@
+dependencies:
+- name: support-agent
+  repository: file://../agent-helm-charts/support-agent
+  version: 1.0.0
+- name: omegamon-insights-agent
+  repository: file://../agent-helm-charts/system-insight-agent-z
+  version: 1.0.0
+- name: upgrade-agent
+  repository: file://../agent-helm-charts/upgrade-agent
+  version: 1.0.0
+- name: workload-scheduler-agent-z
+  repository: file://../agent-helm-charts/workload-scheduler-agent-z
+  version: 1.0.0
+- name: automation-insights-agent
+  repository: file://../agent-helm-charts/system-automation-netview-agent
+  version: 1.0.0
+digest: sha256:e656cb88bf97dfdc8502dd072b2317bf6c9bf7bd4019bab75169fb4c9f2e8bce
+generated: "2025-09-18T18:23:14.842734+05:30"

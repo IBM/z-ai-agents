@@ -1,0 +1,14 @@
+resources:
+  agents:
+    - name: IBM_Z_Automation_Insights_Agent
+      kind: orchestrator
+      path: /system-automation-netview-agent-bootstrap-config/system_automation_netview_agent.yaml
+      collaborators:
+        - name: IBM_Z_Automation_Insights_Agent_ext
+          kind: external
+          description: This agent helps users to search for relevant system automation or netview information like resources, domains, systems, etc.
+          route_name: ${SYSTEM_AUTOMATION_NETVIEW_AGENT_ROUTE_NAME}
+          route_path: v1/aiops_chat
+          namespace: ${SYSTEM_AUTOMATION_NETVIEW_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${AGENT_AUTH_TOKEN}

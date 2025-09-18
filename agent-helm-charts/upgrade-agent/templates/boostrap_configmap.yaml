@@ -1,0 +1,11 @@
+{{- if .Values.bootstrapJob.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-bootstrap-config
+data:
+  upgrade_agent_bootstrap_config.yaml: |-
+{{ .Files.Get "config/upgrade_agent_bootstrap_config.yaml" | indent 4 }}
+  upgrade_agent.yaml: |-
+{{ .Files.Get "config/upgrade_agent.yaml" | indent 4 }}
+{{- end }}

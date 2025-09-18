@@ -1,0 +1,223 @@
+{{- if .Values.caTrustSync.enabled }}
+{{- $jobName := printf "%s-ca-trust-sync-job" .Chart.Name -}}
+{{- $capaths  := default (list "/etc/ssl/certs/ca-bundle.crt") .Values.caTrustSync.caPaths -}}
+{{- $timeout  := default "300s" .Values.caTrustSync.rolloutTimeout -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $jobName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: ca-trust-sync
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    # Keep failed Jobs for troubleshooting; remove succeeded ones; recreate before a new hook run.
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    kubernetes.io/description: >
+      ca-trust-sync: merge the target workload's system CA with the product CA; create/update
+      'merged-ca-bundle-secret' in the target namespace; ensure it is mounted; set EXT_CERT_PATH;
+      and wait for the deployment to become Available.
+spec:
+  backoffLimit: {{ default 1 .Values.caTrustSync.backoffLimit }}
+  ttlSecondsAfterFinished: {{ default 300 .Values.caTrustSync.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: ca-trust-sync
+        job-name: {{ $jobName }}
+    spec:
+      serviceAccountName: {{ .Chart.Name }}-ca-trust-sync-sa
+      automountServiceAccountToken: true
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ca-trust-sync
+          image: {{ required "caTrustSync.image is required" .Values.caTrustSync.image }}
+          imagePullPolicy: {{ default "IfNotPresent" .Values.caTrustSync.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+{{- with .Values.caTrustSync.resources }}
+          resources:
+{{ toYaml . | indent 12 }}
+{{- end }}
+          env:
+            - name: TARGET_NAMESPACE
+              value: "{{ required "caTrustSync.targetNamespace is required" .Values.caTrustSync.targetNamespace }}"
+            - name: TARGET_DEPLOYMENT
+              value: "{{ required "caTrustSync.targetDeployment is required" .Values.caTrustSync.targetDeployment }}"
+            - name: TARGET_CONTAINER
+              value: "{{ required "caTrustSync.targetContainer is required" .Values.caTrustSync.targetContainer }}"
+            - name: TLS_SECRET_NAME
+              value: "{{ required "caTrustSync.sourceSecretName is required" .Values.caTrustSync.sourceSecretName }}"
+            - name: CA_PATHS
+              value: "{{ join " " $capaths }}"
+          volumeMounts:
+            - name: tls-secret
+              mountPath: /etc/tls-secret
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -Eeuo pipefail
+              log() { printf '%s %s\n' "$(date +'%Y-%m-%dT%H:%M:%S%z')" "$*"; }
+              die() { log "ERROR: $*"; exit 1; }
+
+
+              NAMESPACE="${TARGET_NAMESPACE}"
+              DEPLOY="${TARGET_DEPLOYMENT}"
+              CONTAINER_NAME="${TARGET_CONTAINER}"
+              SECRET_NAME="${TLS_SECRET_NAME}"
+
+              MERGED_DIR="/etc/ssl/certs/merged-ca"
+              MERGED_FILE="${MERGED_DIR}/wxa4z_ca_bundle.crt"
+              WORK_CA="/tmp/ca-bundle.crt"
+              MERGED_TMP="/tmp/wxa4z_ca_bundle.crt"
+              CA_PATHS="${CA_PATHS:-/etc/ssl/certs/ca-bundle.crt}"
+
+              log "Start: ns=${NAMESPACE} deploy=${DEPLOY} container=${CONTAINER_NAME} paths=${CA_PATHS}"
+
+              # RBAC preflight against target ns
+              for chk in \
+                "get pods" "list pods" "create pods/exec" \
+                "get deployments" "patch deployments" "watch deployments" \
+                "get replicasets" "list replicasets" "watch replicasets" \
+                "get secrets" "create secrets" "update secrets" "patch secrets"
+              do
+                verb="${chk% *}"; res="${chk#* }"
+                kubectl auth can-i "${verb}" "${res}" -n "${NAMESPACE}" >/dev/null 2>&1 \
+                  || die "Insufficient RBAC for: ${verb} ${res} in ${NAMESPACE}"
+              done
+
+              [ -f /etc/tls-secret/ca.crt ] || die "Source CA (/etc/tls-secret/ca.crt) not found"
+
+              # Build label selector from deployment.matchLabels
+              raw="$(kubectl get deploy "${DEPLOY}" -n "${NAMESPACE}" -o jsonpath='{.spec.selector.matchLabels}' 2>/dev/null || true)"
+              [ -n "${raw}" ] || die "Deployment/${DEPLOY} missing .spec.selector.matchLabels"
+              if printf '%s' "${raw}" | grep -q '^map\['; then
+                selector="$(printf '%s' "${raw}" | sed -e 's/^map\[//' -e 's/\]$//' -e 's/ /,/g' -e 's/:/=/g')"
+              else
+                selector="$(printf '%s' "${raw}" | sed -e 's/[{}"]//g' -e 's/:/=/g' -e 's/, /,/g' -e 's/ /,/g')"
+              fi
+              [ -n "${selector}" ] || die "Failed to compute selector for Deployment/${DEPLOY}"
+              log "Using selector: ${selector}"
+
+              # Verify target container exists in the deployment
+              containers="$(kubectl get deploy "${DEPLOY}" -n "${NAMESPACE}" -o jsonpath='{range .spec.template.spec.containers[*]}{.name}{" "}{end}')"
+              echo "${containers}" | tr ' ' '\n' | grep -qx "${CONTAINER_NAME}" \
+                || die "Container '${CONTAINER_NAME}' not found in Deployment/${DEPLOY} (have: ${containers})"
+
+              # Find a Running pod
+              attempts=24; POD_NAME=""
+              while [ $attempts -gt 0 ]; do
+                POD_NAME="$(kubectl get pods -n "${NAMESPACE}" -l "${selector}" \
+                  --field-selector=status.phase=Running \
+                  -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)"
+                [ -n "${POD_NAME}" ] && break
+                attempts=$((attempts-1)); sleep 5
+              done
+              [ -n "${POD_NAME}" ] || die "No Running pod for ${DEPLOY} in ${NAMESPACE}"
+              log "Pod: ${POD_NAME}"
+
+              # Copy first readable system CA bundle
+              copied="false"
+              for p in ${CA_PATHS}; do
+                if kubectl exec -n "${NAMESPACE}" "${POD_NAME}" -c "${CONTAINER_NAME}" -- sh -c "test -r ${p}"; then
+                  kubectl exec -n "${NAMESPACE}" "${POD_NAME}" -c "${CONTAINER_NAME}" -- cat "${p}" > "${WORK_CA}" \
+                    || die "Failed to read ${p}"
+                  copied="true"; log "Source CA bundle: ${p}"; break
+                fi
+              done
+              [ "${copied}" = "true" ] || die "No readable CA bundle in target container"
+              [ -s "${WORK_CA}" ] || die "Empty CA bundle from ${POD_NAME}"
+
+              # Merge (append a newline + product CA)
+              cp "${WORK_CA}" "${MERGED_TMP}"
+              printf '\n' >> "${MERGED_TMP}"
+              cat /etc/tls-secret/ca.crt >> "${MERGED_TMP}"
+
+              certs="$(grep -c 'BEGIN CERTIFICATE' "${MERGED_TMP}" || true)"
+              bytes="$(wc -c < "${MERGED_TMP}")"
+              log "Merged bundle: certs=${certs} bytes=${bytes}"
+
+              # Create/update Secret via Server-Side Apply (no huge last-applied annotation)
+              kubectl create secret generic merged-ca-bundle-secret \
+                --from-file=wxa4z_ca_bundle.crt="${MERGED_TMP}" \
+                -n "${NAMESPACE}" --dry-run=client -o yaml > /tmp/merged-secret.yaml
+
+              if kubectl apply --server-side --field-manager=ca-trust-sync --force-conflicts \
+                   -n "${NAMESPACE}" -f /tmp/merged-secret.yaml; then
+                log "Secret merged-ca-bundle-secret applied (server-side)"
+              else
+                log "SSA failed; fallback to replace/create"
+                if kubectl get secret merged-ca-bundle-secret -n "${NAMESPACE}" >/dev/null 2>&1; then
+                  kubectl replace -n "${NAMESPACE}" -f /tmp/merged-secret.yaml || {
+                    kubectl delete secret merged-ca-bundle-secret -n "${NAMESPACE}" --ignore-not-found=true
+                    kubectl create secret generic merged-ca-bundle-secret \
+                      --from-file=wxa4z_ca_bundle.crt="${MERGED_TMP}" -n "${NAMESPACE}"
+                  }
+                else
+                  kubectl create secret generic merged-ca-bundle-secret \
+                    --from-file=wxa4z_ca_bundle.crt="${MERGED_TMP}" -n "${NAMESPACE}"
+                fi
+              fi
+
+              # Ensure volume exists (strategic merge)
+              cat > /tmp/vol-patch.yaml <<'EOF'
+              spec:
+                template:
+                  spec:
+                    volumes:
+                      - name: merged-ca-bundle
+                        secret:
+                          secretName: merged-ca-bundle-secret
+              EOF
+              kubectl patch deploy "${DEPLOY}" -n "${NAMESPACE}" --type='strategic' --patch-file=/tmp/vol-patch.yaml
+
+              # Ensure volumeMount on the *specific* container (strategic merge)
+              cat > /tmp/vm-patch.yaml <<EOF
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: ${CONTAINER_NAME}
+                        volumeMounts:
+                          - name: merged-ca-bundle
+                            mountPath: ${MERGED_DIR}
+                            readOnly: true
+              EOF
+              kubectl patch deploy "${DEPLOY}" -n "${NAMESPACE}" --type='strategic' --patch-file=/tmp/vm-patch.yaml
+
+              # Set EXT_CERT_PATH with a targeted strategic patch (avoids duplicate env warnings)
+              cat > /tmp/env-patch.yaml <<EOF
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: ${CONTAINER_NAME}
+                        env:
+                          - name: EXT_CERT_PATH
+                            value: ${MERGED_FILE}
+              EOF
+              kubectl patch deploy "${DEPLOY}" -n "${NAMESPACE}" --type='strategic' --patch-file=/tmp/env-patch.yaml
+
+              # Wait until Deployment is Available (no 'list' permission required)
+              kubectl wait -n "${NAMESPACE}" --for=condition=available --timeout={{ $timeout }} "deployment/${DEPLOY}"
+              log "ca-trust-sync completed"
+      volumes:
+        - name: tls-secret
+          secret:
+            secretName: {{ required "caTrustSync.sourceSecretName is required" .Values.caTrustSync.sourceSecretName }}
+        - name: tmp
+          emptyDir: {}
+{{- end }}

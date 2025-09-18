@@ -1,0 +1,140 @@
+replicaCount: 1
+
+image:
+  repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/upgrade-agent
+  tag: latest@sha256:2edf544b8ac6bdae19402a76afbafeae70cecf63957b514957f01964c6ff5a23
+  pullPolicy: Always
+
+service:
+  name: upgrade-agent-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+  redisports:
+    name: redis
+    protocol: TCP
+    port: 6379
+    targetPort: 6379
+
+route:
+  name: upgrade-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: upgrade-agent-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+env:
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_ML_URL: ""
+  CPD_VERSION: "5.2"
+  ONPREM_WML_INSTANCE_ID: "openshift"
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  DEPLOYMENT_TYPE: "on-prem"
+  REDIS_HOST: "localhost"
+  REDIS_PORT: "6379"
+  WRAPPER_URL: ""
+  TEMPLATE_PATH: "/opt/app-root/src/upgrade_agent/jcl_templates/job_template.jcl"
+  TEMPLATE_PDS: "/opt/app-root/src/upgrade_agent/jcl_templates/alloc_rex.jcl"
+  TEMPLATE_HWCOMP_CHK: "/opt/app-root/src/upgrade_agent/jcl_templates/compatibility_check.jcl"
+  SSL_CERT_FILE: "/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt"
+  VERIFY_SSL: "false"
+  ENABLE_DOC_INGESTION: "true"
+  PDS_NAME: ""
+  LANGFUSE_HOST: ""
+  HOST_NAME: ""
+  MAX_FIXCATS_TO_DISPLAY: "25"
+  MAX_LLM_CONTEXT_MESSAGES_COUNT: "50"
+  FIXCATS_CACHE_EXPIRY_TIME_IN_SECS: "86400"
+  LANGFUSE_ENABLED: false
+  MODEL_CATALOG_PATH: /opt/app-root/src/upgrade_agent/agents/model_catalog.yaml
+  INGESTION_URL: ""
+ptfJob:
+  SMPNTS: ""
+  SMPWDIR_PATH: ""
+  SMPJHOME: ""
+  SMPCPATH: ""
+  ORDER_SERVER_URL: ""
+  KEYRING: ""
+  CERT_NAME: ""
+  DOWNLOAD_METHOD: "https"
+  DOWNLOADKEYRING: ""
+
+secrets:
+  name: upgrade-agent-secrets
+  data:
+    CPD_USERNAME: "cpadmin"
+    # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: "" # pragma: allowlist secret
+    ZOSMF_ENDPOINT: ""
+    ZOSMF_USERNAME: ""
+    ZOSMF_PASSWORD: "" # pragma: allowlist secret
+    AGENT_AUTH_TOKEN: ""
+    WRAPPER_USERNAME: ""
+    WRAPPER_PASSWORD: ""
+    LANGFUSE_SECRET_KEY: "LANGFUSE_SECRET_KEY"
+    LANGFUSE_PUBLIC_KEY: "LANGFUSE_PUBLIC_KEY"
+    INGESTION_PASSWORD: ""
+    AGENT_ID: Wxa4z::upgrade::agent
+imagePullSecrets:
+  - name: wxa4z-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "200m"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+  - ReadWriteOnce
+  enabled: true
+  size: 8Gi
+
+networkPolicy:
+  name: wxa4z-upgrade-agent-network-policy
+  egress:
+  - {}
+  ingress:
+  - {}
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: icr.io/wxa4z-agentic-development/agent-bootstrapper
+    tag: v1-pre-release
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: upgrade-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/upgrade-agent-bootstrap-config/upgrade_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: upgrade-agent-bootstrap-job-sa

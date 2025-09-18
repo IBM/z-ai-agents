@@ -1,0 +1,6 @@
+apiVersion: v2
+name: workload-scheduler-agent-z
+description: A Helm chart for deploying the workload-scheduler-agent
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

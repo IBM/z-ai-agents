@@ -1,0 +1,139 @@
+# templates/job.yaml
+{{- if .Values.bootstrapJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Chart.Name }}-bootstrap-job
+  labels:
+    app: {{ .Chart.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  completions: {{ default 1 .Values.bootstrapJob.completions }}
+  parallelism: {{ default 1 .Values.bootstrapJob.parallelism }}
+  backoffLimit: {{ default 2 .Values.bootstrapJob.backoffLimit }}
+  activeDeadlineSeconds: {{ default 1800 .Values.bootstrapJob.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ default "default" .Values.bootstrapJob.serviceAccount.name }}
+      {{- with .Values.bootstrapJob.imagePullSecrets}}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ .Chart.Name }}-bootstrap-config-volume
+          configMap:
+            name: {{ .Chart.Name }}-bootstrap-config
+      containers:
+        - name: {{ .Chart.Name }}-bootstrap-job
+          image: "{{ .Values.bootstrapJob.image.repository }}:{{ .Values.bootstrapJob.image.tag }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secrets.name | quote }}
+            - secretRef:
+              {{- if .Values.bootstrapJob.secret.dev_mode}}
+                name: {{ .Values.bootstrapJob.secret.name}}
+              {{- else }}
+                name: {{ .Values.global.secrets.name}}
+              {{- end }}
+          env:
+              - name: ORCHESTRATE_ENV_NAME
+                value: {{ .Values.bootstrapJob.env.ORCHESTRATE_ENV_NAME}}
+              - name: CONFIG_PATH
+                value: {{ .Values.bootstrapJob.env.CONFIG_PATH}}
+              - name: HOME
+                value: {{ .Values.bootstrapJob.env.HOME}}
+              - name: SYSTEM_AUTOMATION_NETVIEW_AGENT_ROUTE_NAME
+                value: {{ .Values.route.name | quote }}
+              - name: SYSTEM_AUTOMATION_NETVIEW_AGENT_NAMESPACE
+                value: {{ .Release.Namespace | quote }}
+          resources:
+            {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Chart.Name }}-bootstrap-config-volume
+              mountPath: /system-automation-netview-agent-bootstrap-config
+              readOnly: true
+{{- end }}
+---
+# templates/job.yaml
+{{- if .Values.bootstrapJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Chart.Name }}-cleanup-job
+  labels:
+    app: {{ .Chart.Name }}
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  completions: {{ default 1 .Values.bootstrapJob.completions }}
+  parallelism: {{ default 1 .Values.bootstrapJob.parallelism }}
+  backoffLimit: {{ default 2 .Values.bootstrapJob.backoffLimit }}
+  activeDeadlineSeconds: {{ default 1800 .Values.bootstrapJob.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ default "default" .Values.bootstrapJob.serviceAccount.name }}
+      {{- with .Values.bootstrapJob.imagePullSecrets}}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ .Chart.Name }}-bootstrap-config-volume
+          configMap:
+            name: {{ .Chart.Name }}-bootstrap-config
+      containers:
+        - name: {{ .Chart.Name }}-cleanup-job
+          image: "{{ .Values.bootstrapJob.image.repository }}:{{ .Values.bootstrapJob.image.tag }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secrets.name | quote }}
+            - secretRef:
+              {{- if .Values.bootstrapJob.secret.dev_mode}}
+                name: {{ .Values.bootstrapJob.secret.name}}
+              {{- else }}
+                name: {{ .Values.global.secrets.name}}
+              {{- end }}
+          env:
+              - name: IS_CLEANUP_JOB
+                value: "true"
+              - name: ORCHESTRATE_ENV_NAME
+                value: {{ .Values.bootstrapJob.env.ORCHESTRATE_ENV_NAME}}
+              - name: CONFIG_PATH
+                value: {{ .Values.bootstrapJob.env.CONFIG_PATH}}
+              - name: HOME
+                value: {{ .Values.bootstrapJob.env.HOME}}
+              - name: SYSTEM_AUTOMATION_NETVIEW_AGENT_ROUTE_NAME
+                value: {{ .Values.route.name | quote }}
+              - name: SYSTEM_AUTOMATION_NETVIEW_AGENT_NAMESPACE
+                value: {{ .Release.Namespace | quote }}
+          resources:
+            {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Chart.Name }}-bootstrap-config-volume
+              mountPath: /system-automation-netview-agent-bootstrap-config
+              readOnly: true
+{{- end }}
