@@ -10,6 +10,7 @@ metadata:
     app: {{ .Chart.Name }}
     "wxa4z.ibm.com/agent": "true"
   annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
     "wxa4z.ibm.com/agent-secret-name": {{ .Values.secrets.name}}
     "wxa4z.ibm.com/agent-route-name": {{ .Values.route.name}}
 spec:

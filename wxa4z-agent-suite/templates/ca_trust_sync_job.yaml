@@ -12,6 +12,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: ca-trust-sync
   annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
     "helm.sh/hook": post-install,post-upgrade
     # Keep failed Jobs for troubleshooting; remove succeeded ones; recreate before a new hook run.
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded

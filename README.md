@@ -68,16 +68,16 @@ wxa4z-agent-suite/ # <— umbrella chart
 | IBM IMS Agents                 | `ims-agent`                    | Product  |[README](/agent-helm-charts/ims-agent/README.md)|
 | IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[README](/agent-helm-charts/intellimagic-agent/README.md)|
 | Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[README](/agent-helm-charts/taz-functional-testing-agent/README.md)|
-| IBM Operations Agent for z | `ibm-operations-agent-for-z` | Product  |[README](/agent-helm-charts/ibm-operations-agent-z/README.md)|
+| IBM Operations Agent for Z | `ibm-operations-agent-for-z` | Product  |[README](/agent-helm-charts/ibm-operations-agent-z/README.md)|
 
 ---
 
 ## ⚠️ Attention
 
-> **This site hosts only the Agent Deployment Guide, not the agents themselves. A valid entitlement must be obtained before agents can be properly deployed.**  
->
-> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**.  
->
+> **This site hosts only the Agent Deployment Guide, not the agents themselves. A valid entitlement must be obtained before agents can be properly deployed.**
+
+> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**. By installing the **IBM watsonx Assistant for Z Foundational Agents** in accordance with the instructions provided herein, you acknowledge and agree to comply with the terms of the **[IBM watsonx Assistant for Z License](https://www.ibm.com/support/customer/csol/terms/?id=L-EZAK-KGTP3H)**. 
+
 > For **Prebuilt IBM Z product agents**, a separate entitlement must be obtained for each corresponding product.
 
 ---
@@ -85,8 +85,8 @@ wxa4z-agent-suite/ # <— umbrella chart
 ## Compatibility & Requirements
 
 - **Helm:** v3.11+ (recommended v3.12+)
-- **OpenShift CLI (oc)**: 
-    - installed and authenticated to the target cluster; 
+- **OpenShift CLI (oc)**:
+    - installed and authenticated to the target cluster;
     - version compatible with your OCP (for example, oc 4.12+ for OCP 4.12).
     - Check: `oc whoami && oc version`
 - **Network access:**
@@ -133,16 +133,16 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 ---
 
-**Fill required values in `global.secrets.data`:**  
+**Fill required values in `global.secrets.data`:**
 
-   Update [values.yaml](/wxa4z-agent-suite/values.yaml) to include all mandatory keys (`WATSONX_DEPLOYMENT_SPACE_ID`, `WATSONX_ML_URL`, `CPD_USERNAME`, `WATSONX_API_KEY`, `WATSONX_PROJECT_ID`, `ORCHESTRATE_ENV_URL`, `ORCHESTRATE_ENV_TYPE`) under `global.secrets.data`.  
+   Update [values.yaml](/wxa4z-agent-suite/values.yaml) to include all mandatory keys (`WATSONX_DEPLOYMENT_SPACE_ID`, `WATSONX_ML_URL`, `CPD_USERNAME`, `WATSONX_API_KEY`, `WATSONX_PROJECT_ID`, `ORCHESTRATE_ENV_URL`, `ORCHESTRATE_ENV_TYPE`) under `global.secrets.data`.
 
-**Configure registry for mirrored images:**  
+**Configure registry for mirrored images:**
 
-   If using a private or mirrored registry, set `global.registry.server` to your internal registry endpoint and update `global.registry.name` to reference the imagePullSecret containing the registry credentials.  
+   If using a private or mirrored registry, set `global.registry.server` to your internal registry endpoint and update `global.registry.name` to reference the imagePullSecret containing the registry credentials.
    > In air-gapped mode, authenticate to the private registry instead of using IBM entitlement keys.
 
-   
+
    ```yaml
    global:
      # Shared (non-image) secret available to all subcharts. Intended for bootstrapjobs.
@@ -167,8 +167,8 @@ wxa4z-agent-suite/ # <— umbrella chart
        entitlementKey: ""   # entitlement key/IAM APIkey used solely for image pulls.
    ```
 
-  
-   > The chart may template a namespace‑scoped Secret when `createSecret: true`. 
+
+   > The chart may template a namespace‑scoped Secret when `createSecret: true`.
 
 ---
 
@@ -178,9 +178,9 @@ Each agent in the suite can be customized individually in [values.yaml](/wxa4z-a
 
 #### Configuration for IBM watsonx Assistant for Z Foundational Agents
 
-- Enabled by default in most environments.  
+- Enabled by default in most environments.
 - Only require `enabled: true`.
-- Fill additional values (if any) by consulting the [README](#ibm-watsonx-assistant-for-z-foundational-agents) for required fields, backend connectivity, and environment variables.  
+- Fill additional values (if any) by consulting the [README](#ibm-watsonx-assistant-for-z-foundational-agents) for required fields, backend connectivity, and environment variables.
 
 **Example:**
 
@@ -218,13 +218,13 @@ ims-agent:
 ---
 
 ##### 1. Create Model Gateway Connection
-- Follow the IBM documentation to create and configure a Model Gateway connection:  
+- Follow the IBM documentation to create and configure a Model Gateway connection:
   [Managing LLM in Watson Orchestrate](https://developer.watson-orchestrate.ibm.com/llm/managing_llm)
 
 ---
 
 ##### 2. Configure External API Key in [`values.yaml`](/wxa4z-agent-suite/values.yaml)
-- Update your `global.secrets.data` section with the **external CPD API key** or **IBM Cloud API key**.  
+- Update your `global.secrets.data` section with the **external CPD API key** or **IBM Cloud API key**.
 - Set the `WATSONX_ML_URL` to point to the **external CPD instance**.
 
 ```yaml
@@ -285,7 +285,7 @@ helm upgrade wxa4z-agent-suite \
 helm uninstall wxa4z-agent-suite -n <namespace>
 ```
 
-#### Uninstall specific agnet
+#### Uninstall specific agent
 
 1.Set the `<agent>.enabled` flag to false.
 
@@ -330,7 +330,7 @@ Common health signals:
 
 ## Troubleshooting
 
-- **Image pull back‑off**: 
+- **Image pull back‑off**:
   - Verify the global pull secret
   - Verify the Entitlement keys for Prebuilt IBM Z product agents and that in per‑agent `registry.*` values point to the correct server/secret.
   - In case of airgapped cluster, Verify pull secret in the target namespace and that `global.registry.*` or per‑agent `registry.*` values point to the correct server/secret.

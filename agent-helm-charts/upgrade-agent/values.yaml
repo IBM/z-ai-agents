@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/upgrade-agent
-  tag: latest@sha256:2edf544b8ac6bdae19402a76afbafeae70cecf63957b514957f01964c6ff5a23
+  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
+  tag: v3.0.0@sha256:c62860ba2a6137fa411767ceadc868024c84a8ffdece30c58f12a5a9fc6ad8e8
   pullPolicy: Always
 
 service:
@@ -112,8 +112,8 @@ bootstrapJob:
   backoffLimit: 2
   activeDeadlineSeconds: 1800
   image:
-    repository: icr.io/wxa4z-agentic-development/agent-bootstrapper
-    tag: v1-pre-release
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:

@@ -31,7 +31,7 @@ dependencies:
     condition: support-agent.enabled
   - name: omegamon-insights-agent
     version: 1.0.0
-    repository: file://../agent-helm-charts/system-insight-agent-z
+    repository: file://../agent-helm-charts/omegamon-insight-agent-z
     condition: omegamon-insights-agent.enabled
   - name: upgrade-agent
     version: 1.0.0
@@ -43,5 +43,5 @@ dependencies:
     condition: workload-scheduler-agent-z.enabled
   - name: automation-insights-agent
     version: 1.0.0
-    repository: file://../agent-helm-charts/system-automation-netview-agent
+    repository: file://../agent-helm-charts/automation-insight-agent
     condition: automation-insights-agent.enabled

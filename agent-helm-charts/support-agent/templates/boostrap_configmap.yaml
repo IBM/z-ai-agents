@@ -3,6 +3,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}-bootstrap-config
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
 data:
   support_agent_bootstrap_config.yaml: |-
 {{ .Files.Get "config/support_agent_bootstrap_config.yaml" | indent 4 }}

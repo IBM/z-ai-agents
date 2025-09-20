@@ -26,8 +26,8 @@ global:
   registry:
     name: wxa4z-image-pull-secret    # Default pull secret name (namespace‑scoped).
     createSecret: false               # If true, chart templates will create this secret.
-    server: na.artifactory.swg-devops.com                   # ICR endpoint (can be region‑specific like us.icr.io).
-    username: ""              # Required literal when using entitlement/IAM keys with ICR.
+    server: icr.io                   # ICR endpoint (can be region‑specific like us.icr.io).
+    username: iamapikey              # Required literal when using entitlement/IAM keys with ICR.
     entitlementKey: ""   # entitlement key/IAM APIkey used solely for image pulls.
 
 
@@ -72,20 +72,19 @@ caTrustSync:
 # Set `enabled: true` ONLY for entitled agents. License gating is enforced by
 # chart prechecks; you must also set `acceptLicense: true` for enabled products.
 
-
 # ---------------------------------------------------------------------------- #
-# Default: support-agent
+# Foundational: support-agent
 # ---------------------------------------------------------------------------- #
 support-agent:
   enabled: true
   image:
-   repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-tls-agent
-   tag: latest@sha256:295b4d25d2cb8afc91ecced32cfb9529cc7d19b75e58a57a08da1f4c80c262b0
+   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+   tag: v3.0.0@sha256:635174e72f606da90313dfd71567b40a87058532019746b299b7369f31e4a60c
   bootstrapJob:
     enabled: true
     image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
-      tag: latest@sha256:224ed32eaea030e82ca0de6692cf88cdfd3ae85e5d2f8bcaba43d3e7874c6584
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   env:
@@ -102,18 +101,18 @@ support-agent:
   # - name: wxa4z-image-pull-secret
 
 # ---------------------------------------------------------------------------- #
-# Default: omegamon-insights-agent
+# Foundational: omegamon-insights-agent
 # ---------------------------------------------------------------------------- #
 omegamon-insights-agent:
   enabled: true
   image:
-    repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-aiops-agent
-    tag: 20250915101021-dev-a17d143d13ad833f78440d7013103c467c286664-multiarch@sha256:b37ba514f03009c22fe6dcb1f2effa8023603033e70e52edf94010498af97459
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
+    tag: v3.0.0@sha256:1bc6bf6567e9010ab8f3c177a8d4d6d6f4f5e821af477b37152c77185fa8b661
   bootstrapJob:
     enabled: true
     image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
-      tag: latest@sha256:224ed32eaea030e82ca0de6692cf88cdfd3ae85e5d2f8bcaba43d3e7874c6584
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   # env:
@@ -129,18 +128,18 @@ omegamon-insights-agent:
     storageClass: "ocs-storagecluster-cephfs"
 
 # ---------------------------------------------------------------------------- #
-# Default: automation-insights-agent
+# Foundational: automation-insights-agent
 # ---------------------------------------------------------------------------- #
 automation-insights-agent:
   enabled: true
   image:
-    repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-system-automation-netview-agent
-    tag: 20250915101021-dev-a17d143d13ad833f78440d7013103c467c286664-multiarch@sha256:9f9c71267e89f34500995bd3fdcf0601a9ecbee36c65a4d9c33eed6bef073dd5
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-system-automation-netview-agent
+    tag: v3.0.0@sha256:52f0b45da65238d388614d192aaa6650583eeb14eafaff4ff00cc0e5bde667bf
   bootstrapJob:
     enabled: true
     image:
-      repository:  na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
-      tag: latest@sha256:224ed32eaea030e82ca0de6692cf88cdfd3ae85e5d2f8bcaba43d3e7874c6584
+      repository:  cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   # env:
@@ -156,18 +155,18 @@ automation-insights-agent:
     storageClass: "ocs-storagecluster-cephfs"
 
 # ---------------------------------------------------------------------------- #
-# Default: upgrade-agent
+# Foundational: upgrade-agent
 # ---------------------------------------------------------------------------- #
 upgrade-agent:
   enabled: true
   image:
-    repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/upgrade-agent
-    tag: latest@sha256:2edf544b8ac6bdae19402a76afbafeae70cecf63957b514957f01964c6ff5a23
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
+    tag: v3.0.0@sha256:c62860ba2a6137fa411767ceadc868024c84a8ffdece30c58f12a5a9fc6ad8e8
   bootstrapJob:
     enabled: true
     image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
-      tag: latest@sha256:224ed32eaea030e82ca0de6692cf88cdfd3ae85e5d2f8bcaba43d3e7874c6584
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   # env:
@@ -201,19 +200,19 @@ upgrade-agent:
     storageClass: "ocs-storagecluster-cephfs"
 
 # ---------------------------------------------------------------------------- #
-# Default: workload-scheduler-agent-z
+# Foundational: workload-scheduler-agent-z
 # ---------------------------------------------------------------------------- #
 
 workload-scheduler-agent-z:
   enabled: true
   image:
-    repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-workload-scheduler-agent
-    tag: 20250916064413-dev-110f3daad34984d23d9898337c2302bfac4bd49d-multiarch@sha256:e45d18d08cc17377b7d836e8f713c30c4e8511b56028c2141b60cb832a9a19b7
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
+    tag: v3.0.0@sha256:2ff2d38b35743518435ae6c9f41fefd713547da9e95ad2b79472bf6045194adc
   bootstrapJob:
     enabled: true
     image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
-      tag: latest@sha256:224ed32eaea030e82ca0de6692cf88cdfd3ae85e5d2f8bcaba43d3e7874c6584
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   # env:

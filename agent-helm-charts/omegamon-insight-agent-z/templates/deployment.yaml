@@ -1,0 +1,122 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+    "wxa4z.ibm.com/agent-secret-name": {{ .Values.secrets.name}}
+    "wxa4z.ibm.com/agent-route-name": {{ .Values.route.name}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: data-volume
+      {{- if .Values.pvc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name }}-pvc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /data
+          ports:
+            - containerPort: {{ .Values.service.ports.targetPort }}
+          env:
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: AIOPS_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AIOPS_BASE_URL
+            - name: AIOPS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AIOPS_TOKEN
+            - name: WML_URL
+              valueFrom:
+                secretKeyRef:
+                  name:  {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name:  {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: ONPREM_WML_INSTANCE_ID
+              value: {{ .Values.env.ONPREM_WML_INSTANCE_ID}}
+            - name: CPD_VERSION
+              value: "{{ .Values.env.CPD_VERSION }}"
+            - name: LLM_MODEL
+              value: {{ .Values.env.WATSONX_MODEL_ID }}
+            - name: DEPLOYMENT_TYPE
+              value: {{ required "A valid deployment type is required!" .Values.env.DEPLOYMENT_TYPE }}
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            - name: LANGFUSE_ENABLED
+              value: "{{ .Values.env.LANGFUSE_ENABLED }}"
+            - name: MAX_LLM_CONTEXT_MESSAGES_COUNT
+              value: "{{ .Values.env.MAX_LLM_CONTEXT_MESSAGES_COUNT }}"
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: CLOUD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name:  {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: ONPREM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name:  {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}

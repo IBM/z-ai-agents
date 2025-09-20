@@ -26,7 +26,7 @@ Retrieve Content from agent documentation stored in ZRAG |  Answers the upgrade
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z) is installed
+- [watsonx Assistant for Z]( https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 - The minimum version of z/OSMF is 3.1
 
 ## Install the IBM Z Upgrade Agent
@@ -69,7 +69,7 @@ In the values.yaml file, scroll down to the Upgrade Agent section and update the
 WATSONX_MODEL_ID | LLM Model Used by the Agent. For example, "meta-llama/llama-3-70b-instruct".
 WRAPPER_URL | Endpoint for OpenSearch.
 HOST_NAME | Cluster endpoint where the image is deployed.
-PDS_NAME | Partitioned Dataset Name for storing the REXX script. It should follow the naming convention <USERNAME>.REXX.
+PDS_NAME | Partitioned Dataset Name for storing the REXX script. It should follow the naming convention {USERNAME}.REXX.
 INGESTION_URL | URL of the service endpoint where documents or data are uploaded for ingestion.
 **PTF Job Configurations**
 SMPNTS | Path for SMP/E target zone datasets
@@ -90,7 +90,7 @@ WRAPPER_USERNAME | User name for accessing the WRAPPER_URL endpoint.
 WRAPPER_PASSWORD | Password for accessing the WRAPPER_URL endpoint.
 INGESTION_PASSWORD | User name for accessing the INGESTION_URL endpoint.
 
-
+ Please refer to this document for information on these varaibles <link to the doc>
 ### Install or upgrade the wxa4z-agent-suite
 
 > **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
@@ -105,7 +105,7 @@ helm upgrade --install wxa4z-agent-suite \
   -f <path_to>/values.yaml --wait
 ```
 
-## Deploy your agent
+## Deploy the agent
 
 1. Log in to watsonx Orchestrate.
 2. From the main menu, navigate to **Build** > **Agent Builder**.
@@ -114,7 +114,7 @@ helm upgrade --install wxa4z-agent-suite \
 5. Click **Deploy** to activate the agent and make it available in the live environment.
 
 
-## Test your agent
+## Test the agent
 
 After deployment, the agent becomes active and is available for selection in the live environment.
 
@@ -125,11 +125,16 @@ After deployment, the agent becomes active and is available for selection in the
    
       - Can you show software instance available for system AQFT?
 
-      - Can you receive PTFs for fixcat IBM.DEVICE.SERVER.Z17-9175.EXPLOITATION?
+      - Can you retrieve missing fixcat updates for software instance Watsonx-Testing on system S2?
 
     Responses are displayed either in a tabular format or as a sentence, depending on the context.
 
 4. Verify that the responses returned by the AI Assistant are accurate.
 
+## Troubleshooting installation errors
+If you run into any errors during installation, see [Troubleshooting link](https://github.ibm.com/wxa4z/agent-deployment-charts/tree/support_agent-readme-update/agent-helm-charts/upgrade-agent) for troubleshooting steps.
 
-------------------------------------------------------------
+## Uninstalling the agent
+For uninstallation instructions, see [Agent Uninstallation](https://github.ibm.com/wxa4z/agent-deployment-charts/tree/support_agent-readme-update/agent-helm-charts/upgrade-agent)
+
+-------------------------

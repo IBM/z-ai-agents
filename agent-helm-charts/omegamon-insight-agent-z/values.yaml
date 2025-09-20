@@ -1,0 +1,113 @@
+replicaCount: 1
+
+image:
+  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
+  tag: v3.0.0@sha256:1bc6bf6567e9010ab8f3c177a8d4d6d6f4f5e821af477b37152c77185fa8b661
+  pullPolicy: Always
+
+service:
+  name: wxa4z-omegamon-insight-agent-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8050
+
+route:
+  name: wxa4z-omegamon-insight-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-omegamon-insight-agent-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+env:
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_ML_URL: ""
+  ONPREM_WML_INSTANCE_ID: openshift
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  DEPLOYMENT_TYPE: on-prem
+  # CPD_VERSION, needed for on-prem deployments.Example(5.1)
+  CPD_VERSION: "5.2"
+  LANGFUSE_HOST: ""
+  LANGFUSE_TRACING_ENABLED: false
+  LANGFUSE_ENABLED: false
+  MAX_LLM_CONTEXT_MESSAGES_COUNT: 50
+  MODEL_CATALOG_PATH: "model_catalog.yaml"
+secrets:
+  name: wxa4z-omegamon-insight-agent-secrets
+  createSecret: true
+  data:
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud) 
+    CPD_USERNAME: cpadmin
+    # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: ""
+    # External App Credential specific to aiops-agent
+    AIOPS_BASE_URL: ""
+    AIOPS_TOKEN: ""
+    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    AGENT_AUTH_TOKEN: ""
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
+
+imagePullSecrets:
+  - name: wxa4z-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "200m"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+  - ReadWriteOnce
+  enabled: true
+  size: 8Gi
+
+networkPolicy:
+  name: wxa4z-omegamon-insight-agent-network-policy
+  egress:
+  - {}
+  ingress:
+  - {}
+
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: omegamon-insights-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/omegamon-insights-agent-bootstrap-config/omegamon_insights_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: omegamon-insights-agent-bootstrap-job-sa

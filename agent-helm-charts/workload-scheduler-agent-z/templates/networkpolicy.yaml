@@ -2,6 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ .Values.networkPolicy.name }}
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:

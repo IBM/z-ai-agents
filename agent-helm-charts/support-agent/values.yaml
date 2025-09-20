@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-tls-agent
-  tag: latest@sha256:295b4d25d2cb8afc91ecced32cfb9529cc7d19b75e58a57a08da1f4c80c262b0
+  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+  tag: v3.0.0@sha256:635174e72f606da90313dfd71567b40a87058532019746b299b7369f31e4a60c
 
   pullPolicy: Always
 
@@ -88,8 +88,8 @@ bootstrapJob:
   backoffLimit: 2
   activeDeadlineSeconds: 1800
   image:
-    repository: icr.io/wxa4z-agentic-development/agent-bootstrapper
-    tag: v1-pre-release
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:

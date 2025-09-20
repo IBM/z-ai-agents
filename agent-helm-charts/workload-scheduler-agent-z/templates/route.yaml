@@ -15,6 +15,7 @@ kind: Route
 metadata:
   name: {{ $name }}
   annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
     openshift.io/host.generated: "{{ $hostGen }}"
     haproxy.router.openshift.io/timeout: "1m"
 spec:

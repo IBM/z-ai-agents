@@ -10,6 +10,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded

@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-workload-scheduler-agent
-  tag: 20250916064413-dev-110f3daad34984d23d9898337c2302bfac4bd49d-multiarch@sha256:e45d18d08cc17377b7d836e8f713c30c4e8511b56028c2141b60cb832a9a19b7
+  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
+  tag: v3.0.0@sha256:2ff2d38b35743518435ae6c9f41fefd713547da9e95ad2b79472bf6045194adc
   pullPolicy: Always
 
 service:
@@ -85,8 +85,8 @@ bootstrapJob:
   backoffLimit: 2
   activeDeadlineSeconds: 1800
   image:
-    repository: icr.io/wxa4z-agentic-development/agent-bootstrapper
-    tag: v1-pre-release
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:

@@ -4,6 +4,8 @@ kind: ServiceAccount
 metadata:
   name: {{ .Chart.Name }}-ca-trust-sync-sa
   namespace: {{ .Release.Namespace }}
+  annotations: 
+    {{- include "wxa4z.annotations" . | nindent 4 }}
   labels:
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -14,6 +16,8 @@ kind: Role
 metadata:
   name: {{ .Chart.Name }}-ca-trust-sync-role
   namespace: {{ required "caTrustSync.targetNamespace is required" .Values.caTrustSync.targetNamespace }}
+  annotations: 
+    {{- include "wxa4z.annotations" . | nindent 4 }}
   labels:
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -40,6 +44,8 @@ kind: RoleBinding
 metadata:
   name: {{ .Chart.Name }}-ca-trust-sync-rolebinding
   namespace: {{ .Values.caTrustSync.targetNamespace }}
+  annotations: 
+    {{- include "wxa4z.annotations" . | nindent 4 }}
   labels:
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
