@@ -53,22 +53,11 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 | Name                       | Chart name               | Category      |   Reference   |
 | -------------------------- | ------------------------ | ------------- | ------------- |
-| IBM Z Support Agent              | `support-agent`          | Foundational | [README](./agent-helm-charts/support-agent/README.md)                   |
 | IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [README](./agent-helm-charts/system-insight-agent-z/README.md)                  |
 | IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./agent-helm-charts/upgrade-agent/README.md)                  |
 | IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](/agent-helm-charts/system-automation-netview-agent/README.md)|
 | IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
 
-### Prebuilt IBM Z product agents
-
-| Name                           | Chart name                     | Category         |  Reference.      |
-| ------------------------------ | ------------------------------ | -----------------| -----------------|
-| IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[README](/agent-helm-charts/cics-agent/README.md)|
-| IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[README](/agent-helm-charts/db2z-agent/README.md)|
-| IBM IMS Agents                 | `ims-agent`                    | Product  |[README](/agent-helm-charts/ims-agent/README.md)|
-| IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[README](/agent-helm-charts/intellimagic-agent/README.md)|
-| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[README](/agent-helm-charts/taz-functional-testing-agent/README.md)|
-| IBM Operations Agent for Z | `ibm-operations-agent-for-z` | Product  |[README](/agent-helm-charts/ibm-operations-agent-z/README.md)|
 
 ---
 
