@@ -73,6 +73,36 @@ caTrustSync:
 # chart prechecks; you must also set `acceptLicense: true` for enabled products.
 
 # ---------------------------------------------------------------------------- #
+# Foundational: support-agent
+# ---------------------------------------------------------------------------- #
+support-agent:
+  enabled: true
+  image:
+   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+   tag: v3.0.0@sha256:58e2d1089974d623dc5245460fb652f7af9b9a9b29ae0a749650e4a0f133c1f8
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    TAKE_DUMP_JOB_TEMPLATE: ""   # Names/IDs of Job templates used by agent.
+    SEND_DUMP_JOB_TEMPLATE: ""
+  secrets:
+    data:
+      AAP_ENDPOINT: ""          # External aap credentials specific to support‑agent.
+      AAP_USERNAME: ""
+      AAP_PASSWORD: ""
+      SEND_DUMP_TRANSFER_ID: ""
+      SEND_DUMP_TRANSFER_PASSWORD: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+
+# ---------------------------------------------------------------------------- #
 # Foundational: omegamon-insights-agent
 # ---------------------------------------------------------------------------- #
 omegamon-insights-agent:

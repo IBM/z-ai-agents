@@ -1,0 +1,14 @@
+resources:
+  agents:
+    - name: IBM_Z_Support_Agent
+      kind: orchestrator
+      path: /support-agent-bootstrap-config/support_agent.yaml
+      collaborators:
+        - name: IBM_Z_Support_Agent_ext
+          kind: external
+          description: IBM Z Support Agent helps the user to collect dumps from a z/os system and also send the z/os dumps to a support case.
+          route_name: ${SUPPORT_AGENT_ROUTE_NAME}
+          route_path: v1/tls_chat
+          namespace: ${SUPPORT_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${AGENT_AUTH_TOKEN}

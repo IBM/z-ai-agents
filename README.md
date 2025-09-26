@@ -57,6 +57,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 | IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./agent-helm-charts/upgrade-agent/README.md)                  |
 | IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](/agent-helm-charts/system-automation-netview-agent/README.md)|
 | IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
+| IBM Z Support Agent              | `support-agent`          | Foundational | [README](./agent-helm-charts/support-agent/README.md)                   |
 
 
 ---
@@ -105,6 +106,23 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 ## Quick Start
 
+### Clone the repository:
+
+```bash
+# HTTPS (public)
+git clone https://github.com/IBM/z-ai-agents.git
+cd z-ai-agents
+# or: SSH
+# git clone git@github.com:IBM/z-ai-agents.git
+# cd z-ai-agents
+```
+
+Fetch chart dependencies for the umbrella chart:
+```bash
+cd wxa4z-agent-suite
+helm dependency update
+cd -
+```
 ### 1. Global settings
 
 ***Create Shared Variables(Create once, reuse everywhere)***
