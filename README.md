@@ -86,7 +86,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 ## Preflight Checklist
 
-- **Prerequisite product installed**: IBM watsonx Assistant for Z (foundation). Install steps: IBM Docs → [Install watsonx Assistant for Z”](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z).
+- **Prerequisite product installed**: IBM watsonx Assistant for Z (foundation). Install steps: IBM Docs → [Install watsonx Assistant for Z”](https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z).
 
 - **Entitlement(s) available for all agents being installed**:
 
@@ -96,7 +96,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 ### Where do I get the entitlement key?
 
-- For **IBM watsonx Assistant for Z**: During the installation process of watsonx Assistant for Z, you would have acquired the entitlement key. However, if you need to retrieve it again, follow the steps in [Get wxa4z entitlement key](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=z-update-global-pull-secret)
+- For **IBM watsonx Assistant for Z**: During the installation process of watsonx Assistant for Z, you would have acquired the entitlement key. However, if you need to retrieve it again, follow the steps in [Get wxa4z entitlement key](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=z-update-global-pull-secret)
 
 - For **Prebuilt IBM Z product agents**: Refer to agent specific [README](#prebuilt-ibm-z-product-agents)
 
