@@ -163,7 +163,7 @@ upgrade-agent:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
-    tag: v3.0.0@sha256:c62860ba2a6137fa411767ceadc868024c84a8ffdece30c58f12a5a9fc6ad8e8
+    tag: v3.0.0@sha256:3108c9e57d4f7ef3cb0a37d5d62335053f17b12cfc664db2d9387436de2bcb28
   bootstrapJob:
     enabled: true
     image:
@@ -209,7 +209,7 @@ workload-scheduler-agent-z:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
-    tag: v3.0.0@sha256:2ff2d38b35743518435ae6c9f41fefd713547da9e95ad2b79472bf6045194adc
+    tag: v3.0.0@sha256:d7a50049ecd0caeaf93c6be0bac75554d8dc7a1b60568bf773a9d084f051f959
   bootstrapJob:
     enabled: true
     image:
