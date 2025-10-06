@@ -228,3 +228,36 @@ workload-scheduler-agent-z:
   # - name: wxa4z-image-pull-secret
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
+
+
+# ---------------------------------------------------------------------------- #
+# Product: IBM IntelliMagic agent for Z
+# ---------------------------------------------------------------------------- #
+
+intellimagic-agent:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference Intellimagic agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-WZGZ-XWN8JA
+  image:
+    repository: icr.io/ibm-intellimagic-ai/intellimagic-agent
+    tag: 1.1.0@sha256:5351f0229d65cf35a4f58e7e790c1a44c978a00ba89ea2b18c5dda0f53237f40
+  registry:
+    name: intellimagic-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  # env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  secrets:
+    data:
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets:
+  - name: intellimagic-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"

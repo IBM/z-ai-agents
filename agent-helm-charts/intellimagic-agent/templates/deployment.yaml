@@ -1,0 +1,107 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ required "Chart name is required" .Chart.Name }}
+  labels:
+    app: {{ required "Chart name is required" .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    "wxa4z.ibm.com/agent-secret-name": {{ required "Agent Secret name is required" .Values.secrets.name }}
+    "wxa4z.ibm.com/agent-route-name": {{ required "Agent Route name is required" .Values.route.name }}
+spec:
+  replicas: {{ required "Replica count is required" .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ required "Chart name is required" .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ required "Chart name is required" .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ required "Chart name is required" .Chart.Name }}-config
+      - name: data-volume
+      {{- if .Values.pvc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ required "Chart name is required" .Chart.Name }}-pvc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      containers:
+        - name: {{ required "Chart name is required" .Chart.Name }}
+          image: {{ required "Image repository is required" .Values.image.repository }}:{{ required "Image tag is required" .Values.image.tag }}
+          imagePullPolicy: {{ required "Image pull policy is required" .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /data
+          ports:
+            - containerPort: {{ required "Service target port is required" .Values.service.ports.targetPort }}
+          env:
+            - name: LLM_MODEL
+              value: {{ required "A valid WATSONX_MODEL_ID is required in env" .Values.env.WATSONX_MODEL_ID | quote }}
+            - name: WATSONX_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            {{- if ne .Values.env.DEPLOYMENT_TYPE "cloud" }}
+            - name: WATSONX_INSTANCE_ID
+              value: {{ required "WATSONX_INSTANCE_ID is required" .Values.env.WATSONX_INSTANCE_ID | quote }}
+            - name: WATSONX_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: CPD_VERSION
+              value: {{ required "CPD_VERSION is required" .Values.env.CPD_VERSION | quote }}
+            {{- end }}
+            - name: DEPLOYMENT_TYPE
+              value: {{ required "DEPLOYMENT_TYPE is required" .Values.env.DEPLOYMENT_TYPE | quote }}
+            - name: WATSONX_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote }}
+            {{- if eq (.Values.env.LANGFUSE_TRACING_ENABLED | toString) "true" }}
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required for Langfuse public key" .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required for Langfuse secret key" .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: LANGFUSE_HOST
+              value: {{ required "LANGFUSE_HOST is required" .Values.env.LANGFUSE_HOST | quote }}
+            {{- end }}
+          resources:
+            limits:
+              cpu: {{ required "CPU limit is required" .Values.resources.limits.cpu }}
+              memory: {{ required "Memory limit is required" .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ required "CPU request is required" .Values.resources.requests.cpu }}
+              memory: {{ required "Memory request is required" .Values.resources.requests.memory }}

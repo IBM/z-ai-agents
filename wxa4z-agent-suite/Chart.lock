@@ -14,5 +14,8 @@ dependencies:
 - name: automation-insights-agent
   repository: file://../agent-helm-charts/automation-insight-agent
   version: 1.0.0
-digest: sha256:e69a8803d7c47a49906a81220e17525fa5f2f8c4972c223716d4fa09898b3e6d
-generated: "2025-09-26T10:16:33.084308+05:30"
+- name: intellimagic-agent
+  repository: file://../agent-helm-charts/intellimagic-agent
+  version: 1.1.0
+digest: sha256:7318c3ea7f103250d966ca7722da56aedfbfb07d7a054b6030c16bf173517fd6
+generated: "2025-10-06T15:26:18.04049+05:30"

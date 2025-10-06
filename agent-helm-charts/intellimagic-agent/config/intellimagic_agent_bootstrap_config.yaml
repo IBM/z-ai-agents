@@ -1,0 +1,14 @@
+resources:
+  agents:
+    - name: IBM_IntelliMagic_agent_for_Z
+      kind: orchestrator
+      path: /intellimagic-agent-bootstrap-config/intellimagic_agent.yaml
+      collaborators:
+        - name: IBM_IntelliMagic_agent_for_Z_ext
+          kind: external
+          description: A system that recommends IntelliMagic Vision charts and reports. These charts and reports show information on IBM Z system, both from a performance and a configuration perspective. The information shown can include health insights, exceptions, performance metrics and configuration tables. The scope includes Db2, CICS, Storage Systems, Ficon Directors, IMS etc. The recommendations are based on a user-provided topic or problem description.
+          route_name: ${INTELLIMAGIC_AGENT_ROUTE_NAME}
+          route_path: v1/im_chat
+          namespace: ${INTELLIMAGIC_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${AGENT_AUTH_TOKEN}

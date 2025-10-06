@@ -1,0 +1,105 @@
+replicaCount: 1
+
+image:
+  repository: icr.io/ibm-intellimagic-ai/intellimagic-agent
+  tag: 1.1.0@sha256:5351f0229d65cf35a4f58e7e790c1a44c978a00ba89ea2b18c5dda0f53237f40
+  pullPolicy: Always
+
+service:
+  name: intellimagic-agent-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+
+route:
+  name: intellimagic-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: intellimagic-agent-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+env:
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  WATSONX_INSTANCE_ID: "openshift"
+  CPD_VERSION: "5.2"
+  DEPLOYMENT_TYPE: on-prem
+  LANGFUSE_HOST: ""
+  LANGFUSE_TRACING_ENABLED: false
+secrets:
+  name: intellimagic-agent-secrets
+  createSecret: true
+  data:
+    LANGFUSE_SECRET_KEY: ""
+    LANGFUSE_PUBLIC_KEY: ""
+
+imagePullSecrets:
+  - name: intellimagic-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "4Gi"
+  requests:
+    cpu: "1"
+    memory: "4Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: false
+  size: 8Gi
+
+networkPolicy:
+  name: intellimagic-agent-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: intellimagic-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: ""
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/intellimagic-agent-bootstrap-config/intellimagic_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: intellimagic-agent-bootstrap-job-sa
+
+# This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
+registry:
+  name: intellimagic-image-pull-secret
+  createSecret: true
+  server: icr.io
+  username: iamapikey
+  entitlementKey: "<ENTITLEMENT_KEY>"
