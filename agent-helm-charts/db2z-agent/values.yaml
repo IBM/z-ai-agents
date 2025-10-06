@@ -1,0 +1,147 @@
+replicaCount: 1
+
+image:
+  repository: icr.io/ibm-db2z-ai/db2z-agent
+  tag: latest@sha256:4e25bc61bf45a2d97c106220c491c4aceda055156db57421e228be60c594578f
+  pullPolicy: Always
+
+service:
+  name: db2z-agent-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+    
+mcpImage:
+  repository: icr.io/ibm-db2z-ai/db2z-mcp-server
+  tag: latest@sha256:570f7c11f5f3e845e80d32603bf13a528ac600eb933697929a95157752e7d156
+  pullPolicy: Always
+
+mcpService:
+  name: db2z-mcp-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 9000
+    targetPort: 9000
+
+route:
+  name: db2z-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: db2z-agent-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+
+mcpRoute:
+  name: db2z-mcp-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: db2z-mcp-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+
+env:
+  DEPLOYMENT_TYPE: on_prem
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_PROJECT_ID: ""
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  WATSONX_ML_URL: ""
+  WATSONX_INSTANCE_ID: openshift
+  CPD_VERSION: 5.2
+  MONGODB_DB_NAME: db2zagent
+  LANGFUSE_HOST: "LANGFUSE_HOST"
+  LANGFUSE_TRACING_ENABLED: false
+  AGENT_ID: "wxa4z:db2:agent"
+  AUTH_SERVICE_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
+  MCP_SERVER_NAME: "Db2zMCPServer"
+  MCP_SERVER_URL: "http://db2z-mcp-service:9000"
+  SERVICE_ENDPOINT: "https://tolec78.vmec.svl.ibm.com:5443"
+
+secrets:
+  name: db2z-agent-secrets
+  createSecret: true
+  data:
+    WATSONX_API_KEY: ""
+    CPD_USERNAME: cpadmin
+    ENCRYPT_KEY: ""
+    # Bundled mongodb container for storing metadata.
+    MONGODB_URI: mongodb://admin:admin@localhost:27017
+    MONGODB_DB_USERNAME: admin
+    MONGODB_DB_PASSWORD: admin
+    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    AGENT_AUTH_TOKEN: ""
+    LANGFUSE_SECRET_KEY: "LANGFUSE_SECRET_KEY"
+    LANGFUSE_PUBLIC_KEY: "LANGFUSE_PUBLIC_KEY"
+imagePullSecrets:
+  - name: db2-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "1"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+  - ReadWriteOnce
+  enabled: true
+  size: 8Gi
+
+networkPolicy:
+  name: db2z-agent-network-policy
+  egress:
+  - {}
+  ingress:
+  - {}
+
+# This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
+registry:
+  name: db2-image-pull-secret
+  createSecret: true
+  server: icr.io
+  username: iamapikey
+  entitlementKey: ""
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: db2-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/db2-agent-bootstrap-config/db2_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: db2-agent-bootstrap-job-sa

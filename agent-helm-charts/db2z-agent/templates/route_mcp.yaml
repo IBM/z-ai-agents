@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Values.mcpRoute.name }}
+  annotations:
+    openshift.io/host.generated: "{{ .Values.mcpRoute.annotations.hostGenerated | default "true" }}"
+spec:
+  to:
+    kind: Service
+    name: {{ .Values.mcpRoute.serviceName }}
+    weight: {{ .Values.mcpRoute.weight | default 100 }}
+  port:
+    targetPort: {{ .Values.mcpRoute.targetPort | default "http" }}
+  tls:
+    termination: {{ .Values.mcpRoute.tls.termination | default "edge" }}
