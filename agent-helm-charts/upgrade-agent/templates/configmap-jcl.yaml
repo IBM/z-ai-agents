@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ptf-jcl-job-config
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+data:
+  JCL_PATH: |
+    //SMPNTS   DD PATH='{{ .Values.ptfJob.SMPNTS }}',PATHDISP=KEEP
+    //SMPWKDIR DD PATH='{{ .Values.ptfJob.SMPWDIR_PATH }}',PATHDISP=KEEP
+    //SMPJHOME DD PATH='{{ .Values.ptfJob.SMPJHOME }}/'
+    //SMPCPATH DD PATH='{{ .Values.ptfJob.SMPCPATH }}/'
+  CLIENT_CONFIG: |
+    <CLIENT
+      downloadmethod="{{ .Values.ptfJob.DOWNLOAD_METHOD }}"
+      downloadkeyring="{{ .Values.ptfJob.DOWNLOADKEYRING }}"
+      javahome="{{ .Values.ptfJob.SMPJHOME }}"
+      classpath="{{ .Values.ptfJob.SMPCPATH }}">
+    </CLIENT>
+  ORDERSERVER_CONFIG: |
+    <ORDERSERVER
+      url="{{ .Values.ptfJob.ORDER_SERVER_URL }}"
+      keyring="{{ .Values.ptfJob.KEYRING }}"
+      certificate="{{ .Values.ptfJob.CERT_NAME }}">
+    </ORDERSERVER>

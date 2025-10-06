@@ -1,0 +1,230 @@
+# ============================================================================ #
+# WXA4Z Agent Suite — values.yaml
+# ---------------------------------------------------------------------------- #
+# Conventions
+# - "entitlementKey" is used ONLY for pulling images from container registry (registry auth).
+# - "WATSONX_API_KEY" semantics:
+#     • On‑prem CPD: set to the CPD  API key (a.k.a. CPD API key)
+#     • IBM Cloud (SaaS): set to your IBM Cloud IAM API key
+# ============================================================================ #
+
+global:
+  # Shared (non-image) secret available to all subcharts. Intended for bootstrapjobs.
+  secrets:
+    name: wxa4z-watsonx-credentials   # K8s Secret name to be created/used.
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd                    # Set this to "cpd", "ibm_iam"(for ibm cloud). Non‑sensitive.
+      WATSONX_API_KEY: ""                         # Set this to CPD API key (on‑prem Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys) or IBM Cloud IAM API key (cloud).
+      ORCHESTRATE_ENV_URL: ""                      # Set this to wxo service instance url.
+      CPD_USERNAME: ""                             # Set this to CPD Username for on-prem deployments.
+      WATSONX_DEPLOYMENT_SPACE_ID: ""              # Set this to Watsonx deployment space id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=spaces-creating-deployment) .
+      WATSONX_ML_URL: ""                           # Set this to CPD Instance FQDN for on-prem deployments.
+      EXTERNAL_WATSONX_API_KEY: ""                 # Set this to External CPD API Key  only when External IFM is configured for WxO with model gateway.
+      WATSONX_PROJECT_ID: ""                       # Set this to Watsonx project id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project).
+  # Default image pull secret and registry auth used by many subcharts.
+  # Set registry.createSecret to true only when default image pull fails for watsonx assistant for z agents or when using private registry.
+  registry:
+    name: wxa4z-image-pull-secret    # Default pull secret name (namespace‑scoped).
+    createSecret: false               # If true, chart templates will create this secret.
+    server: icr.io                   # ICR endpoint (can be region‑specific like us.icr.io).
+    username: iamapikey              # Required literal when using entitlement/IAM keys with ICR.
+    entitlementKey: ""   # entitlement key/IAM APIkey used solely for image pulls.
+
+
+# +--------------------------------------------------------------------------------------+
+# | ca-trust-sync (cics-agent): merges the target workload’s system CA with the product  |
+# | CA and creates/updates `merged-ca-bundle-secret` in the target namespace.            |
+# | Patches the target Deployment to mount the merged bundle and sets                    |
+# | EXT_CERT_PATH=/etc/ssl/certs/merged-ca/NEW_CA_BUNDLE.CRT; runs in release namespace  |
+# | and operates cross-namespace on the target Deployment/Pods.                          |
+# | NOTE: Do not change these values here; override via Helm values files only if        |
+# | explicitly instructed.                                                               |
+# +--------------------------------------------------------------------------------------+
+
+caTrustSync:
+  enabled: true
+  # Namespace containing the target Deployment & Pods (merged secret is created here)
+  targetNamespace: cpd-instance-1
+  # Target Deployment and the EXACT container name to exec into
+  targetDeployment: wo-conversation-controller
+  targetContainer: wo-conversation-controller
+  # Source CA secret that exists in the RELEASE namespace (mounted into the Job)
+  sourceSecretName: wxa4z-agents-tls-secret
+  # One or more candidate CA bundle paths inside the target container (first readable wins)
+  caPaths:
+    - /etc/ssl/certs/ca-bundle.crt
+  image: registry.redhat.io/openshift4/ose-cli:v4.14
+  imagePullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "500m"
+      memory: "256Mi"
+  rolloutTimeout: 600s
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 300
+  networkPolicy:
+    allowAll: true   # set true only if your cluster is default-deny
+
+
+# Set `enabled: true` ONLY for entitled agents. License gating is enforced by
+# chart prechecks; you must also set `acceptLicense: true` for enabled products.
+
+# ---------------------------------------------------------------------------- #
+# Foundational: support-agent
+# ---------------------------------------------------------------------------- #
+support-agent:
+  enabled: true
+  image:
+   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+   tag: v3.0.0@sha256:58e2d1089974d623dc5245460fb652f7af9b9a9b29ae0a749650e4a0f133c1f8
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    TAKE_DUMP_JOB_TEMPLATE: ""   # Names/IDs of Job templates used by agent.
+    SEND_DUMP_JOB_TEMPLATE: ""
+  secrets:
+    data:
+      AAP_ENDPOINT: ""          # External aap credentials specific to support‑agent.
+      AAP_USERNAME: ""
+      AAP_PASSWORD: ""
+      SEND_DUMP_TRANSFER_ID: ""
+      SEND_DUMP_TRANSFER_PASSWORD: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+
+# ---------------------------------------------------------------------------- #
+# Foundational: omegamon-insights-agent
+# ---------------------------------------------------------------------------- #
+omegamon-insights-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
+    tag: v3.0.0@sha256:1bc6bf6567e9010ab8f3c177a8d4d6d6f4f5e821af477b37152c77185fa8b661
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  # env:
+   # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  secrets:
+    data:
+      AIOPS_BASE_URL: ""
+      AIOPS_TOKEN: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Foundational: automation-insights-agent
+# ---------------------------------------------------------------------------- #
+automation-insights-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-system-automation-netview-agent
+    tag: v3.0.0@sha256:52f0b45da65238d388614d192aaa6650583eeb14eafaff4ff00cc0e5bde667bf
+  bootstrapJob:
+    enabled: true
+    image:
+      repository:  cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  # env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  secrets:
+    data:
+      AIOPS_BASE_URL: ""
+      AIOPS_TOKEN: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Foundational: upgrade-agent
+# ---------------------------------------------------------------------------- #
+upgrade-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
+    tag: v3.0.0@sha256:3108c9e57d4f7ef3cb0a37d5d62335053f17b12cfc664db2d9387436de2bcb28
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  # env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WRAPPER_URL: ""                         # endpoint for opensearch
+    HOST_NAME: ""                           #endpoint of the cluster in which the image is deployed
+    PDS_NAME: ""                           #Partial dataset name to be used  for storing the rexx script . it should have the convention <USERNAME>.REXX
+    INGESTION_URL: ""                      # URL of the service endpoint where documents or data are uploaded for ingestion.
+  ptfJob:
+    SMPNTS: ""                               # z/OS SMP/E: SMP/E target zone datasets path.
+    SMPWDIR_PATH: ""                       # SMP/E working directory path.
+    SMPJHOME: ""                           #used in UNIX System Services (USS) or JCL scripts to point to the root directory of the SMP/E Java-based interface
+    SMPCPATH: ""                           # SMP/E CSI datasets path.
+    ORDER_SERVER_URL: ""                  # IBM Shopz/Order server URL.
+    KEYRING: ""                             # RACF keyring name where cert is stored.
+    CERT_NAME: ""                           # Certificate label in keyring.
+    DOWNLOAD_METHOD: ""                     # https | ftp | sftp per environment policy.
+    DOWNLOADKEYRING: ""                    # Keyring for outbound TLS (if required by z/OS).
+  secrets:
+    data:
+      ZOSMF_ENDPOINT: ""                     # endpoint URL of the z/OS Management Facility (z/OSMF) provided by IBM for managing and interacting with IBM z/OS systems
+      ZOSMF_USERNAME: ""                    # username to connect with ZOSMF_ENDPOINT
+      ZOSMF_PASSWORD: ""                    # password to connect with ZOSMF_ENDPOINT
+      AGENT_AUTH_TOKEN: ""                  #Authentication token for the agent
+      WRAPPER_USERNAME: ""                   #username for the WRAPPER_URL
+      WRAPPER_PASSWORD: ""                   #password for the WRAPPER_URL
+      INGESTION_PASSWORD:                 #password for the INGESTION_URL
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Foundational: workload-scheduler-agent-z
+# ---------------------------------------------------------------------------- #
+
+workload-scheduler-agent-z:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
+    tag: v3.0.0@sha256:d7a50049ecd0caeaf93c6be0bac75554d8dc7a1b60568bf773a9d084f051f959
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  # env:
+   # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  secrets:
+    data:
+      AIOPS_BASE_URL: ""
+      AIOPS_TOKEN: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: omegamon-insights-agent
+description: A Helm chart for deploying the omegamon-insights-agent
+type: application
+version: 1.0.0
+appVersion: "1.0.0"

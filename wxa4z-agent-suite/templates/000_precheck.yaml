@@ -1,0 +1,2 @@
+{{- /* templates/000-precheck.yaml */ -}}
+{{- include "wxa4z.precheck" . -}}

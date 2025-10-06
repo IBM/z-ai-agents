@@ -1,0 +1,13 @@
+{{- if .Values.bootstrapJob.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-bootstrap-config
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+data:
+  workload_scheduler_agent_bootstrap_config.yaml: |-
+{{ .Files.Get "config/workload_scheduler_agent_bootstrap_config.yaml" | indent 4 }}
+  workload_scheduler_agent.yaml: |-
+{{ .Files.Get "config/workload_scheduler_agent.yaml" | indent 4 }}
+{{- end }}

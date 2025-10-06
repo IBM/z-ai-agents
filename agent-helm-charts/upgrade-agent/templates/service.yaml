@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+spec:
+  selector:
+    app: {{ .Chart.Name }}
+  ports:
+    - name: {{ .Values.service.ports.name }}
+      protocol: {{ .Values.service.ports.protocol }}
+      port: {{ .Values.service.ports.port }}
+      targetPort: {{ .Values.service.ports.targetPort }}
+    - name: {{ .Values.service.redisports.name }}
+      protocol: {{ .Values.service.redisports.protocol }}
+      port: {{ .Values.service.redisports.port }}
+      targetPort: {{ .Values.service.redisports.targetPort }}

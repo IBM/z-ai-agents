@@ -1,0 +1,20 @@
+{{- if and .Values.caTrustSync.enabled .Values.caTrustSync.networkPolicy.allowAll }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ .Chart.Name }}-ca-trust-sync-allow-all
+  namespace: {{ .Release.Namespace }}
+  annotations: 
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: ca-trust-sync
+spec:
+  podSelector:
+    matchLabels:
+      job-name: {{ .Chart.Name }}-ca-trust-sync-job
+  policyTypes: ["Ingress","Egress"]
+  egress:
+    - {}
+{{- end }}

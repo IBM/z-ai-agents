@@ -1,0 +1,186 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+    "wxa4z.ibm.com/agent-secret-name": {{ .Values.secrets.name}}
+    "wxa4z.ibm.com/agent-route-name": {{ .Values.route.name}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /data
+          ports:
+            - containerPort: {{ .Values.service.ports.targetPort }}
+          env:
+            - name: MODEL_CATALOG_PATH
+              value: {{ .Values.env.MODEL_CATALOG_PATH }}
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: ZOSMF_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: ZOSMF_ENDPOINT
+            - name: ZOSMF_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: ZOSMF_USERNAME
+            - name: ZOSMF_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: ZOSMF_PASSWORD
+            - name: WML_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: ONPREM_WML_INSTANCE_ID
+              value: {{ .Values.env.ONPREM_WML_INSTANCE_ID}}
+            - name: CLIENT_INGESTION_STARTUP
+              value: {{ .Values.env.ENABLE_DOC_INGESTION | quote}}
+            - name: LLM_MODEL
+              value: {{ required "WATSONX_MODEL_ID is required" .Values.env.WATSONX_MODEL_ID }}
+            - name: DEPLOYMENT_TYPE
+              value: {{ required "DEPLOYMENT_TYPE is required" .Values.env.DEPLOYMENT_TYPE }}
+            - name: AGENT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: IBM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: WRAPPER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: WRAPPER_USERNAME
+            - name: WRAPPER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: WRAPPER_PASSWORD
+            - name: INGESTION_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: INGESTION_PASSWORD
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: ROUTE_NAME
+              value: {{ .Values.route.name | quote }}
+            - name: NAMESPACE
+              value: {{ .Release.Namespace | quote }}
+            - name: HOST_NAME
+              value: {{ required "HOST_NAME is required" .Values.env.HOST_NAME }}
+            - name: REDIS_HOST
+              value: {{ .Values.env.REDIS_HOST }}
+            - name: REDIS_PORT
+              value: "{{ .Values.env.REDIS_PORT }}"
+            - name: WRAPPER_URL
+              value: {{ required "WRAPPER_URL is required"  .Values.env.WRAPPER_URL }}  
+            - name: INGESTION_URL
+              value: {{ required "INGESTION_URL is required" .Values.env.INGESTION_URL }}
+            - name: TEMPLATE_PATH
+              value: {{ .Values.env.TEMPLATE_PATH }}
+            - name: SSL_CERT_FILE
+              value: {{ .Values.env.SSL_CERT_FILE }}
+            - name: MAX_FIXCATS_TO_DISPLAY
+              value: "{{ .Values.env.MAX_FIXCATS_TO_DISPLAY }}"
+            - name: MAX_LLM_CONTEXT_MESSAGES_COUNT
+              value: "{{ .Values.env.MAX_LLM_CONTEXT_MESSAGES_COUNT }}"
+            - name: FIXCATS_CACHE_EXPIRY_TIME_IN_SECS
+              value: "{{ .Values.env.FIXCATS_CACHE_EXPIRY_TIME_IN_SECS }}"
+            - name: CPD_VERSION
+              value: {{ .Values.env.CPD_VERSION | quote }}
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+            - name: LANGFUSE_ENABLED
+              value: {{ .Values.env.LANGFUSE_ENABLED | quote}}
+            - name: TEMPLATE_PDS
+              value: {{ .Values.env.TEMPLATE_PDS }}
+            - name: TEMPLATE_HWCOMP_CHK
+              value: {{ .Values.env.TEMPLATE_HWCOMP_CHK }}
+            - name: PDS_NAME
+              value: {{ required "PDS_NAME is required" .Values.env.PDS_NAME }}
+          envFrom:
+            - configMapRef:
+                name: ptf-jcl-job-config   
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+        - name: redis
+          image: registry.redhat.io/rhel9/redis-7:latest
+          ports:
+            - containerPort: {{ .Values.service.redisports.targetPort }}
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+          resources:  # Added resources for Redis
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+        - name: data-volume
+        {{- if .Values.pvc.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-pvc
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
