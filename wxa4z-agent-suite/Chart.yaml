@@ -45,3 +45,7 @@ dependencies:
     version: 1.0.0
     repository: file://../agent-helm-charts/automation-insight-agent
     condition: automation-insights-agent.enabled
+  - name: intellimagic-agent
+    version: 1.1.0
+    repository: file://../agent-helm-charts/intellimagic-agent
+    condition: intellimagic-agent.enabled
