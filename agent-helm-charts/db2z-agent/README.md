@@ -63,7 +63,7 @@ global:
 
 ### Create Shared Variables
 
-Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables]([https://github.com/IBM/z-ai-agents?tab=readme-ov-file#1-global-settings) (link to the global GitHub page).
+Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents?tab=readme-ov-file#1-global-settings) (link to the global GitHub page).
 However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/agent-helm-charts/db2z-agent/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
 
 ### Configure the values.yaml file
