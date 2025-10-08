@@ -68,7 +68,7 @@ However, if any of these shared variables are also defined in your agent-specifi
 
 ### Configure the values.yaml file
 
-To enable the IBM Db2 for z/OS Agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/agent-helm-charts/db2z-agent/values.yaml) file.
+To enable the IBM Db2 for z/OS Agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/agent-helm-charts/wxa4z-agent-suite/values.yaml) file.
 
 In the values.yaml file, scroll down to the IBM Db2 for z/OS Agent section and update the keys as outlined in the following table.
 
@@ -84,8 +84,7 @@ CPD_VERSION | CPD version for on-prem deployments (e.g., `5.1`)
 WATSONX_DEPLOYMENT_TYPE | Deployment environment type (`cloud`)  
 WML_URL | WML Instance URL  [IBM WML API Reference](https://cloud.ibm.com/apidocs/machine-learning)               |
 **Common For ON-PREM/Cloud Deployment**
-DEPLOYMENT_SPACE_ID | Identifier of the Watson Machine Learning deployment space  refer [Prerequesites]
-(#prerequisites) for creating deployment space.
+DEPLOYMENT_SPACE_ID | Identifier of the Watson Machine Learning deployment space refer [Prerequesites](#prerequisites) for creating deployment space.
 LLM_MODEL | Name  of the large language model to use (`meta-llama/llama-3-1-70b-instruct`)
 MONGODB_DB_NAME |  Name of the mongodb database. For example, `db2zagent`.
 AUTH_SERVICE_BASE_URL | URL of the authorization service the agent needs to be registered.
