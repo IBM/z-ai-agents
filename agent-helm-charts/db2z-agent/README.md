@@ -47,8 +47,7 @@ Can you give me details about that bufferpool? | Fetches detailed bufferpool inf
 
 An entitlement key is required to download the Db2 for z/OS Agent container image from the IBM Container Registry. This entitlement key is available at no charge to licensed users of Db2 13.
  
-* Existing Db2 for z/OS customers should download and apply the PTF that is associated with APAR PH67670 to access the PDF document that contains the entitlement key.
-* For new Db2 for z/OS customers, the entitlement key is included with the product code that you obtain through Shopz.
+* To obtain the entitlement key, open a case with IBM Support indicating that you are requesting the entitlement key for IBM Db2 for z/OS Agent.
  
 Set the global entitlement key using the watsonx Assistant for Z entitlement key:
 
