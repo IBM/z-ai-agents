@@ -448,3 +448,52 @@ ims-agent:
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
 
+
+# ---------------------------------------------------------------------------- #
+# Product: cics-agent
+# ---------------------------------------------------------------------------- #
+
+cics-agent:
+  enabled: false
+  acceptLicense: false  # Must be true to install. Reference CICS agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-SSLZ-QYC4LH
+  image:
+    repository: icr.io/ibm-cics-ai/cics-ai-agent
+    tag: topology-1.0.0@sha256:a705fc4c0911adf9eaca2e443879e92145240867c33575aadc539ccd77a588ad
+  PDimage:
+    repository: icr.io/ibm-cics-ai/cics-ai-agent
+    tag: problem-determination-1.0.0@sha256:3657a30a9ba3eb99c5978cf08d8b373adab775540c0f649762ab8540d1f097e5
+  registry:
+    name: cics-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""   # ICR entitlement/IAM key used solely for image pulls.
+  bootstrapJob:
+    enabled: true                    # Seeds/registers agent resources before controller starts.
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: [] # Uses global secret by default; override if needed.
+      # - name: wxa4z-image-pull-secret
+  env:
+    MCP_SERVER_URL: ""  # URL for MCP server running in CICS
+    APPLID: ""
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  secrets:
+    data:
+      INGESTION_URL: ""          # URL of the service endpoint where documents or data are uploaded for ingestion.
+      WRAPPER_URL: ""            # URL for the OpenSearch endpoint (zRAG)
+      WRAPPER_USERNAME: ""       # username for the OpenSearch wrapper URL (zRAG)
+      WRAPPER_PASSWORD: ""       # password for the OpenSearch wrapper URL (zRAG)
+      INGESTION_PASSWORD: ""   # password for the INGESTION_URL
+      AGENT_AUTH_TOKEN: ""       # secret used for agent registration with wxo.
+  PDsecrets:
+    data:
+      INGESTION_URL: ""          # URL of the service endpoint where documents or data are uploaded for ingestion.
+      WRAPPER_URL: ""            # URL for the OpenSearch endpoint (zRAG)
+      WRAPPER_USERNAME: ""       # username for the OpenSearch wrapper URL (zRAG)
+      WRAPPER_PASSWORD: ""       # password for the OpenSearch wrapper URL (zRAG)
+      INGESTION_PASSWORD: ""   # password for the INGESTION_URL
+      AGENT_AUTH_TOKEN: ""       # secret used for agent registration with wxo.
+      SERVICE_ENDPOINT: ""      # URL for non-default Service Endpoint, for use with Auth service
+  imagePullSecrets:
+  - name: cics-image-pull-secret

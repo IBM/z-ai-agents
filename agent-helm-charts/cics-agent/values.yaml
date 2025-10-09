@@ -1,0 +1,207 @@
+replicaCount: 1
+
+image:
+  repository: icr.io/ibm-cics-ai/cics-ai-agent
+  tag: topology-1.0.0@sha256:a705fc4c0911adf9eaca2e443879e92145240867c33575aadc539ccd77a588ad
+  pullPolicy: Always
+
+PDimage:
+  repository: icr.io/ibm-cics-ai/cics-ai-agent
+  tag: problem-determination-1.0.0@sha256:3657a30a9ba3eb99c5978cf08d8b373adab775540c0f649762ab8540d1f097e5
+  pullPolicy: Always
+
+service:
+  name: wxa4z-cics-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+
+PDservice:
+  name: wxa4z-cics-pd-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000    
+
+route:
+  name: wxa4z-cics-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-cics-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+
+PDroute:
+  name: wxa4z-cics-pd-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-cics-pd-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+
+env:
+  # Required for on prem installations.
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  # Set this to CPD Instance(https://cpd_instance.com) or IBM CLOUD WML Url for cloud deployment
+  WATSONX_ML_URL: ""
+  CPD_VERSION: "5.2"
+  ONPREM_WML_INSTANCE_ID: openshift
+  # This must be set to either "cloud" or "on-prem".
+  DEPLOYMENT_TYPE: "on-prem"
+  LANGFUSE_HOST: "LANGFUSE_HOST"
+  LANGFUSE_TRACING_ENABLED: false
+  ### Set this to the URL for the MCP server in CICS
+  MCP_SERVER_URL: ""
+  APPLID: ""
+  ### set this to the model
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  MODEL_CATALOG_PATH: /home/agentserver/agents/prompt.yaml
+
+secrets:
+  name: wxa4z-cics-agent-secrets
+  createSecret: true
+  data:
+    ### Set for on-prem deployments, leave blank otherwise.
+    CPD_USERNAME: cpadmin
+    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY 
+    WATSONX_API_KEY: ""
+    ### Values set for zRAG
+    WRAPPER_USERNAME: ""
+    WRAPPER_PASSWORD: ""
+    WRAPPER_URL: ""
+    ### Set these to ingest documents on start-up
+    INGESTION_URL: ""
+    INGESTION_PASSWORD: ""
+    ### Values fed through during deployment
+    AGENT_ID: "wxa4z:cics:agent"
+    AUTH_SERVICE_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
+    AGENT_AUTH_TOKEN: ""
+    ### Only set next 2 for cloud deployments, leave blank otherwise.
+    WATSONX_PROJECT_URL: ""
+    WATSONX_PROJECT_ID: ""
+    ### Set these for tracing
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
+    ACTIVE_AGENT: "topology"
+
+PDsecrets:
+  name: wxa4z-cics-pd-agent-secrets
+  createSecret: true
+  data:
+    ### Set for on-prem deployments, leave blank otherwise.
+    CPD_USERNAME: cpadmin
+    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY 
+    WATSONX_API_KEY: ""
+    ### Values set for zRAG
+    WRAPPER_USERNAME: ""
+    WRAPPER_PASSWORD: ""
+    WRAPPER_URL: ""
+    ### Set these to ingest documents on start-up
+    INGESTION_URL: ""
+    INGESTION_PASSWORD: ""
+    ### Set this to the URL for the MCP server in CICS
+    MCP_SERVER_URL: MCP_SERVER_URL
+    APPLID: "APPLID"
+    ### Values fed through during deployment
+    AGENT_ID: "wxa4z:cics:agent"
+    AUTH_SERVICE_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
+    AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
+    ### Only set next 2 for cloud deployments, leave blank otherwise.
+    WATSONX_PROJECT_URL: "WATSONX_PROJECT_URL"
+    WATSONX_PROJECT_ID: "WATSONX_PROJECT_ID"
+    ### Set these for tracing
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
+    ACTIVE_AGENT: "problem_determination"
+    SERVICE_ENDPOINT: ""
+
+imagePullSecrets:
+  - name: cics-image-pull-secret
+
+# This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
+registry:
+  name: cics-image-pull-secret
+  createSecret: true
+  server: icr.io
+  username: iamapikey
+  entitlementKey: ""
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "1"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+  - ReadWriteOnce
+  enabled: false
+  size: 8Gi
+
+PDpvc:
+  name: cics-pd-agent-pvc
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: false
+  size: 8Gi
+
+networkPolicy:
+  name: wxa4z-cics-network-policy
+  egress:
+  - {}
+  ingress:
+  - {}
+
+PDnetworkPolicy:
+  name: wxa4z-cics-pd-network-policy
+  egress:
+  - {}
+  ingress:
+  - {}
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  env:
+    ORCHESTRATE_ENV_NAME: wxo-live-instance
+    CONFIG_PATH: "/cics-agent-bootstrap-config/cics_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: cics-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: cics-agent-bootstrap-job-sa
