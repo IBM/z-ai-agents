@@ -261,3 +261,40 @@ intellimagic-agent:
   - name: intellimagic-image-pull-secret
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: db2z-agent
+# ---------------------------------------------------------------------------- #
+
+db2z-agent:
+  enabled: false
+  acceptLicense: false             # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
+  image:
+    repository: icr.io/ibm-db2z-ai/db2z-agent
+    tag: latest@sha256:4e25bc61bf45a2d97c106220c491c4aceda055156db57421e228be60c594578f
+  mcpImage:
+    repository: icr.io/ibm-db2z-ai/db2z-mcp-server
+    tag: latest@sha256:570f7c11f5f3e845e80d32603bf13a528ac600eb933697929a95157752e7d156
+  registry:
+    name: db2-image-pull-secret     # Dedicated pull secret for this agent.
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    SERVICE_ENDPOINT: ""
+  secrets:
+    data:
+      ENCRYPT_KEY: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets:
+  - name: db2-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
