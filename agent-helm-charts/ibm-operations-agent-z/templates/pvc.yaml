@@ -1,0 +1,18 @@
+{{- if .Values.pvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Chart.Name }}-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    {{- range .Values.pvc.accessModes }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.size }}
+  {{- if .Values.pvc.storageClass }}
+  storageClassName: {{ .Values.pvc.storageClass }}
+  {{- end }}
+{{- end }}

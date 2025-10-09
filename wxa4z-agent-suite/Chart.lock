@@ -20,5 +20,8 @@ dependencies:
 - name: db2z-agent
   repository: file://../agent-helm-charts/db2z-agent
   version: 0.1.0
-digest: sha256:9ab7c4a40679e7334cc8921b3922145b8fc8e575378df443c973fa1d6cdcacae
-generated: "2025-10-06T18:23:10.458925+05:30"
+- name: ibm-operations-agent-z
+  repository: file://../agent-helm-charts/ibm-operations-agent-z
+  version: 0.1.0
+digest: sha256:a701debc2e069bf6d27313db53f62f931f3b6d19d68446784a71ade7e03072f6
+generated: "2025-10-09T07:49:42.732192991-07:00"
