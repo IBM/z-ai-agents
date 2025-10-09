@@ -1,0 +1,11 @@
+{{- if .Values.bootstrapJob.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-bootstrap-config
+data:
+  ibm_ops_agent_bootstrap_config.yaml: |-
+{{ .Files.Get "config/ibm_ops_agent_bootstrap_config.yaml" | indent 4 }}
+  ibm_ops_agent.yaml: |-
+{{ .Files.Get "config/ibm_ops_agent.yaml" | indent 4 }}
+{{- end }}
