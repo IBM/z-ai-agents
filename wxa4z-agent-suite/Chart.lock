@@ -17,5 +17,8 @@ dependencies:
 - name: intellimagic-agent
   repository: file://../agent-helm-charts/intellimagic-agent
   version: 1.1.0
-digest: sha256:7318c3ea7f103250d966ca7722da56aedfbfb07d7a054b6030c16bf173517fd6
-generated: "2025-10-06T15:26:18.04049+05:30"
+- name: ims-agent
+  repository: file://../agent-helm-charts/ims-agent
+  version: 1.0.0
+digest: sha256:bc25001fe9bc3afc1a4d9f0e71410491297886491b9f2a9748b3a37143dccb15
+generated: "2025-10-08T10:51:00.190458-07:00"

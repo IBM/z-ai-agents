@@ -261,3 +261,62 @@ intellimagic-agent:
   - name: intellimagic-image-pull-secret
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: ims-agent
+# ---------------------------------------------------------------------------- #
+
+ims-agent:
+  enabled: false
+  acceptLicense: false       # Must be true to install. Confirm IMS agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-XEPV-WC7KSS
+  registry:
+    name: ims-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  image:
+    repository: icr.io/ibm-ims-ai/ims-agent
+    tag: 1.0.0
+  mcpImage:
+    repository: icr.io/ibm-ims-ai/ims-mcp-agent
+    tag: 1.0.0
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  pullPolicy: Always
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    ZOSMF_CONSOLE_NAME: ""
+    IMS_SUBSYSTEM_ID: ""
+    IMS_CONNECT_JOBNAME: ""
+    APPL_ID: ""
+  secrets:
+    data:
+      WRAPPER_USERNAME: ""
+      WRAPPER_PASSWORD: ""
+      WRAPPER_URL: ""
+      AGENT_AUTH_TOKEN: ""
+  mcpSecrets:
+    data:
+      SERVICE_ENDPOINT: ""
+      ZOSMF_ENDPOINT: "ZOSMF_ENDPOINT"
+      AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
+  mcpCertSecret:
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      Replace this value with the certificate
+      you create to access your service endpoint.
+      This secret can be manually updated in
+      your cluster after deployment. It is NOT
+      recommended that you store secrets in any
+      git repository. Restart your pod after
+      updating this secret to reflect changes.
+      -----END CERTIFICATE-----
+  imagePullSecrets:
+  - name: ims-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
