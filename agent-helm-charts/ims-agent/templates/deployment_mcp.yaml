@@ -1,0 +1,146 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ required "Chart name is required" .Chart.Name }}-mcp
+  labels:
+    app: {{ required "Chart name is required" .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    "wxa4z.ibm.com/agent-secret-name": {{ required "Agent Secret name is required" .Values.mcpSecrets.name}}
+    "wxa4z.ibm.com/agent-route-name": {{ required "Agent Route name is required" .Values.mcpRoute.name}}
+    "productID": {{ .Values.ilmtAnnotation.productID}}
+    "productName": {{ .Values.ilmtAnnotation.productName}}
+    "productMetric": {{ .Values.ilmtAnnotation.productMetric}}
+    "productChargedContainers": {{ .Values.ilmtAnnotation.productChargedContainers}}
+spec:
+  replicas: {{ required "Replica count is required" .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ required "Chart name is required" .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ required "Chart name is required" .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: cert-volume
+        secret:      
+          secretName: {{ .Values.mcpCertSecret.name }}
+      containers:
+        - name: {{  required "Chart name is required" .Chart.Name }}
+          image: {{ required "Image repository is required" .Values.mcpImage.repository }}:{{ required "Image tag is required" .Values.mcpImage.tag }}
+          imagePullPolicy: {{ required "Image pull policy is required" .Values.mcpImage.pullPolicy }}
+          volumeMounts:
+          - name: cert-volume
+            mountPath: /opt/app-root/src/.cert
+            readOnly: true
+          ports:
+            {{- range .Values.mcpService.ports }}
+            - containerPort: {{ .targetPort }}
+              name: {{ .name }} 
+            {{- end }}
+          securityContext:
+            privileged: false
+            readOnlyRootFilesystem: true
+          env:
+            - name: MODEL_CATALOG_PATH
+              value: {{ required "MODEL_CATALOG_PATH is required" .Values.env.MODEL_CATALOG_PATH | quote }}
+            - name: MCP_SERVER
+              value: {{ required "MCP_SERVER is required" .Values.env.MCP_SERVER | quote }}
+            - name: SERVICE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
+                  key: SERVICE_ENDPOINT
+            - name: APPL_ID
+              value: {{ required "APPL_ID is required" .Values.env.APPL_ID | quote }}
+            - name: IMS_ID
+              value: {{ required "IMS_ID is required" .Values.env.IMS_ID | quote }}
+            - name: AUTHZ_BASE_URL
+              value: {{ required "AUTHZ_BASE_URL is required" .Values.env.AUTHZ_BASE_URL | quote}}
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
+                  key: CPD_USERNAME
+            - name: ZOSMF_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
+                  key: ZOSMF_ENDPOINT
+            - name: WML_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: ONPREM_WML_INSTANCE_ID
+              value: {{ required "A valid ONPREM_WML_INSTANCE_ID is required in env" .Values.env.ONPREM_WML_INSTANCE_ID | quote }}
+            - name: LLM_MODEL
+              value: {{ required "A valid WATSONX_MODEL_ID is required in env" .Values.env.WATSONX_MODEL_ID | quote }}
+            - name: DEPLOYMENT_TYPE
+              value: {{ required "DEPLOYMENT_TYPE is required" .Values.env.DEPLOYMENT_TYPE | quote }}
+            - name: CPD_VERSION
+              value: {{ required "CPD_VERSION is required" .Values.env.CPD_VERSION | quote }}
+            - name: MCP_LOG_LEVEL
+              value: {{ required "MCP_LOG_LEVEL is required" .Values.env.MCP_LOG_LEVEL | quote }}
+            - name: ZOSMF_CONSOLE_NAME
+              value: {{ required "ZOSMF CONSOLE NAME is required" .Values.env.ZOSMF_CONSOLE_NAME | quote }}
+            - name: IMS_SUBSYSTEM_ID
+              value: {{ required "IMS SUBSYSTEM ID is required" .Values.env.IMS_SUBSYSTEM_ID | quote }}
+            - name: IMS_CONNECT_JOBNAME
+              value: {{ required "IMS CONNECT JOBNAME is required" .Values.env.IMS_CONNECT_JOBNAME | quote }}
+            - name: ZOS_SYS_UTC_OFFSET
+              value:  {{ required "ZOS_SYS_UTC_OFFSET is required" .Values.env.ZOS_SYS_UTC_OFFSET | quote }}
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: CLOUD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: ONPREM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            {{- if eq (.Values.env.LANGFUSE_TRACING_ENABLED | toString) "true" }}  
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            {{- end }}
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+          resources:
+            limits:
+              cpu: {{ .Values.mcpResources.limits.cpu }}
+              memory: {{ .Values.mcpResources.limits.memory }}
+            requests:
+              cpu: {{ .Values.mcpResources.requests.cpu }}
+              memory: {{ .Values.mcpResources.requests.memory }}

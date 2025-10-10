@@ -26,5 +26,8 @@ dependencies:
 - name: taz-functional-testing-agent
   repository: file://../agent-helm-charts/taz-functional-testing-agent
   version: 0.1.0
-digest: sha256:4f9ef264640ffc8639a52e3bc6217b2e91310026f921e492a0a9e6f5f5db3c96
-generated: "2025-10-10T10:27:20.128613+05:30"
+- name: ims-agent
+  repository: file://../agent-helm-charts/ims-agent
+  version: 1.0.0
+digest: sha256:9e208902ebc310cec5ddb6a8931090e4c6f92f988f140f1ee5cae6ab4aee994b
+generated: "2025-10-09T23:35:42.254914-07:00"
