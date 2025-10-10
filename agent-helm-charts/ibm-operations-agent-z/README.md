@@ -140,29 +140,25 @@ Response verify OK
 
 ### Retrieve the entitlement key
 
-During the installation process for IBM watsonx Assistant for Z, you acquire the entitlement key. However, if you need to retrieve it again, complete the following steps:
+The entitlement key is shipped as part of IBM Concert for Z
+> **Note**: In the Shopz memo, this key is referred to as an API key.
+Enter the value of this key in the `ibm-operations-agent-z` section of the `values.yaml` file in the `wxa4z-agent-suite` folder.
+(See [values.yaml](../../wxa4z-agent-suite/values.yaml)).
 
-1. Click the link to sign in to My IBM.
-2. Scroll to locate the Container Software & Entitlement Keys tile, and click View Library.
-3. Find your hidden key and click the Copy button next to it.
-4. Set the global entitlement key using the watsonx Assistant for Z entitlement key:
-
+```yaml:
+ibm-operations-agent-z:
+  ...
+    registry:
+        name: ibm-operations-agent-image-pull-secret
+        server: icr.io
+        username: iamapikey
+        entitlementKey: entitlementKey
 ```
-global:
-  registry:
-    name: wxa4z-image-pull-secret
-    createSecret: true
-    server: icr.io
-    username: iamapikey
-    entitlementKey: "<WATSONX_ASSISTANT_FOR_Z_ENTITLEMENT_KEY>"
-```
-
-> **Note**: Ensure that `global.registry.entitlementKey` is set to the watsonx Assistant for Z entitlement key.
 
 ### Create Shared Variables
 
-Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents/blob/main/README.md).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
+Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents?tab=readme-ov-file#1-global-settings).
+However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
 
 ### Configure the values.yaml file
 
