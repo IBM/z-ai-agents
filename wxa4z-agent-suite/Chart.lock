@@ -23,5 +23,8 @@ dependencies:
 - name: ibm-operations-agent-z
   repository: file://../agent-helm-charts/ibm-operations-agent-z
   version: 0.1.0
-digest: sha256:a701debc2e069bf6d27313db53f62f931f3b6d19d68446784a71ade7e03072f6
-generated: "2025-10-09T07:49:42.732192991-07:00"
+- name: taz-functional-testing-agent
+  repository: file://../agent-helm-charts/taz-functional-testing-agent
+  version: 0.1.0
+digest: sha256:4f9ef264640ffc8639a52e3bc6217b2e91310026f921e492a0a9e6f5f5db3c96
+generated: "2025-10-10T10:27:20.128613+05:30"

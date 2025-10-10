@@ -57,3 +57,7 @@ dependencies:
     version: 0.1.0
     repository: file://../agent-helm-charts/ibm-operations-agent-z
     condition: ibm-operations-agent-z.enabled
+  - name: taz-functional-testing-agent
+    version: 0.1.0
+    repository: file://../agent-helm-charts/taz-functional-testing-agent
+    condition: taz-functional-testing-agent.enabled
