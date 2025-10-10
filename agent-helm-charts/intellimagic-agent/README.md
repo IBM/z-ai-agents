@@ -1,4 +1,4 @@
-># IBM IntelliMagic agent for Z
+# IBM IntelliMagic agent for Z
 
 A system that recommends IBM Z IntelliMagic Vision for z/OS charts and
 reports. These charts and reports show information on IBM Z systems,
@@ -20,13 +20,11 @@ For more information on the integrated experience see [IBM Z IntelliMagic Vision
 
 ## Prerequisites
 
-- IntelliMagic Vision version 1.1.2.3-AI or higher is installed.
+- IBM Z IntelliMagic Vision for z/OS version 1.1.2.4 or higher is installed.
 
 ## Install the IBM IntelliMagic agent for Z
 
-IBM IntelliMagic agent for Z is part of the suite of WXA4Z agents.  You must configure all the shared
-variables, described in the section _Step 2: Create Shared Variables_
-in [wxa4z-agent-suite Chart - Deployment Guide](../../README.md).
+IBM IntelliMagic agent for Z is part of the suite of WXA4Z agents.  You must configure all the shared variables, described in the section [wxa4z-agent-suite Chart - Global Settings](../../README.md#1-global-settings).
 
 You must also setup two additional variables.  To enable the agent:
 
