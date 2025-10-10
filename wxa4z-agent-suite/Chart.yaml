@@ -61,3 +61,7 @@ dependencies:
     version: 0.1.0
     repository: file://../agent-helm-charts/taz-functional-testing-agent
     condition: taz-functional-testing-agent.enabled
+  - name: ims-agent
+    version: 1.0.0
+    repository: file://../agent-helm-charts/ims-agent
+    condition: ims-agent.enabled
