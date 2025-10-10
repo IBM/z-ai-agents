@@ -27,7 +27,7 @@ global:
     name: wxa4z-image-pull-secret    # Default pull secret name (namespace‑scoped).
     createSecret: false               # If true, chart templates will create this secret.
     server: cp.icr.io                   # ICR endpoint (can be region‑specific like us.icr.io).
-    username: iamapikey              # Required literal when using entitlement/IAM keys with ICR.
+    username: cp              # Required literal when using entitlement/IAM keys with ICR.
     entitlementKey: ""   # entitlement key/IAM APIkey used solely for image pulls.
 
 
