@@ -1,0 +1,92 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    "wxa4z.ibm.com/agent-secret-name": {{ .Values.secrets.name }}
+    "wxa4z.ibm.com/agent-route-name": {{ .Values.route.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: data-volume
+          {{- if .Values.pvc.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data
+          ports:
+            - containerPort: {{ .Values.service.ports.targetPort }}
+          env:
+            {{- range $key, $val := .Values.env }}
+            - name: {{ $key }}
+              value: "{{ $val }}"
+            {{- end }}
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+            - name: WATSONX_DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: WATSONX_ML_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: WATSONX_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_PROJECT_ID
+            - name: WATSONX_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: CPD_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secrets.name }}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}

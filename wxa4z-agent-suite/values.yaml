@@ -239,7 +239,7 @@ intellimagic-agent:
   acceptLicense: false # Must be true to install. Reference Intellimagic agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-WZGZ-XWN8JA
   image:
     repository: icr.io/ibm-intellimagic-ai/intellimagic-agent
-    tag: 1.1.0@sha256:5351f0229d65cf35a4f58e7e790c1a44c978a00ba89ea2b18c5dda0f53237f40
+    tag: 1.1.0@sha256:4660a70e7f11edfcbf0a3d1d942d1180c1153b1b573b2a954d622b261a27d59a
   registry:
     name: intellimagic-image-pull-secret
     server: icr.io
@@ -263,23 +263,23 @@ intellimagic-agent:
     storageClass: "ocs-storagecluster-cephfs"
 
 # ---------------------------------------------------------------------------- #
-# Product: ims-agent
+# Product: db2z-agent
 # ---------------------------------------------------------------------------- #
 
-ims-agent:
+db2z-agent:
   enabled: false
-  acceptLicense: false       # Must be true to install. Confirm IMS agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-XEPV-WC7KSS
+  acceptLicense: false             # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
+  image:
+    repository: icr.io/ibm-db2z-ai/db2z-agent
+    tag: latest@sha256:4e25bc61bf45a2d97c106220c491c4aceda055156db57421e228be60c594578f
+  mcpImage:
+    repository: icr.io/ibm-db2z-ai/db2z-mcp-server
+    tag: latest@sha256:570f7c11f5f3e845e80d32603bf13a528ac600eb933697929a95157752e7d156
   registry:
-    name: ims-image-pull-secret
+    name: db2-image-pull-secret     # Dedicated pull secret for this agent.
     server: icr.io
     username: iamapikey
     entitlementKey: ""
-  image:
-    repository: icr.io/ibm-ims-ai/ims-agent
-    tag: 1.0.0
-  mcpImage:
-    repository: icr.io/ibm-ims-ai/ims-mcp-agent
-    tag: 1.0.0
   bootstrapJob:
     enabled: true
     image:
@@ -287,36 +287,55 @@ ims-agent:
       tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
-  pullPolicy: Always
   env:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
-    ZOSMF_CONSOLE_NAME: ""
-    IMS_SUBSYSTEM_ID: ""
-    IMS_CONNECT_JOBNAME: ""
-    APPL_ID: ""
+    SERVICE_ENDPOINT: ""
   secrets:
     data:
-      WRAPPER_USERNAME: ""
-      WRAPPER_PASSWORD: ""
-      WRAPPER_URL: ""
+      ENCRYPT_KEY: ""
       AGENT_AUTH_TOKEN: ""
-  mcpSecrets:
-    data:
-      SERVICE_ENDPOINT: ""
-      ZOSMF_ENDPOINT: "ZOSMF_ENDPOINT"
-      AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
-  mcpCertSecret:
-    cert: |
-      -----BEGIN CERTIFICATE-----
-      Replace this value with the certificate
-      you create to access your service endpoint.
-      This secret can be manually updated in
-      your cluster after deployment. It is NOT
-      recommended that you store secrets in any
-      git repository. Restart your pod after
-      updating this secret to reflect changes.
-      -----END CERTIFICATE-----
   imagePullSecrets:
-  - name: ims-image-pull-secret
+  - name: db2-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: ibm-operations-agent-z
+# ---------------------------------------------------------------------------- #
+ibm-operations-agent-z:
+  enabled: false
+  acceptLicense: false    # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
+  image:
+    repository: icr.io/ibm-operations-ai/ibm-operations-agent-for-z
+    tag: v1.1.0
+  registry:
+    name: ibm-operations-agent-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: entitlementKey
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem      # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    CPD_AUTH_URL: ""
+  secrets:
+    data:
+      UNITE_CLIENT_ID: ""
+      UNITE_CLIENT_SECRET: ""
+      UNITE_GRANT_TYPE: "client_credentials"
+      UNITE_API_URL: ""
+      UNITE_TOKEN_URL: ""
+      AGENT_AUTH_TOKEN: ""
+      ASSISTANT_ENV_ID: ""
+      ASSISTANT_API_KEY: ""
+      ASSISTANT_SVC_INSTANCE_URL: ""
+      CPD_ADMIN_PASSWORD: ""
+  imagePullSecrets:
+  - name: ibm-operations-agent-image-pull-secret
   pvc:
     storageClass: "ocs-storagecluster-cephfs"

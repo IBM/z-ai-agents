@@ -17,8 +17,11 @@ dependencies:
 - name: intellimagic-agent
   repository: file://../agent-helm-charts/intellimagic-agent
   version: 1.1.0
-- name: ims-agent
-  repository: file://../agent-helm-charts/ims-agent
-  version: 1.0.0
-digest: sha256:bc25001fe9bc3afc1a4d9f0e71410491297886491b9f2a9748b3a37143dccb15
-generated: "2025-10-08T10:51:00.190458-07:00"
+- name: db2z-agent
+  repository: file://../agent-helm-charts/db2z-agent
+  version: 0.1.0
+- name: ibm-operations-agent-z
+  repository: file://../agent-helm-charts/ibm-operations-agent-z
+  version: 0.1.0
+digest: sha256:a701debc2e069bf6d27313db53f62f931f3b6d19d68446784a71ade7e03072f6
+generated: "2025-10-09T07:49:42.732192991-07:00"

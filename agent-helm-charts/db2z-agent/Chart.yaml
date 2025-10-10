@@ -1,0 +1,6 @@
+apiVersion: v2
+name: db2z-agent
+description: A Helm chart for deploying the Db2 for z/OS agent
+type: application
+version: 0.1.0
+appVersion: "1.0.1"

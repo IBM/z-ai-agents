@@ -1,0 +1,260 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    "wxa4z.ibm.com/agent-secret-name": {{ .Values.secrets.name}}
+    "wxa4z.ibm.com/agent-route-name": {{ .Values.route.name}}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: data-volume
+      {{- if .Values.pvc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name }}-pvc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      - name: license-volume
+      {{- if .Values.pvc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name }}-license-pvc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /data
+          - name: license-volume
+            mountPath: /usr/local/lib64/python3.12/site-packages/clidriver/license
+          ports:
+            - containerPort: {{ .Values.service.ports.targetPort }}
+          env:
+            - name: WATSONX_DEPLOYMENT_TYPE
+              value: {{ .Values.env.DEPLOYMENT_TYPE }}
+            - name: WATSONX_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: WATSONX_DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: WATSONX_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_PROJECT_ID
+            - name: WATSONX_MODEL
+              value: {{ .Values.env.WATSONX_MODEL_ID }}  
+            - name: WATSONX_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: WATSONX_INSTANCE_ID
+              value: {{ .Values.env.WATSONX_INSTANCE_ID }}
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: CPD_VERSION
+              value: {{ .Values.env.CPD_VERSION | quote }}
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: ENCRYPT_KEY
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_URI
+            - name: MONGODB_DB_NAME
+              value: {{ .Values.env.MONGODB_DB_NAME }}
+            - name: MONGODB_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_DB_USERNAME
+            - name: MONGODB_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_DB_PASSWORD
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: AGENT_ID
+              value: {{ .Values.env.AGENT_ID}}
+            - name: AUTH_SERVICE_BASE_URL
+              value: {{ .Values.env.AUTH_SERVICE_BASE_URL}}
+            - name: MCP_SERVER_NAME
+              value: {{ .Values.env.MCP_SERVER_NAME}}
+            - name: MCP_SERVER_URL
+              value: {{ .Values.env.MCP_SERVER_URL}}
+            - name: SERVICE_ENDPOINT
+              value: {{ .Values.env.SERVICE_ENDPOINT}}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+        
+        - name: db2z-mcp-server
+          image: {{ .Values.mcpImage.repository }}:{{ .Values.mcpImage.tag }}
+          imagePullPolicy: {{ .Values.mcpImage.pullPolicy }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /data
+          - name: license-volume
+            mountPath: /usr/local/lib64/python3.12/site-packages/clidriver/license
+          ports:
+            - containerPort: {{ .Values.mcpService.ports.targetPort }}
+          env:
+            - name: WATSONX_DEPLOYMENT_TYPE
+              value: {{ .Values.env.DEPLOYMENT_TYPE }}
+            - name: WATSONX_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: WATSONX_DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: WATSONX_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_PROJECT_ID
+            - name: WATSONX_MODEL
+              value: {{ .Values.env.WATSONX_MODEL_ID }}  
+            - name: WATSONX_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: WATSONX_INSTANCE_ID
+              value: {{ .Values.env.WATSONX_INSTANCE_ID }}
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: CPD_VERSION
+              value: {{ .Values.env.CPD_VERSION | quote }}
+            - name: ENCRYPT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: ENCRYPT_KEY
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_URI
+            - name: MONGODB_DB_NAME
+              value: {{ .Values.env.MONGODB_DB_NAME }}
+            - name: MONGODB_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_DB_USERNAME
+            - name: MONGODB_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_DB_PASSWORD
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: AGENT_ID
+              value: {{ .Values.env.AGENT_ID}}
+            - name: AUTH_SERVICE_BASE_URL
+              value: {{ .Values.env.AUTH_SERVICE_BASE_URL}}
+            - name: MCP_SERVER_NAME
+              value: {{ .Values.env.MCP_SERVER_NAME}}
+            - name: MCP_SERVER_URL
+              value: {{ .Values.env.MCP_SERVER_URL}}
+            - name: SERVICE_ENDPOINT
+              value: {{ .Values.env.SERVICE_ENDPOINT}}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+        - name: mongodb
+          image: docker.io/library/mongo:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data/db
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_DB_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: MONGODB_DB_PASSWORD
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.env.MONGODB_DB_NAME }}

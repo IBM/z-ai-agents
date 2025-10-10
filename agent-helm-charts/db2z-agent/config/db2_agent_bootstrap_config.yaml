@@ -1,0 +1,14 @@
+resources:
+  agents:
+    - name: IBM_Db2_for_zOS_Agent
+      kind: orchestrator
+      path: /db2-agent-bootstrap-config/db2_agent.yaml
+      collaborators:
+        - name: IBM_Db2_for_zOS_Agent_ext
+          kind: external
+          description: The Db2 for z/OS agent provides a conversational experience for interacting with Db2 for z/OS subsystems, making it significantly easier to retrieve and interpret information across multiple Db2 for z/OS environments. By reducing the complexity traditionally associated with navigating system configurations, comparing subsystem data, and handling large volumes of technical information, the agent empowers both technical and non-technical users to gain meaningful insights—without requiring deep expertise in Db2 for z/OS command syntax.
+          route_name: ${DB2_AGENT_ROUTE_NAME}
+          route_path: /api/v1/agents/chat
+          namespace: ${DB2_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${AGENT_AUTH_TOKEN}

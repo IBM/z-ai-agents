@@ -1,0 +1,132 @@
+replicaCount: 1
+
+image:
+  repository: icr.io/ibm-operations-ai/ibm-operations-agent-for-z
+  tag: v1.1.0
+  pullPolicy: Always
+
+createSecret: false
+
+service:
+  name: wxa4z-ibm-operations-agent-z-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 9001
+
+route:
+  name: wxa4z-ibm-operations-agent-z-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-ibm-operations-agent-z-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+
+env:
+  CPD_VERSION: "5.2"
+  DEPLOYMENT_TYPE: on-prem
+  LOG_LEVEL: INFO
+  VERIFY_SSL: "true"
+  ONPREM_WML_INSTANCE_ID: openshift
+  UNITE_METRIC_INDEX: unite-metrics
+  UNITE_EVENT_INDEX: unite-events
+  LLM_MODEL: meta-llama/llama-3-3-70b-instruct
+  LANGFUSE_HOST: ""
+  LANGFUSE_TRACING_ENABLED: false
+  SUMMARY_DIR: /data
+  GRAPH_RECURSION_LIMIT: "30"
+  CPD_AUTH_URL: ""
+
+secrets:
+  name: ibm-operations-agent-z-secrets
+  createSecret: true
+  data:
+    WATSONX_ML_URL: ""
+    WATSONX_DEPLOYMENT_SPACE_ID: ""
+    CPD_USERNAME: CPD_USERNAME
+    WATSONX_API_KEY: CLOUD_API_KEY
+    UNITE_CLIENT_ID: UNITE_CLIENT_ID
+    UNITE_CLIENT_SECRET: UNITE_CLIENT_SECRET
+    UNITE_GRANT_TYPE: client_credentials
+    UNITE_API_URL: ""
+    UNITE_TOKEN_URL: ""
+    AGENT_AUTH_TOKEN: ""
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
+    WATSONX_PROJECT_ID: ""
+    ASSISTANT_VERSION: "2023-09-15"
+    ASSISTANT_ENV_ID: ""
+    ASSISTANT_API_KEY: ""
+    ASSISTANT_SVC_INSTANCE_URL: ""
+    CPD_ADMIN_PASSWORD: ""
+
+imagePullSecrets:
+  - name: ibm-operations-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "1"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: true
+  size: 8Gi
+
+networkPolicy:
+  name: wxa4z-ibm-operations-agent-z-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: ibm-operations-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: WATSONX_API_KEY
+      ORCHESTRATE_ENV_URL: ORCHESTRATE_ENV_URL
+      CPD_USERNAME: CPD_USERNAME
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/ibm-ops-agent-bootstrap-config/ibm_ops_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "500m"
+  serviceAccount:
+    name: ibm-ops-agent-bootstrap-job-sa
+
+# This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
+registry:
+  name: ibm-operations-image-pull-secret
+  createSecret: true
+  server: icr.io
+  username: iamapikey
+  entitlementKey: entitlementKey

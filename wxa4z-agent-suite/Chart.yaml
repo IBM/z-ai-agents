@@ -49,6 +49,14 @@ dependencies:
     version: 1.1.0
     repository: file://../agent-helm-charts/intellimagic-agent
     condition: intellimagic-agent.enabled
+  - name: db2z-agent
+    version: 0.1.0
+    repository: file://../agent-helm-charts/db2z-agent
+    condition: db2z-agent.enabled
+  - name: ibm-operations-agent-z
+    version: 0.1.0
+    repository: file://../agent-helm-charts/ibm-operations-agent-z
+    condition: ibm-operations-agent-z.enabled
   - name: ims-agent
     version: 1.0.0
     repository: file://../agent-helm-charts/ims-agent
