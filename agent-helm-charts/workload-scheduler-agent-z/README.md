@@ -25,11 +25,11 @@ Ensure the following:
 ### Create Shared Variables
 
 Certain variables are common across all agents. To configure these shared variables, refer to [Create Shared Variables](../../README.md#1-global-settings).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
+However, if any of these shared variables are also defined in your agent-specific [values.yaml](/agent-helm-charts/workload-scheduler-agent-z/values.yaml) file, the values specified in the suite [values.yaml](/wxa4z-agent-suite/values.yaml) file will override the shared ones.
 
 ### Configure the values.yaml file
 
-To enable the IBM Z Workload Scheduler Insights Agent, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
+To enable the IBM Z Workload Scheduler Insights Agent, you need to configure agent-specific values in the [values.yaml](/wxa4z-agent-suite/values.yaml) file.
 
 In the values.yaml file, scroll down to the workload-scheduler-agent-z section and update the keys as outlined in the following table.
 
@@ -45,7 +45,7 @@ AGENT_AUTH_TOKEN | Authentication token for the agent.
 
 ### Install or upgrade the wxa4z-agent-suite
 
-> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
+> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
 
 Use the following command to install or upgrade the wxa4z_agent_suite:
 
