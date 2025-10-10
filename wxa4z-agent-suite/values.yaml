@@ -239,7 +239,7 @@ intellimagic-agent:
   acceptLicense: false # Must be true to install. Reference Intellimagic agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-WZGZ-XWN8JA
   image:
     repository: icr.io/ibm-intellimagic-ai/intellimagic-agent
-    tag: 1.1.0@sha256:5351f0229d65cf35a4f58e7e790c1a44c978a00ba89ea2b18c5dda0f53237f40
+    tag: 1.1.0@sha256:4660a70e7f11edfcbf0a3d1d942d1180c1153b1b573b2a954d622b261a27d59a
   registry:
     name: intellimagic-image-pull-secret
     server: icr.io
