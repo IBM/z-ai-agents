@@ -171,7 +171,7 @@ upgrade-agent:
       tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
-  # env:
+  env:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
     WRAPPER_URL: ""                         # endpoint for opensearch
     HOST_NAME: ""                           #endpoint of the cluster in which the image is deployed

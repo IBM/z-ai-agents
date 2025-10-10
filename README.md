@@ -1,4 +1,4 @@
-# z-ai-agents - Deployment Guide
+# IBM Z AI Agents - Deployment Guide
 
 Install and operate the [IBM watsonx Assistant for Z – Agent Suite](/wxa4z-agent-suite/) Helm chart on OpenShift. Deploy multiple z/OS agents with one command, using shared configuration and per‑agent overrides.
 
@@ -53,12 +53,25 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 | Name                       | Chart name               | Category      |   Reference   |
 | -------------------------- | ------------------------ | ------------- | ------------- |
-| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [README](./agent-helm-charts/system-insight-agent-z/README.md)                  |
-| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./agent-helm-charts/upgrade-agent/README.md)                  |
-| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](/agent-helm-charts/system-automation-netview-agent/README.md)|
-| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
-| IBM Z Support Agent              | `support-agent`          | Foundational | [README](./agent-helm-charts/support-agent/README.md)                   |
+| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [Configuration Guide](./agent-helm-charts/system-insight-agent-z/README.md)                  |
+| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [Configuration Guide](./agent-helm-charts/upgrade-agent/README.md)                  |
+| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[Configuration Guide](/agent-helm-charts/system-automation-netview-agent/README.md)|
+| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[Configuration Guide](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
+| IBM Z Support Agent              | `support-agent`          | Foundational | [Configuration Guide](./agent-helm-charts/support-agent/README.md)                   |
 
+
+---
+
+### Prebuilt IBM Z product agents
+
+| Name                           | Chart name                     | Category         |  Reference.      |
+| ------------------------------ | ------------------------------ | -----------------| -----------------|
+| IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/cics-agent/README.md)|
+| IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/db2z-agent/README.md)|
+| IBM IMS Agents                 | `ims-agent`                    | Product  |[Configuration Guide](/agent-helm-charts/ims-agent/README.md)|
+| IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[Configuration Guide](/agent-helm-charts/intellimagic-agent/README.md)|
+| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[Configuration Guide](/agent-helm-charts/taz-functional-testing-agent/README.md)|
+| IBM Operations Agent for Z | `ibm-operations-agent-for-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z/README.md)|
 
 ---
 
