@@ -67,14 +67,14 @@ Now run `export FINGERPRINT=$(gpg --fingerprint --with-colons | grep fpr | tr -d
 
 Sign in to skopeo so the container can be pulled with `skopeo login --username <USERNAME> --password <PASSWORD_OR_TOKEN> icr.io`.
 
-Copy the container image to a temporary directory with `skopeo copy docker://icr.io/ibm-cics-ts/cics-ai-agent:topology-v1.0.0 dir:./tmp/`.
+Copy the container image to a temporary directory with `skopeo copy docker://icr.io/ibm-cics-ai/cics-ai-agent:topology-v1.0.0 dir:./tmp/`.
   
 This copies blobs, manifests and signatures from the container into the `tmp` directory. The signature will usually be something like `signature-1`.
 <br>
 
 #### Step 3: Validating the signature
 
-You can now verify the signature.. Run `skopeo standalone-verify ./tmp/manifest.json icr.io/ibm-cics-ts/cics-ai-agent:topology-v1.0.0 $FINGERPRINT ./tmp/signature-1`
+You can now verify the signature.. Run `skopeo standalone-verify ./tmp/manifest.json icr.io/ibm-cics-ai/cics-ai-agent:topology-v1.0.0 $FINGERPRINT ./tmp/signature-1`
 
 You should see output like this:
 ```Signature verified using fingerprint B83574F1F039B21CDCC4FD5FF884D56B4AA7091A, digest sha256:f2f11696e64395b79a9f5e31b91bae4f8c802ae1548ffd831067b3eb3ed1f077```
