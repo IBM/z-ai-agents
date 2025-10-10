@@ -1,0 +1,22 @@
+resources:
+  agents:
+    - name: CICS_Transaction_Server_Agents_for_Z
+      kind: orchestrator
+      path: /cics-agent-bootstrap-config/cics_agent.yaml
+      collaborators:
+        - name: CICS_Transaction_Server_Topology_Agent_for_Z_ext
+          kind: external
+          description: The CICS (Customer Information Control System) Transaction Server Topology agent can take queries about CICS topologies and provide answers using documentation and subject matter expert data.
+          route_name: ${CICS_AGENT_ROUTE_NAME}
+          route_path: /v1/cics_chat/
+          namespace: ${CICS_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${CICS_TS_AGENT_AUTH_TOKEN}
+        - name: CICS_Transaction_Server_Problem_Determination_Agent_for_Z_ext
+          kind: external
+          description: The CICS (Customer Information Control System) Transaction Server Problem Determination agent can take queries about CICS error codes and provide answers using documentation and live system information.
+          route_name: ${CICS_PD_AGENT_ROUTE_NAME}
+          route_path: /v1/problem_determination/
+          namespace: ${CICS_PD_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${CICS_PD_AGENT_AUTH_TOKEN}

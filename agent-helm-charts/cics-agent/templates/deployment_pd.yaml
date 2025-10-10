@@ -1,0 +1,172 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "PDsecrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or PDsecrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ required "Chart name is required" .Chart.Name }}-pd
+  labels:
+    app: {{ required "Chart name is required" .Chart.Name }}-pd
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    "wxa4z.ibm.com/agent-secret-name": {{ required "Agent Secret name is required" .Values.PDsecrets.name}}
+    "wxa4z.ibm.com/agent-route-name": {{ required "Agent Route name is required" .Values.PDroute.name}}
+spec:
+  replicas: {{ required "Replica count is required" .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ required "Chart name is required" .Chart.Name }}-pd
+  template:
+    metadata:
+      labels:
+        app: {{ required "Chart name is required" .Chart.Name }}-pd
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: data-volume
+      {{- if .Values.pvc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ required "PVC name is required" .Values.PDpvc.name }}
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      containers:
+        - name: {{ required "Chart name is required" .Chart.Name }}-pd
+          image: {{ required "Image repository is required" .Values.PDimage.repository }}:{{ required "Image tag is required" .Values.PDimage.tag }}
+          imagePullPolicy: {{ required "Image pull policy is required" .Values.PDimage.pullPolicy }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /data
+            subPath: cics_model_instructions.yaml
+          ports:
+            - containerPort: {{ .Values.PDservice.ports.targetPort }}
+          env:
+            - name: MODEL_CATALOG_PATH
+              value: {{ required "MODEL_CATALOG_PATH is required" .Values.env.MODEL_CATALOG_PATH }}
+            - name: MCP_SERVER_URL
+              value: {{ required "MCP_SERVER is required" .Values.env.MCP_SERVER_URL }}  
+            - name: APPLID
+              value: {{ .Values.env.APPLID }}  
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+            - name: CPD_VERSION
+              value: {{ required "CPD_VERSION is required" .Values.env.CPD_VERSION | quote }}
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: DEPLOYMENT_TYPE
+              value: {{ required "DEPLOYMENT_TYPE is required" .Values.env.DEPLOYMENT_TYPE }}
+            - name: ONPREM_WML_INSTANCE_ID
+              value: {{ required "A valid ONPREM_WML_INSTANCE_ID is required in env" .Values.env.ONPREM_WML_INSTANCE_ID }}
+            - name: WML_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: WATSONX_MODEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: WATSONX_MODEL_ID
+            - name: WATSONX_PROJECT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: WATSONX_PROJECT_URL
+            - name: WATSONX_PROJECT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_PROJECT_ID
+            - name: WATSONX_APIKEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: WRAPPER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: WRAPPER_USERNAME
+            - name: WRAPPER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: WRAPPER_PASSWORD
+            - name: WRAPPER_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: WRAPPER_URL
+            - name: AGENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AGENT_ID
+            - name: AUTH_SERVICE_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AUTH_SERVICE_BASE_URL 
+            - name: INGESTION_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: INGESTION_URL
+            - name: INGESTION_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: INGESTION_PASSWORD
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: ONPREM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: ACTIVE_AGENT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.PDsecrets.name }}
+                  key: ACTIVE_AGENT
+            - name: SERVICE_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.PDsecrets.name }}
+                  key: SERVICE_ENDPOINT
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
