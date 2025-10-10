@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-operations-ai/ibm-operations-agent-for-z
-  tag: v1.0.0
+  tag: v1.1.0
   pullPolicy: Always
 
 createSecret: false
