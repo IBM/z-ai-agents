@@ -307,7 +307,7 @@ ibm-operations-agent-z:
   acceptLicense: false    # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
   image:
     repository: icr.io/ibm-operations-ai/ibm-operations-agent-for-z
-    tag: v1.0.0
+    tag: v1.1.0
   registry:
     name: ibm-operations-agent-image-pull-secret
     server: icr.io
