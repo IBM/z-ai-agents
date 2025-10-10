@@ -65,8 +65,8 @@ global:
 
 ### Create Shared Variables
 
-Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables]([https://github.ibm.com/wxa4z/agent-deployment-charts/tree/readme-update?tab=readme-ov-file#step-2-create-shared-variablescreate-once-reuse-everywhere) (link to the global GitHub page).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
+Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents?tab=readme-ov-file#1-global-settings) (link to the global GitHub page).
+However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/agent-helm-charts/taz-functional-testing-agent/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
 
 ### Resources
 
@@ -74,7 +74,7 @@ Configure `resources.limits` and `resources.requests` to configure the CPU and m
 
 ### Configure the values.yaml file
 
-To enable the IBM Z Functional Test Agent, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
+To enable the IBM Z Functional Test Agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
 
 In the values.yaml file, scroll down to the taz-functional-testing-agent section and update the keys as outlined in the following table.
 
@@ -111,7 +111,7 @@ In the values.yaml file, scroll down to the taz-functional-testing-agent section
 
 ### Install or upgrade the taz-functional-testing-agent
 
-> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
+> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
 
 Use the following command to install or upgrade the taz-functional-testing-agent:
 
