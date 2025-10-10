@@ -1,0 +1,143 @@
+replicaCount: 1
+
+mainApp:
+  image:
+    repository: cp.icr.io/cp/ibm-taz-functional-testing/taz-functional-testing-agent
+    tag: v2.1.0@sha256:a9b3751023caa8953ea1e1c0e459ad5070fa78d8e01e47e982eb56bc088ca5d2
+    pullPolicy: Always
+mcpServer:
+  image:
+    repository: cp.icr.io/cp/ibm-taz-functional-testing/taz-functional-testing-mcp-server
+    tag: v2.1.0@sha256:6a8f442804d50116cc18a46a3c5e719f9383ce6955c819f69e8e9a89635095c6
+    pullPolicy: Always
+
+service:
+  name: taz-functional-testing-service
+  ports:
+    - name: taz-fta-agent
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+    - name: taz-fta-mcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+route:
+  name: taz-functional-testing-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: taz-functional-testing-service
+  weight: 100
+  targetPort: taz-fta-agent
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+env:
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_ML_URL: ""
+  ONPREM_WML_INSTANCE_ID: "openshift"
+  WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct"
+  DEPLOYMENT_TYPE: "on-prem"
+  # CPD_VERSION, needed for on-prem deployments.Example(5.1)
+  CPD_VERSION: "5.2"
+  LANGFUSE_HOST: ""
+  LANGFUSE_TRACING_ENABLED: false
+  API_BASE_URL: ""
+  UPLOADS_PATH: /opt/app-root/data/uploads
+  DOWNLOADS_PATH: /opt/app-root/data/downloads
+  # Understand, to fetch data from database 
+  CFG_URI : ""
+  UNDERSTAND_API_ENDPOINT : ""
+  AD_HOST: ""
+  ZOOKEEPER_HOST_PORT: ""
+  IS_UNDERSTAND_CERT_VALIDATE_REQ: "False"
+
+secrets:
+  name: taz-functional-testing-secrets
+  createSecret: true
+  data:
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud) 
+    CPD_USERNAME: cpadmin
+    # CPD ONPREM ZENAPI KEY, Needed for on-prem only.(set it to empty for cloud) 
+    WATSONX_API_KEY: ""
+    # IBM CLOUD APIKEY, Needed for cloud deployments. (set it to empty for on-prem)
+    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    AGENT_AUTH_TOKEN: ""
+    # This the rest endpoint exposed by agent, needed for agent registration with wxo by agent-controller.
+    AGENT_SERVICE_PATH: "v1/z_functiontest_chat"
+    LANGFUSE_SECRET_KEY: "LANGFUSE_SECRET_KEY"
+    LANGFUSE_PUBLIC_KEY: "LANGFUSE_PUBLIC_KEY"
+    # This is to fetch data from understand container and database
+    UNDERSTAND_API_KEY : ""
+    ENVIRONMENT_ID: ""
+  understandName:
+      secretName: understand-cert-key # Use pre-created certificate secret of understand component
+
+imagePullSecrets:
+  - name: taz-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "1"
+    memory: "1Gi"
+
+pvc:
+  enabled: false
+
+networkPolicy:
+  name: taz-functional-testing-network-policy
+  egress:
+  - {}
+  ingress:
+  - {}
+
+serviceAccount:
+  name: taz-functional-testing-controller
+
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: taz-image-pull-secret
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/taz-ft-agent-bootstrap-config/taz_ft_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  secret:
+    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: taz-ft-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "500m"
+  serviceAccount:
+    name: taz-ft-agent-bootstrap-job-sa
+
+
+# This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
+registry:
+  name: taz-image-pull-secret
+  createSecret: true
+  server: icr.io
+  username: iamapikey
+  entitlementKey: ""

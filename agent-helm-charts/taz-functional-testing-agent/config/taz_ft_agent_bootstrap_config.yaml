@@ -1,0 +1,14 @@
+resources:
+  agents:
+    - name: Functional_Testing_Agent
+      kind: orchestrator
+      path: /taz-ft-agent-bootstrap-config/taz_ft_agent.yaml
+      collaborators:
+        - name: Functional_Testing_Agent_ext
+          kind: external
+          description: Functional Testing Agent generates functional tests in Galasa for the given functionality as instructions and Java
+          route_name: ${TAZ_FT_AGENT_ROUTE_NAME}
+          route_path: v1/z_functiontest_chat
+          namespace: ${TAZ_FT_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${AGENT_AUTH_TOKEN}

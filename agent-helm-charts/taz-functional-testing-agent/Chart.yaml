@@ -1,0 +1,6 @@
+apiVersion: v2
+name: taz-functional-testing-agent
+description: A Helm chart for deploying IBM Test Accelerator for Z Functional Testing Agent
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

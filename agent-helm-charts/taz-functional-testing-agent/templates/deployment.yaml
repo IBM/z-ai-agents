@@ -1,0 +1,231 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    "wxa4z.ibm.com/agent-secret-name": {{ .Values.secrets.name }}
+    "wxa4z.ibm.com/agent-route-name": {{ .Values.route.name }}
+  
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      automountServiceAccountToken: true
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: data-volume
+        emptyDir: {}
+      - name: cert-volume
+        secret:
+          secretName: {{ .Values.secrets.understandName.secretName}}
+          optional: true
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.mainApp.image.repository }}:{{ .Values.mainApp.image.tag }}
+          imagePullPolicy: {{ .Values.mainApp.image.pullPolicy | default "IfNotPresent" }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /opt/app-root/data
+          - name: cert-volume
+            mountPath: /etc/certs
+            readOnly: true
+          ports:
+            - containerPort: 8000
+              name: taz-fta-agent
+          env:
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: WML_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: ONPREM_WML_INSTANCE_ID
+              value: {{ .Values.env.ONPREM_WML_INSTANCE_ID}}
+            - name: CPD_VERSION
+              value: "{{ .Values.env.CPD_VERSION }}"
+            - name: LLM_MODEL
+              value: {{ .Values.env.WATSONX_MODEL_ID }}
+            - name: DEPLOYMENT_TYPE
+              value: {{ .Values.env.DEPLOYMENT_TYPE }}
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: CLOUD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: ONPREM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+            - name: API_BASE_URL
+              value: {{ .Values.env.API_BASE_URL }}
+            - name: CFG_URI
+              value: {{ .Values.env.CFG_URI}}
+            -name: UNDERSTAND_API_ENDPOINT
+              value: {{ .Values.env.UNDERSTAND_API_ENDPOINT}}
+            -name: AD_HOST
+              value: {{ .Values.env.AD_HOST}}
+            -name: ZOOKEEPER_HOST_PORT
+              value: {{ .Values.env.ZOOKEEPER_HOST_PORT}}
+            - name: UNDERSTAND_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: UNDERSTAND_API_KEY
+            - name: ENVIRONMENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: ENVIRONMENT_ID
+            - name: IS_UNDERSTAND_CERT_VALIDATE_REQ
+              value: "{{ .Values.env.IS_UNDERSTAND_CERT_VALIDATE_REQ }}"
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+        - name: taz-functional-testing-mcp
+          image: {{ .Values.mcpServer.image.repository }}:{{ .Values.mcpServer.image.tag }}
+          imagePullPolicy: {{ .Values.mcpServer.image.pullPolicy | default "IfNotPresent" }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /opt/app-root/data
+          - name: cert-volume
+            mountPath: /etc/certs
+            readOnly: true
+          ports:
+            - containerPort: 8080
+              name: taz-fta-mcp
+          env:
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: WML_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: ONPREM_WML_INSTANCE_ID
+              value: {{ .Values.env.ONPREM_WML_INSTANCE_ID }}
+            - name: CPD_VERSION
+              value: "{{ .Values.env.CPD_VERSION }}"
+            - name: LLM_MODEL
+              value: {{ .Values.env.WATSONX_MODEL_ID }}
+            - name: DEPLOYMENT_TYPE
+              value: {{ .Values.env.DEPLOYMENT_TYPE }}
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: CLOUD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: ONPREM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            - name: LANGFUSE_HOST
+              value: {{ .Values.env.LANGFUSE_HOST }}
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY        
+            - name: API_BASE_URL
+              value: {{ .Values.env.API_BASE_URL }}
+            - name: CFG_URI
+              value: {{ .Values.env.CFG_URI}}
+            - name: UNDERSTAND_API_ENDPOINT
+              value: {{ .Values.env.UNDERSTAND_API_ENDPOINT}}
+            - name: AD_HOST
+              value: {{ .Values.env.AD_HOST}}
+            - name: ZOOKEEPER_HOST_PORT
+              value: {{ .Values.env.ZOOKEEPER_HOST_PORT}}
+            - name: UNDERSTAND_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: UNDERSTAND_API_KEY
+            - name: ENVIRONMENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: ENVIRONMENT_ID
+            - name: IS_UNDERSTAND_CERT_VALIDATE_REQ
+              value: "{{ .Values.env.IS_UNDERSTAND_CERT_VALIDATE_REQ }}"
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
