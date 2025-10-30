@@ -350,12 +350,12 @@ taz-functional-testing-agent:
   mainApp:
     image:
       repository: cp.icr.io/cp/ibm-taz-functional-testing/taz-functional-testing-agent
-      tag: v2.1.0@sha256:a9b3751023caa8953ea1e1c0e459ad5070fa78d8e01e47e982eb56bc088ca5d2
+      tag: v2.1.0@sha256:bf4c49595ec56a3893f430994e60b49eb079b70fe9f747aa9ac16d8b6d440b25
       pullPolicy: Always
   mcpServer:
     image:
       repository: cp.icr.io/cp/ibm-taz-functional-testing/taz-functional-testing-mcp-server
-      tag: v2.1.0@sha256:6a8f442804d50116cc18a46a3c5e719f9383ce6955c819f69e8e9a89635095c6
+      tag: v2.1.0@sha256:49130ed33f5624a5fb489413177c4a6cf9ec02714f4421209eabb3314b5363ec
       pullPolicy: Always
   registry:
     name: taz-image-pull-secret
