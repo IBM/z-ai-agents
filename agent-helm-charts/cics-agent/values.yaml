@@ -2,12 +2,12 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-cics-ai/cics-ai-agent
-  tag: topology-1.0.0@sha256:92d99d98855eb332ff1ada549d3aeed80d5113a5edf8445d8ae67b37c4b55537
+  tag: topology-1.0.0@sha256:6f49b62e4cfaf9dae3bf6b28ebbc46a12ba17c0958cea92a60b9e14ea2ee85b7
   pullPolicy: Always
 
 PDimage:
   repository: icr.io/ibm-cics-ai/cics-ai-agent
-  tag: problem-determination-1.0.0@sha256:d1e003b8d11552648a968c36f5ad513907b8aa70245598f0e1e6d3cf7ef90330
+  tag: problem-determination-1.0.0@sha256:fb223b601b72016f8943527333920d394b621b23359a00746980ad89607df474
   pullPolicy: Always
 
 service:
