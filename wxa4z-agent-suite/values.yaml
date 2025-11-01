@@ -271,10 +271,10 @@ db2z-agent:
   acceptLicense: false             # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
   image:
     repository: icr.io/ibm-db2z-ai/db2z-agent
-    tag: latest@sha256:e22d5987ac2ae47e5843e5bae5dc7b7ac3ca18d34a7b7f42b90d7a9de511fdf4
+    tag: latest@sha256:33650af116be86abf2698ec4d17a00c8f0c96317771cd06b48758f2117ab510a
   mcpImage:
     repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-    tag: latest@sha256:16166c3c74f43f9e88a1143b5566015197091160ca6748f703f0f47b1e1f7c41
+    tag: latest@sha256:82f5f1a9f9967c472ff2d9431bee03091de7b5099f4ce88377bf66953cd18f7b
   registry:
     name: db2-image-pull-secret     # Dedicated pull secret for this agent.
     server: icr.io
