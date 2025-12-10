@@ -1,0 +1,144 @@
+{{- /* Prefer global.secrets.name; fallback to subchart secrets.name */ -}}
+{{- $globName := get (get (get .Values "global" | default dict) "secrets" | default dict) "name" -}}
+{{- $subName  := get (get .Values "secrets" | default dict) "name" -}}
+{{- $secretName := required "Set global.secrets.name (preferred) or secrets.name" (or $globName $subName) -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ required "Chart name is required" .Chart.Name }}
+  labels:
+    app: {{ required "Chart name is required" .Chart.Name }}
+    "wxa4z.ibm.com/agent": "true"
+  annotations:
+    "wxa4z.ibm.com/agent-secret-name": {{ required "Agent Secret name is required" .Values.secrets.name}}
+    "wxa4z.ibm.com/agent-route-name": {{  required "Agent Route name is required"  .Values.route.name}}
+    "productID": {{ .Values.ilmtAnnotation.productID}}
+    "productName": {{ .Values.ilmtAnnotation.productName}}
+    "productMetric": {{ .Values.ilmtAnnotation.productMetric}}
+    "productChargedContainers": {{ .Values.ilmtAnnotation.productChargedContainers}}
+    
+spec:
+  replicas: {{ required "Replica count is required" .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ required "Chart name is required" .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ required "Chart name is required" .Chart.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: data-volume
+      {{- if .Values.pvc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ required "Chart name is required" .Chart.Name }}-pvc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      containers:
+        - name: {{ required "Chart name is required" .Chart.Name }}
+          image: {{ required "Image repository is required" .Values.image.repository }}:{{ required "Image tag is required" .Values.image.tag }}
+          imagePullPolicy: {{ required "Image pull policy is required" .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: data-volume
+            mountPath: /data
+          ports:
+            - containerPort: {{ required "Service target port is required" .Values.service.ports.targetPort }}
+          securityContext:
+            privileged: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          env:
+            - name: MODEL_CATALOG_PATH
+              value: {{ required "MODEL_CATALOG_PATH is required" .Values.env.MODEL_CATALOG_PATH | quote }}
+            - name: CPD_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: CPD_USERNAME
+            - name: OPENSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required"  .Values.secrets.name }}
+                  key: OPENSEARCH_USERNAME
+            - name: OPENSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: OPENSEARCH_PASSWORD
+            - name: OPENSEARCH_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: OPENSEARCH_BASE_URL
+            - name: WML_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_ML_URL
+            - name: DEPLOYMENT_SPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_DEPLOYMENT_SPACE_ID
+            - name: ONPREM_WML_INSTANCE_ID
+              value: {{ required "A valid ONPREM_WML_INSTANCE_ID is required in env" .Values.env.ONPREM_WML_INSTANCE_ID | quote }}
+            - name: LLM_MODEL
+              value: {{ required "A valid WATSONX_MODEL_ID is required in env" .Values.env.WATSONX_MODEL_ID | quote }}
+            - name: DEPLOYMENT_TYPE
+              value: {{ required "DEPLOYMENT_TYPE is required" .Values.env.DEPLOYMENT_TYPE | quote }}
+            - name: CPD_VERSION
+              value: {{ required "CPD_VERSION is required" .Values.env.CPD_VERSION | quote }}
+            - name: LOG_LEVEL
+              value: {{ required "LOG_LEVEL is required" .Values.env.LOG_LEVEL | quote }}
+            - name: LOCAL_EMBEDDING_MODEL
+              value: {{ required "LOCAL_EMBEDDING_MODEL is required" .Values.env.LOCAL_EMBEDDING_MODEL | quote }}
+            - name: AGENT_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: AGENT_AUTH_TOKEN
+            - name: CLOUD_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: ONPREM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: WATSONX_API_KEY
+            - name: LANGFUSE_TRACING_ENABLED
+              value: {{ required "LANGFUSE_TRACING_ENABLED is required" .Values.env.LANGFUSE_TRACING_ENABLED | quote}}
+            {{- if eq (.Values.env.LANGFUSE_TRACING_ENABLED | toString) "true" }}
+            - name: LANGFUSE_HOST
+              value: {{ required "LANGFUSE_HOST is required" .Values.env.LANGFUSE_HOST | quote }}
+            
+            - name: LANGFUSE_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: LANGFUSE_PUBLIC_KEY
+            - name: LANGFUSE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  key: LANGFUSE_SECRET_KEY
+            {{- end }}
+            - name: PYTHONWARNINGS
+              value: "ignore::SyntaxWarning"
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}

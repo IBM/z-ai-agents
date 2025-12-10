@@ -1,0 +1,217 @@
+replicaCount: 1
+
+image:
+  repository: icr.io/ibm-ims-ai/ims-qa-agent
+  tag: 1.0.1
+  pullPolicy: Always
+
+mcpImage:
+  repository: icr.io/ibm-ims-ai/ims-mcp-agent
+  tag: 1.0.1
+  pullPolicy: Always
+
+service:
+  name: wxa4z-ims-agent-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+
+mcpService:
+  name: wxa4z-ims-mcp-agent-service
+  ports:
+    - name: mcp-server
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+    - name: zosmf-agent
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+route:
+  name: wxa4z-ims-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-ims-agent-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
+mcpRoute:
+  name: wxa4z-ims-mcp-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-ims-mcp-agent-service
+  weight: 100
+  targetPort: zosmf-agent
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
+env:
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_ML_URL: ""
+  ONPREM_WML_INSTANCE_ID: openshift
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  DEPLOYMENT_TYPE: "on-prem"
+  # CPD_VERSION, needed for on-prem deployments.Example(5.1)
+  CPD_VERSION: "5.2"
+  LANGFUSE_HOST: ""
+  LANGFUSE_TRACING_ENABLED: false
+  MCP_LOG_LEVEL: "INFO"
+  LOG_LEVEL: "INFO"
+  LOCAL_EMBEDDING_MODEL: "ibm-granite/granite-embedding-278m-multilingual" #  Also supports "ibm-granite/granite-embedding-107m-multilingual"
+  MODEL_CATALOG_PATH: "/opt/app-root/src/qa_agent/model_catalog.yaml"
+  ZOSMF_CONSOLE_NAME: ""
+  MCP_SERVER: "http://localhost:8000/mcp"
+  IMS_SUBSYSTEM_ID: ""
+  IMS_CONNECT_JOBNAME: ""
+  ZOS_SYS_UTC_OFFSET: "0"
+  AUTHZ_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
+  APPL_ID: "IZUDFLT"
+  IMS_ID: "wxa4z%3Aims%3Aagent"
+secrets:
+  name: wxa4z-ims-agent-secrets
+  createSecret: true
+  data:
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
+    CPD_USERNAME: cpadmin
+    # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: ""
+    # External App Credential specific to opensearch wrapper
+    WRAPPER_USERNAME: ""
+    WRAPPER_PASSWORD: ""
+    WRAPPER_URL: ""
+    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    AGENT_AUTH_TOKEN: ""
+    LANGFUSE_SECRET_KEY: ""
+    LANGFUSE_PUBLIC_KEY: ""
+
+mcpSecrets:
+  name: wxa4z-ims-mcp-agent-secrets
+  createSecret: true
+  data:
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
+    CPD_USERNAME: cpadmin
+    # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: ""
+    # External App Credential specific to opensearch wrapper
+    ZOSMF_ENDPOINT: ZOSMF_ENDPOINT
+    SERVICE_ENDPOINT: ""
+    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    AGENT_AUTH_TOKEN: ""
+    LANGFUSE_SECRET_KEY: ""
+    LANGFUSE_PUBLIC_KEY: ""
+
+imagePullSecrets:
+  - name: ims-image-pull-secret
+
+resources:
+  limits:
+    cpu: "4"
+    memory: "4Gi"
+  requests:
+    cpu: "4"
+    memory: "4Gi"
+
+mcpResources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "1"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: true
+  size: 8Gi
+
+mcpPvc:
+  name: ims-mcp-agent-pvc
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: true
+  size: 8Gi
+
+mcpNetworkPolicy:
+  name: wxa4z-ims-mcp-agent-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+networkPolicy:
+  name: wxa4z-ims-agent-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+mcpCertSecret:
+  name: service-endpoint-cert-secret
+  cert: |
+    -----BEGIN CERTIFICATE-----
+    Replace this value with the certificate 
+    you create to access your service endpoint.
+    This secret can be manually updated in 
+    your cluster after deployment. It is NOT 
+    recommended that you store secrets in any 
+    git repository. Restart your pod after 
+    updating this secret to reflect changes.
+    -----END CERTIFICATE-----
+
+ilmtAnnotation:
+  productID: "14b557fa778d4c338300d3d46e3b2b86"
+  productName: "IBM IMS Agents"
+  productMetric: "FREE"
+  productChargedContainers: "All"
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  secret:
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: ims-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/ims-agent-bootstrap-config/ims_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: ims-agent-bootstrap-job-sa
+
+# This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
+registry:
+  name: ims-image-pull-secret
+  createSecret: true
+  server: icr.io
+  username: iamapikey
+  entitlementKey: ""
