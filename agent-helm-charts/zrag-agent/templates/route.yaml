@@ -1,0 +1,17 @@
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Values.route.name }}
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+    openshift.io/host.generated: "{{ .Values.route.annotations.hostGenerated }}"
+    haproxy.router.openshift.io/cookie_same_site: "Strict"
+spec:
+  to:
+    kind: Service
+    name: {{ .Values.service.name }}
+    weight: {{ .Values.route.weight }}
+  port:
+    targetPort: {{ .Values.route.targetPort }}
+{{- end }}

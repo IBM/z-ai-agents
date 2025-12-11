@@ -12,7 +12,7 @@ service:
     protocol: TCP
     port: 8080
     targetPort: 8000
-    
+
 mcpImage:
   repository: icr.io/ibm-db2z-ai/db2z-mcp-server
   tag: latest@sha256:82f5f1a9f9967c472ff2d9431bee03091de7b5099f4ce88377bf66953cd18f7b
@@ -93,16 +93,16 @@ resources:
 pvc:
   storageClass: "ocs-storagecluster-cephfs"
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   enabled: true
   size: 8Gi
 
 networkPolicy:
   name: db2z-agent-network-policy
   egress:
-  - {}
+    - {}
   ingress:
-  - {}
+    - {}
 
 # This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
 registry:
@@ -119,7 +119,7 @@ bootstrapJob:
   backoffLimit: 2
   activeDeadlineSeconds: 1800
   secret:
-    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     name: db2-agent-bootstrap-job-secret
     data:
       ORCHESTRATE_ENV_TYPE: cpd
@@ -128,7 +128,7 @@ bootstrapJob:
       CPD_USERNAME: cpadmin
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:

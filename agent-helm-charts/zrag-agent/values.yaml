@@ -1,0 +1,128 @@
+replicaCount: 1
+
+image:
+  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/zrag-mcp-server
+  tag: v3.1.0@sha256:945b7f3ffb8d3f196c79f64f101c86777aac609c8f13e3584fd9179383b961fb
+  pullPolicy: Always
+
+service:
+  name: wxa4z-zrag-mcp-server-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8000
+    targetPort: 8000
+
+route:
+  enabled: false
+  name: wxa4z-zrag-agent-route
+  annotations:
+    hostGenerated: "true"
+  weight: 100
+  targetPort: http
+
+env:
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_ML_URL: ""
+  WATSONX_PROJECT_ID: ""
+
+secrets:
+  zragSecretRef: wrapper-creds
+  name: wxa4z-zrag-agent-secrets
+  createSecret: true
+  data:
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
+    CPD_USERNAME: cpadmin
+    # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: ""
+    # External App Credential specific to aiops-agent
+    WATSONX_PASSWORD: ""
+
+imagePullSecrets:
+  - name: wxa4z-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "200m"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: false
+  size: 8Gi
+
+configmap:
+  # Watsonx
+  WATSONX_VERIFY_SSL: ""
+  WATSONX_VERSION: "5.2"
+  # Model
+  MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  MODEL_TEMPERATURE: "0.4"
+  MODEL_MAX_TOKENS: "400"
+  MODEL_TOP_P: ""
+  MODEL_TOP_K: ""
+  # MCP Runtime
+  WXO_MCP_HOST: "0.0.0.0"
+  WXO_MCP_PORT: "8000"
+  WXO_MCP_TRANSPORT: "sse"
+  # Logging
+  LOG_LEVEL: "INFO"
+  # RAG
+  ZRAG_RETRIEVER_URL: "https://wxa4z-opensearch-wrapper.wxa4z-zad.svc.cluster.local:8080"
+  ZRAG_DEFAULT_RERANK: "true"
+  ZRAG_DEFAULT_SEARCH_TYPE: "reranked_fusion"
+  ZRAG_DEFAULT_IBM_INDICES: "*_ibm_docs_slate,*_ibm_redbooks_slate"
+  ZRAG_DEFAULT_MAX_RESULTS: "10"
+  ZRAG_DEFAULT_MIN_SCORE: "0.5"
+  ZRAG_CONTEXT_WINDOW: "2048"
+  ZRAG_MAX_CONTEXT_DOCS: "6"
+  # Citation Controls
+  ENABLE_CODE_CITATIONS: "true"
+  CITATION_MIN_SIMILARITY: "0.7"
+  CITATION_MIN_CONFIDENCE: "0.4"
+
+networkPolicy:
+  name: wxa4z-zrag-agent-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 5
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  secret:
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: zrag-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/zrag-agent-bootstrap-config/zrag_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: zrag-agent-bootstrap-job-sa

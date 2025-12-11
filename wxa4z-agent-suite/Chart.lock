@@ -1,19 +1,22 @@
 dependencies:
+- name: zrag-agent
+  repository: file://../agent-helm-charts/zrag-agent
+  version: 1.1.0
 - name: support-agent
   repository: file://../agent-helm-charts/support-agent
-  version: 1.0.0
+  version: 1.1.0
 - name: omegamon-insights-agent
   repository: file://../agent-helm-charts/omegamon-insight-agent-z
-  version: 1.0.0
+  version: 1.1.0
 - name: upgrade-agent
   repository: file://../agent-helm-charts/upgrade-agent
-  version: 1.0.0
+  version: 1.1.0
 - name: workload-scheduler-agent-z
   repository: file://../agent-helm-charts/workload-scheduler-agent-z
-  version: 1.0.0
+  version: 1.1.0
 - name: automation-insights-agent
   repository: file://../agent-helm-charts/automation-insight-agent
-  version: 1.0.0
+  version: 1.1.0
 - name: intellimagic-agent
   repository: file://../agent-helm-charts/intellimagic-agent
   version: 1.1.1
@@ -35,5 +38,5 @@ dependencies:
 - name: cics-agent
   repository: file://../agent-helm-charts/cics-agent
   version: 1.0.0
-digest: sha256:7ae010bbe2cf2c988cfc28161680a36474c4438fe038a82f5a462794ede82536
-generated: "2025-12-11T15:12:25.418+05:30"
+digest: sha256:6cb00b9fd5e8c2d61715c58a4ff1041c93548255c1eb61f717c1a0a94c119f74
+generated: "2025-12-11T23:20:51.146123+05:30"

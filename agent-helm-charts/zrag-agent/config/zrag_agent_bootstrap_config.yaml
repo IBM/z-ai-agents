@@ -1,0 +1,66 @@
+resources:
+  connections:
+    - app: zrag-mcp-connection
+      import_method: cli
+      kind: key_value
+      type: team
+      credentials:
+        # ============================================
+        # zRAG Retriever Configuration
+        # ============================================
+        ZRAG_RETRIEVER_URL: ${ZRAG_RETRIEVER_URL}
+        ZRAG_USERNAME: ${ZRAG_USERNAME}
+        ZRAG_PASSWORD: ${ZRAG_PASSWORD}
+
+        # ============================================
+        # Search Configuration (Optional)
+        # ============================================
+        ZRAG_DEFAULT_RERANK: ${ZRAG_DEFAULT_RERANK}
+        ZRAG_DEFAULT_SEARCH_TYPE: ${ZRAG_DEFAULT_SEARCH_TYPE}
+        ZRAG_DEFAULT_IBM_INDICES: ${ZRAG_DEFAULT_IBM_INDICES}
+        ZRAG_DEFAULT_MAX_RESULTS: ${ZRAG_DEFAULT_MAX_RESULTS}
+        ZRAG_DEFAULT_MIN_SCORE: ${ZRAG_DEFAULT_MIN_SCORE}
+
+        # ============================================
+        # WatsonX AI Configuration - SaaS (IBM Cloud)
+        # ============================================
+        WATSONX_URL: ${WATSONX_ML_URL}
+        WATSONX_APIKEY: ${WATSONX_API_KEY}
+        WATSONX_SPACE_ID: ${WATSONX_DEPLOYMENT_SPACE_ID}
+
+        # ============================================
+        # WatsonX AI Configuration - CPD (On-Prem)
+        # ============================================
+        WATSONX_USERNAME: ${CPD_USERNAME}
+        WATSONX_PASSWORD: ${WATSONX_PASSWORD}
+        WATSONX_PROJECT_ID: ${WATSONX_PROJECT_ID}
+        WATSONX_VERIFY_SSL: ${WATSONX_VERIFY_SSL}
+        WATSONX_VERSION: ${WATSONX_VERSION}
+        # ============================================
+        # Model Configuration
+        # ============================================
+        MODEL_ID: ${MODEL_ID}
+        MODEL_TEMPERATURE: ${MODEL_TEMPERATURE}
+        MODEL_MAX_TOKENS: ${MODEL_MAX_TOKENS}
+        MODEL_TOP_P: ${MODEL_TOP_P}
+        MODEL_TOP_K: ${MODEL_TOP_K}
+
+        # ============================================
+        # RAG Configuration
+        # ============================================
+        ZRAG_CONTEXT_WINDOW: ${ZRAG_CONTEXT_WINDOW}
+        ZRAG_MAX_CONTEXT_DOCS: ${ZRAG_MAX_CONTEXT_DOCS}
+  toolkits:
+    - name: zrag-mcp-toolkit
+      kind: mcp
+      import_method: cli
+      description: "zRAG document retrieval and RAG toolkit with watsonx.ai integration for mainframe and enterprise systems"
+      url: "http://wxa4z-zrag-mcp-server-service.wxa4z-zad.svc.cluster.local:8000/sse"
+      transport: "sse"
+      tools: "*"
+      app_id: zrag-mcp-connection
+      replace: true
+  agents:
+    - name: wxa4z_zrag_agent
+      kind: orchestrator
+      path: /zrag-agent-bootstrap-config/zrag_agent.yaml

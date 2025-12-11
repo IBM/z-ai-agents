@@ -24,7 +24,7 @@ PDservice:
     name: http
     protocol: TCP
     port: 8080
-    targetPort: 8000    
+    targetPort: 8000
 
 route:
   name: wxa4z-cics-route
@@ -72,7 +72,7 @@ secrets:
   data:
     ### Set for on-prem deployments, leave blank otherwise.
     CPD_USERNAME: cpadmin
-    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY 
+    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
     WATSONX_API_KEY: ""
     ### Values set for zRAG
     WRAPPER_USERNAME: ""
@@ -99,7 +99,7 @@ PDsecrets:
   data:
     ### Set for on-prem deployments, leave blank otherwise.
     CPD_USERNAME: cpadmin
-    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY 
+    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
     WATSONX_API_KEY: ""
     ### Values set for zRAG
     WRAPPER_USERNAME: ""
@@ -146,7 +146,7 @@ resources:
 pvc:
   storageClass: "ocs-storagecluster-cephfs"
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   enabled: false
   size: 8Gi
 
@@ -161,16 +161,16 @@ PDpvc:
 networkPolicy:
   name: wxa4z-cics-network-policy
   egress:
-  - {}
+    - {}
   ingress:
-  - {}
+    - {}
 
 PDnetworkPolicy:
   name: wxa4z-cics-pd-network-policy
   egress:
-  - {}
+    - {}
   ingress:
-  - {}
+    - {}
 
 bootstrapJob:
   enabled: true
@@ -180,7 +180,7 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
@@ -190,7 +190,7 @@ bootstrapJob:
     CONFIG_PATH: "/cics-agent-bootstrap-config/cics_agent_bootstrap_config.yaml"
     HOME: /opt/app-root/src
   secret:
-    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     name: cics-agent-bootstrap-job-secret
     data:
       ORCHESTRATE_ENV_TYPE: cpd

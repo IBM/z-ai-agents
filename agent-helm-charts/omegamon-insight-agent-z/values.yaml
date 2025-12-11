@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
-  tag: v3.0.0@sha256:1bc6bf6567e9010ab8f3c177a8d4d6d6f4f5e821af477b37152c77185fa8b661
+  tag: v3.1.0@sha256:0943b2917fde42f335508dca9afdcbab2a21dc142f4f5618af97b4ecdb73e0d1
   pullPolicy: Always
 
 service:
@@ -23,6 +23,7 @@ route:
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 env:
   WATSONX_DEPLOYMENT_SPACE_ID: ""
   WATSONX_ML_URL: ""
@@ -40,7 +41,7 @@ secrets:
   name: wxa4z-omegamon-insight-agent-secrets
   createSecret: true
   data:
-    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud) 
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
     CPD_USERNAME: cpadmin
     # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
     WATSONX_API_KEY: ""
@@ -66,17 +67,16 @@ resources:
 pvc:
   storageClass: "ocs-storagecluster-cephfs"
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   enabled: true
   size: 8Gi
 
 networkPolicy:
   name: wxa4z-omegamon-insight-agent-network-policy
   egress:
-  - {}
+    - {}
   ingress:
-  - {}
-
+    - {}
 
 bootstrapJob:
   enabled: true
@@ -86,13 +86,13 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
     - name: wxa4z-image-pull-secret
   secret:
-    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     name: omegamon-insights-agent-bootstrap-job-secret
     data:
       ORCHESTRATE_ENV_TYPE: cpd
