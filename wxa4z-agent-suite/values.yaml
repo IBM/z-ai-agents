@@ -238,8 +238,8 @@ intellimagic-agent:
   enabled: false
   acceptLicense: false # Must be true to install. Reference Intellimagic agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-WZGZ-XWN8JA
   image:
-    repository: icr.io/ibm-intellimagic-ai/intellimagic-agent
-    tag: 1.1.0@sha256:4660a70e7f11edfcbf0a3d1d942d1180c1153b1b573b2a954d622b261a27d59a
+    repository: icr.io/ibm-intellimagic-agent/intellimagic-agent
+    tag: 1.1.1@sha256:d4f7fadcd7ac055e2b25f0b6126519b957f9c14607fc44ae346ebeaac94f7ad7
   registry:
     name: intellimagic-image-pull-secret
     server: icr.io
@@ -248,17 +248,18 @@ intellimagic-agent:
   bootstrapJob:
     enabled: true
     image:
-      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-      tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+      repository: stg.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
-  # env:
+  env:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
   secrets:
     data:
       AGENT_AUTH_TOKEN: ""
   imagePullSecrets:
-  - name: intellimagic-image-pull-secret
+    - name: intellimagic-image-pull-secret
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
 
