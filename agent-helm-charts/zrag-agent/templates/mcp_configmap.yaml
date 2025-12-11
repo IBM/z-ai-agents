@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-mcp-config
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+data:
+  {{- range $key, $value := .Values.configmap }}
+  {{ $key }}: "{{ $value }}"
+  {{- end }}

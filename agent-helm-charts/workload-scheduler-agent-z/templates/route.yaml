@@ -9,7 +9,9 @@
 {{- $hostGen    := default "true" .Values.route.annotations.hostGenerated -}}
 {{- $secretName := default "wxa4z-agents-tls-secret" .Values.route.tls.secretName -}}
 {{- $termOnPrem := default "edge" .Values.route.tls.termination -}}
-
+{{- $globalCaSync   := dig "caTrustSync" "enabled" false .Values.global -}}
+{{- $localEnable    := default false .Values.route.tls.enableTlsCertMount -}}
+{{- $inject         := or $globalCaSync $localEnable -}}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -17,7 +19,9 @@ metadata:
   annotations:
     {{- include "wxa4z.annotations" . | nindent 4 }}
     openshift.io/host.generated: "{{ $hostGen }}"
-    haproxy.router.openshift.io/timeout: "1m"
+    haproxy.router.openshift.io/timeout: "3m"
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+    haproxy.router.openshift.io/disable_cookies: "true"
 spec:
   to:
     kind: Service
@@ -29,7 +33,7 @@ spec:
     # Cloud: always edge (no certs). On-prem: use value (default edge).
     termination: {{ if $isCloud }}edge{{ else }}{{ $termOnPrem }}{{ end }}
     {{- /* Only inject certs when on-prem AND termination=edge */ -}}
-    {{- if and (not $isCloud) (eq (lower $termOnPrem) "edge") }}
+    {{- if and ($inject) (eq (lower $termOnPrem) "edge") }}
     {{- $sec := lookup "v1" "Secret" $nsRelease $secretName -}}
     {{- with (and $sec (index $sec.data "tls.crt")) }}
     certificate: |-

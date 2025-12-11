@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
-  tag: v3.0.0@sha256:3108c9e57d4f7ef3cb0a37d5d62335053f17b12cfc664db2d9387436de2bcb28
+  tag: v3.1.0@sha256:0818001abc2f55c7cddb6e9f1df645188c084f88c7cd2ce4277e950752948736
   pullPolicy: Always
 
 service:
@@ -28,6 +28,7 @@ route:
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 env:
   WATSONX_DEPLOYMENT_SPACE_ID: ""
   WATSONX_ML_URL: ""
@@ -63,6 +64,7 @@ ptfJob:
   CERT_NAME: ""
   DOWNLOAD_METHOD: "https"
   DOWNLOADKEYRING: ""
+  SIGNATUREKEYRING: ""
 
 secrets:
   name: upgrade-agent-secrets
@@ -94,16 +96,16 @@ resources:
 pvc:
   storageClass: "ocs-storagecluster-cephfs"
   accessModes:
-  - ReadWriteOnce
+    - ReadWriteOnce
   enabled: true
   size: 8Gi
 
 networkPolicy:
   name: wxa4z-upgrade-agent-network-policy
   egress:
-  - {}
+    - {}
   ingress:
-  - {}
+    - {}
 
 bootstrapJob:
   enabled: true
@@ -113,13 +115,13 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
     - name: wxa4z-image-pull-secret
   secret:
-    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     name: upgrade-agent-bootstrap-job-secret
     data:
       ORCHESTRATE_ENV_TYPE: cpd

@@ -1,4 +1,4 @@
-{{- if .Values.caTrustSync.enabled }}
+{{- if .Values.global.caTrustSync.enabled }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -15,7 +15,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ .Chart.Name }}-ca-trust-sync-role
-  namespace: {{ required "caTrustSync.targetNamespace is required" .Values.caTrustSync.targetNamespace }}
+  namespace: {{ required "caTrustSync.targetNamespace is required" .Values.global.caTrustSync.targetNamespace }}
   annotations: 
     {{- include "wxa4z.annotations" . | nindent 4 }}
   labels:
@@ -43,7 +43,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ .Chart.Name }}-ca-trust-sync-rolebinding
-  namespace: {{ .Values.caTrustSync.targetNamespace }}
+  namespace: {{ .Values.global.caTrustSync.targetNamespace }}
   annotations: 
     {{- include "wxa4z.annotations" . | nindent 4 }}
   labels:

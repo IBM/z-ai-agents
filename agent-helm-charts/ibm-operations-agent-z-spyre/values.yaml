@@ -40,8 +40,8 @@ env:
   LANGFUSE_TRACING_ENABLED: false
   SUMMARY_DIR: /data
   GRAPH_RECURSION_LIMIT: "30"
-  CONTEXT_LENGTH: '16000'
-  DEBUG_TOOLSELECTION: 'false'
+  CONTEXT_LENGTH: "16000"
+  DEBUG_TOOLSELECTION: "false"
 
 secrets:
   name: ibm-operations-agent-z-secrets
@@ -94,7 +94,7 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.0.0@sha256:db6488257e62c6fee75d0f999d25fcb845efef77c8148701de62f2211419e33c
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
