@@ -119,7 +119,7 @@ URL is the value in the _Location_ column.
 This container image of **IBM IntelliMagic agent for Z** is digitally signed to guarantee authenticity and integrity. Use the instructions below to verify the image signature with the provided files.
 
 _Image reference:_  
-`icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.0`
+`icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.1`
 
 _Files provided:_  
 - `PRD0014693key.pem.cer` – Certificate  
@@ -142,7 +142,7 @@ Before you begin signature verification, ensure you have the following command-l
 To verify the image signature, run the following command:
 
 ```sh
-cosign verify --key PRD0014693key.pem.pub.key icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.0 | jq .
+cosign verify --key PRD0014693key.pem.pub.key icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.1 | jq .
 ```
 
 If the signature is valid, you'll see details about the signer and the certificate in the output.
@@ -158,7 +158,7 @@ For complete verification, including certificate checks and signature metadata, 
 Identify the signature manifest reference:
 
 ```sh
-cosign triangulate icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.0
+cosign triangulate icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.1
 ```
 
 The output should look like this:
