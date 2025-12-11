@@ -307,8 +307,8 @@ ibm-operations-agent-z:
   enabled: false
   acceptLicense: false    # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
   image:
-    repository: icr.io/ibm-operations-ai/ibm-operations-agent-for-z
-    tag: v1.1.0
+    repository: icr.io/ibm-operations-aai/ibm-operations-agent-z
+    tag: v1.1.1
   registry:
     name: ibm-operations-agent-image-pull-secret
     server: icr.io
@@ -338,6 +338,44 @@ ibm-operations-agent-z:
       CPD_ADMIN_PASSWORD: ""
   imagePullSecrets:
   - name: ibm-operations-agent-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: ibm-operations-agent-z-spyre
+# ---------------------------------------------------------------------------- #
+ibm-operations-agent-z-spyre:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
+  image:
+    repository: icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre
+    tag: v1.1.1
+  registry:
+    name: ibm-operations-agent-image-pull-secret-spyre
+    server: icr.io
+    username: iamapikey
+    entitlementKey: entitlementKey
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
+      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem      # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    LLM_MODEL: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      UNITE_CLIENT_ID: ""
+      UNITE_CLIENT_SECRET: ""
+      UNITE_GRANT_TYPE: "client_credentials"
+      UNITE_API_URL: ""
+      UNITE_TOKEN_URL: ""
+      AGENT_AUTH_TOKEN: ""
+      LLM_MODEL: "ibm/granite-3-3-8b-instruct"
+  imagePullSecrets:
+    - name: ibm-operations-agent-image-pull-secret-spyre
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
 

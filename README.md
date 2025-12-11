@@ -71,7 +71,8 @@ wxa4z-agent-suite/ # <— umbrella chart
 | IBM IMS Agents                 | `ims-agent`                    | Product  |[Configuration Guide](/agent-helm-charts/ims-agent/README.md)|
 | IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[Configuration Guide](/agent-helm-charts/intellimagic-agent/README.md)|
 | Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[Configuration Guide](/agent-helm-charts/taz-functional-testing-agent/README.md)|
-| IBM Operations Agent for Z | `ibm-operations-agent-for-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z/README.md)|
+| IBM Operations Agent for Z | `ibm-operations-agent-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z/README.md)|
+| IBM Operations Agent for Z Spyre | `ibm-operations-agent-z-spyre` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z-spyre/README.md)|
 
 ---
 

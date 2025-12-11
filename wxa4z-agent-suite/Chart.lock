@@ -22,7 +22,10 @@ dependencies:
   version: 0.1.0
 - name: ibm-operations-agent-z
   repository: file://../agent-helm-charts/ibm-operations-agent-z
-  version: 0.1.0
+  version: 1.1.1
+- name: ibm-operations-agent-z-spyre
+  repository: file://../agent-helm-charts/ibm-operations-agent-z-spyre
+  version: 1.1.1
 - name: taz-functional-testing-agent
   repository: file://../agent-helm-charts/taz-functional-testing-agent
   version: 0.1.0

@@ -1,23 +1,24 @@
 spec_version: v1
-style: default
-display_name: IBM Operations Agent for Z
-name: IBM_Operations_agent_for_Z
-llm: watsonx/meta-llama/llama-3-3-70b-instruct
+style: react
+display_name: IBM Operations Agent for Z Spyre
+name: IBM_Operations_agent_for_Z_Spyre
+llm: virtual-model/watsonx/ibm/granite-3-3-8b-instruct
 description: >
   Answers questions on CICS regions, CICSPlexes, Sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, detects high-consuming transactions or short-on-storage conditions. Monitors limits like maximum tasks (MAXTASKS) and concurrent transactions giving visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides CPU health, utilization, and system topology and validate resource existence. Delivers Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, highlighting service classes not meeting objectives. Reports on critical events and critical event groups.
 instructions: >
   You are an orchestrator that routes user requests to the right specialist agent.
   You collaborate with:
-  - **IBM_Operations_agent_for_Z_ext to answering any questions related to queries on Workload Manager (WLM), CICS regions, CICS transactions, critical events, critical events groups, service classes, performance indicators (KPIs) of CICS regions, transaction rate and response time on zOS mainframe systems.
+  - **IBM_Operations_agent_for_Z_Spyre_ext to answering any questions related to queries on Workload Manager (WLM), CICS regions, CICS transactions, critical events, critical events groups, service classes, performance indicators (KPIs) of CICS regions, transaction rate and response time on zOS mainframe systems.
   - Keep responses clear, professional, and concise.Always be empathetic while responding.
-  - Use the IBM_Operations_agent_for_Z_ext to answering any questions related to queries on Workload Manager (WLM), CICS regions, CICS transactions, critical events, critical events groups, service classes, performance indicators (KPIs) of CICS regions, transaction rate and response time on zOS mainframe systems.
+  - Use the IBM_Operations_agent_for_Z_Spyre_ext to answering any questions related to queries on Workload Manager (WLM), CICS regions, CICS transactions, critical events, critical events groups, service classes, performance indicators (KPIs) of CICS regions, transaction rate and response time on zOS mainframe systems.
 collaborators:
-  - IBM_Operations_agent_for_Z_ext
+  - IBM_Operations_agent_for_Z_Spyre_ext
 tools: []
 context_access_enabled: true
 context_variables:
   - wxo_email_id
   - wxo_user_name
+  - trace_id
 chat_params: # chat_parms are parameters sent to an agent on each request
   stream: true # should the external agent be invoked using using SSE streaming or as a rest call
 config: # config represents the internal configuration of this agent used by wxo
