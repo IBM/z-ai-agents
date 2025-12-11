@@ -2,7 +2,7 @@
 
 ## Overview
 
-The IBM® Operations Agent for Z - Spyre enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z. It is a lightweight, non-MCP variant which runs on IBM Spyre and is optimized for Granite, providing a simplified yet powerful solution for environments that do not require MCP integration.
+The IBM® Operations Agent for Z - Spyre enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
 
 The agent uses the conventions that are required by the agent-controller for proper registration and integration with IBM watsonx Orchestrate.
 
@@ -12,7 +12,7 @@ The agent uses the conventions that are required by the agent-controller for pro
 | Images        | `icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:<tag>`    |
 | Endpoint Path | `/v1/wlm_unite_chat`                                                 |
 | Auth Type     | `API_KEY`                                                            |
-| Description   | Answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides information about CPU health, utilization, and system topology, and validates resource existence. Delivers z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. IBM Operations Agent for Z - Spyre supports Granite models on Spyre. |
+| Description   | Operations Agent for Z – Spyre is a lightweight variant without MCP support, runs on IBM Spyre, and is optimized for Granite, providing a simplified yet powerful solution for environments that do not require MCP integration. It answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides information about CPU health, utilization, and system topology, and validates resource existence. Delivers z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. IBM Operations Agent for Z - Spyre supports Granite models on Spyre. |
 
 ## Agent capabilities
 
