@@ -1,18 +1,18 @@
-# IBM Operations Agent for Z Helm Chart
+# IBM Operations Agents for Z
 
 ## Overview
 
-This Helm chart deploys the IBM® Operations Agent for Z, which enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
+The IBM® Operations Agent for Z enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
 
 The agent uses the conventions that are required by the agent-controller for proper registration and integration with IBM watsonx Orchestrate.
 
 | Field         | Value                                                                |
 |---------------|----------------------------------------------------------------------|
-| Agent Name    | `ibm-operations-agent-z`                                             |
-| Image         | `icr.io/wxa4z-agentic-development/ibm-operations-agent-z:<tag>`      |
+| Agent Names    | `ibm-operations-agent-z`                                          |
+| Image         | `icr.io/ibm-operations-aai/ibm-operations-agent-z:<tag>`    |
 | Endpoint Path | `/v1/wlm_unite_chat`                                                 |
 | Auth Type     | `API_KEY`                                                            |
-| Description   | Answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides information about CPU health, utilization, and system topology, and validates resource existence. Delivers z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. |
+| Description   | Operations Agent for Z is designed for environments requiring full MCP support, integrating OMEGAMON MCP Server and Concert for Z MCP Server to deliver deep operational insights and advanced monitoring capabilities. It can handle a broader range of queries thanks to its access to Concert for Z and System Insights tools. This flavour is optimised for Llama and supports deployment on both s390x and x86 architectures, though data will flow outside the Z system for processing. It answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Searches for relevant AIOps information across Db2, LPAR, IMS, Network, JVM, MQ, Storage, CICSplex, and OMEGAMON. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits such as maximum tasks (MAXTASKS) and concurrent transactions to provide visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, delivers information about CPU health, utilization, and system topology, and validates resource existence. Provides z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. |
 
 ## Agent capabilities
 
@@ -20,6 +20,7 @@ The agent uses the conventions that are required by the agent-controller for pro
 |------------------------------|-----------------------------------|
 | Provide general insight        | Provides information about CICS regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments.  |
 | Track z/OS Metrics | Can track CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and can detect high-consuming transactions or short-on-storage conditions.|
+| OMEGAMON MCP integration | Provides information about Db2, IMS, and JVM, pulled from OMEGAMON via MCP|
 | Monitor data |  Can monitor limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes.|
 | Provide health and system information | For sysplexes and LPARs, provides information about CPU health, utilization, and system topology, and can validate resource existence.|
 | Workload Management insights | Provides z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and can highlight service classes that are not meeting objectives. |
@@ -43,10 +44,11 @@ Use the following instructions to verify the image signature with the provided f
 ### Image reference
 
 ```bash
-icr.io/ibm-operations-ai/ibm-operations-agent-for-z:v1.1.0
+icr.io/ibm-operations-aai/ibm-operations-agent-z:v1.1.1
 ```
 ### Files provided
 
+#### IBM Operations Agent for Z
 - **PRD0014680key.pem.cer** – Certificate
 - **PRD0014680key.pem.chain** – CA chain
 - **PRD0014680key.pem.pub.key** – Public key
@@ -70,7 +72,7 @@ To immediately verify the image signature, run the following command:
 
 ```bash
 cosign verify --key PRD0014680key.pem.pub.key \
-  icr.io/ibm-operations-ai/ibm-operations-agent-for-z:v1.1.0 | jq .
+  icr.io/ibm-operations-aai/ibm-operations-agent-z:v1.1.1 | jq .
 ```
 
 If the signature is valid, details about the signer and the certificate are shown in the output.
@@ -82,17 +84,17 @@ If the signature is valid, details about the signer and the certificate are show
 Identify the signature manifest reference:
 
 ```bash
-cosign triangulate icr.io/ibm-operations-ai/ibm-operations-agent-for-z:v1.1.0
+cosign triangulate icr.io/ibm-operations-aai/ibm-operations-agent-z:v1.1.1
 ```
 Example output:
 
 ```bash
-icr.io/ibm-operations-ai/ibm-operations-agent-for-z:sha256-<digest>.sig
+icr.io/ibm-operations-aai/ibm-operations-agent-z:sha256-<digest>.sig
 ```
 Inspect the signature details:
 
 ```bash
-crane manifest icr.io/ibm-operations-ai/ibm-operations-agent-for-z:sha256-<digest>.sig | jq .
+crane manifest icr.io/ibm-operations-aai/ibm-operations-agent-z:sha256-<digest>.sig | jq .
 ```
 This displays the certificate chain and metadata that is embedded in the signature object.
 
@@ -136,7 +138,7 @@ Response verify OK
 | **CPD_ADMIN_PASSWORD** *(On-prem only)* | Password for the CPD admin user. |
 | **ASSISTANT_API_KEY** *(IBM Cloud only)* | IBM Cloud API key (or service credential) for your Assistant instance. <br> **Use:** Required on Cloud; not used on on-prem (CPD uses `CPD_AUTH_URL` with CPD credentials/tokens). |
 
-## Install the IBM Operations Agent for Z
+## Install IBM Operations Agent for Z
 
 ### Retrieve the entitlement key
 
@@ -162,7 +164,7 @@ However, if any of these shared variables are also defined in your agent-specifi
 
 ### Configure the values.yaml file
 
-To enable the IBM Operations Agent for Z, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
+To enable the IBM Operations Agent for Z, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
 
 In the values.yaml file, scroll down to the IBM Operations Agent for Z section and update the keys as outlined in the following table.
 
@@ -179,11 +181,22 @@ In the values.yaml file, scroll down to the IBM Operations Agent for Z section a
 | `UNITE_TOKEN_URL`            | URL to retrieve the Unite token                                             |
 | `LANGFUSE_SECRET_KEY`        | Secret key for Langfuse tracing                                             |
 | `LANGFUSE_PUBLIC_KEY`        | Public key for Langfuse tracing                                             |
+| `WRAPPER_URL`                | Wrapper URL                                                                 |
+| `WRAPPER_USERNAME`           | Wrapper username                                                            |
+| `WRAPPER_PASSWORD`           | Wrapper password                                                            |
 | `ASSISTANT_VERSION`          | Assistant API version                                                       |
 | `ASSISTANT_ENV_ID`           | Assistant environment ID                                                    |
 | `ASSISTANT_API_KEY`          | Assistant API key                                                           |
 | `ASSISTANT_SVC_INSTANCE_URL` | Assistant service instance URL                                              |
 ---
+### MCP Keys
+| Key                          | Description                                                                 |
+|------------------------------|-----------------------------------------------------------------------------|
+|`CONCERT_MCP_SERVER_URL`      | MCP URL endpoint|
+|`CONCERT_MCP_SERVER_PATH`     | MCP path, `/mcp`|
+|`ZCHATOPS_MCP_URL`            | ZChatOps MCP URL|
+|`CONCERT_MCP_SERVER_PORT`     | Port for MCP client, `9002`|
+
 #### Other keys
 | Key                       | Description                                                            |
 |---------------------------|------------------------------------------------------------------------|
@@ -207,7 +220,7 @@ In the values.yaml file, scroll down to the IBM Operations Agent for Z section a
 Run the following command to create an image pull secret for IBM Cloud Container Registry (ICR):
 
 ```bash
-oc create secret -n <your-namespace> docker-registry ibm-operations-agent-z-secrets \
+oc create secret -n <your-namespace> docker-registry ibm-operations-agent-z-mcp-secrets \
   --docker-server=icr.io \  #replace this with container registry
   --docker-username=iamapikey \ # replace this with container registry username
   --docker-password=<your-api-key> # replace this with container registry password
@@ -224,7 +237,7 @@ In your Helm chart's[ `values.yaml`] , update the image pull secret:
 
 ```yaml
 imagePullSecrets:
-  - name: ibm-operations-agent-z-secrets
+  - name: ibm-operations-agent-z-mcp-secrets
 ```
 
 ---
@@ -243,7 +256,7 @@ helm upgrade --install ibm-operations-agent-z . \
 
 ## Install or upgrade the wxa4z-agent-suite
 
-> **Note**: If you're installing multiple agents, you can configure the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
+> **Note**: If you're installing multiple agents, you can configure the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
 
 
 Use the following command to install or upgrade the wxa4z_agent_suite:
@@ -288,4 +301,3 @@ After deployment, the agent becomes active and is available for selection in the
 3. Enter your queries using the AI Assistant.
 Responses are displayed either in a tabular format or as a sentence, depending on the context.
 4. Verify that the responses returned by the AI Assistant are accurate.
-

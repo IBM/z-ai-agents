@@ -51,18 +51,23 @@ spec:
           securityContext:
             privileged: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
           env:
             - name: MODEL_CATALOG_PATH
               value: {{ required "MODEL_CATALOG_PATH is required" .Values.env.MODEL_CATALOG_PATH | quote }}
             - name: CPD_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ required "Secret name is required" .Values.secrets.name }}
+                  name: {{ $secretName | quote }}
                   key: CPD_USERNAME
             - name: OPENSEARCH_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{required "Secret name is required"  .Values.secrets.name }}
+                  name: {{ required "Secret name is required"  .Values.secrets.name }}
                   key: OPENSEARCH_USERNAME
             - name: OPENSEARCH_PASSWORD
               valueFrom:

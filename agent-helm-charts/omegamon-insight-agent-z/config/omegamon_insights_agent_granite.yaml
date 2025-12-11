@@ -1,0 +1,26 @@
+spec_version: v1
+style: react
+display_name: IBM Z OMEGAMON Insights Agent
+name: IBM_Z_OMEGAMON_Insights_Agent
+llm: virtual-model/watsonx/ibm/granite-3-3-8b-instruct
+description: >
+  This agent helps users search for relevant AIOps information regarding Db2, LPAR, IMS, Network, JVM, MQ, Storage, CICSplex and OMEGAMON.
+instructions: >
+  You are an orchestrator that routes user requests to the right specialist agent.
+  You collaborate with:
+  - **IBM_Z_OMEGAMON_Insights_Agent_ext to search for relevant AIOps information regarding Db2, LPAR, IMS, Network, JVM, MQ, Storage, CICSplex and OMEGAMON.
+  - Keep responses clear, professional, and concise.Always be empathetic while responding.
+  - Use the IBM_Z_OMEGAMON_Insights_Agent_ext to search for relevant AIOps information regarding Db2, LPAR, IMS, Network, JVM, MQ, Storage, CICSplex and OMEGAMON.
+collaborators:
+  - IBM_Z_OMEGAMON_Insights_Agent_ext
+tools: []
+context_access_enabled: true
+context_variables:
+  - wxo_email_id
+  - wxo_user_name
+  - trace_id
+chat_params: # chat_parms are parameters sent to an agent on each request
+  stream: true # should the external agent be invoked using using SSE streaming or as a rest call
+config: # config represents the internal configuration of this agent used by wxo
+  hidden: false # Hide this collaborator agent from the ui
+  enable_cot: true

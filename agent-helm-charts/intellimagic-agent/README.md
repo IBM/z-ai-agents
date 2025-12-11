@@ -1,18 +1,18 @@
 # IBM IntelliMagic agent for Z
 
-A system that recommends IBM Z IntelliMagic Vision for z/OS charts and
+A system that recommends IBM Z IntelliMagic Vision charts and
 reports. These charts and reports show information on IBM Z systems,
 from a performance and configuration perspective. The scope includes
-the entire breadth of IBM Z IntelliMagic Vision for z/OS reports,
+the entire breadth of IBM Z IntelliMagic Vision reports,
 including those for Db2, CICS, Storage Systems, Ficon Directors and IMS.
 The recommendations are based on a user-provided topic or problem
 description.
 
 ## Agent Capabilities
 
-The basic feature set, available from WXA4Z, explains where you can find the recommended charts in IBM Z IntelliMagic Vision for z/OS.
+The basic feature set, available from WXA4Z, explains where you can find the recommended charts in IBM Z IntelliMagic Vision.
 The preferred way of using the IBM IntelliMagic agent for Z is by using the integrated chat from IntelliMagic Vision.
-In this setup, previews of the reports are available in the chat and all the previews are clickable links that automatically select the chart in IBM Z IntelliMagic Vision for z/OS.
+In this setup, previews of the reports are available in the chat and all the previews are clickable links that automatically select the chart in IBM Z IntelliMagic Vision.
 
 <img src="Chat-Screenshot.png" alt="A Screenshot of IntelliMagic Vision with a Chat showing CP Used" width=400px>
 
@@ -20,7 +20,7 @@ For more information on the integrated experience see [IBM Z IntelliMagic Vision
 
 ## Prerequisites
 
-- IBM Z IntelliMagic Vision for z/OS version 1.1.2.4 or higher is installed.
+- IBM Z IntelliMagic Vision version 1.1.2.4 or higher is installed.
 
 ## Install the IBM IntelliMagic agent for Z
 
@@ -29,12 +29,12 @@ IBM IntelliMagic agent for Z is part of the suite of WXA4Z agents.  You must con
 You must also setup two additional variables.  To enable the agent:
 
 1. The `entitlementKey`, this allows the download of the agent.
-2. The `AGENT_AUTH_TOKEN`, which is used to authenticate/register the agent with WXA4Z and IBM Z IntelliMagic Vision for z/OS.
+2. The `AGENT_AUTH_TOKEN`, which is used to authenticate/register the agent with WXA4Z and IBM Z IntelliMagic Vision.
 3. Enable the agent and accept the license.
 
 ### Retrieve the entitlement key
 
-The entitlement key is shipped as part of IBM Z IntelliMagic Vision for z/OS.
+The entitlement key is shipped as part of IBM Z IntelliMagic Vision.
 Enter the value of this key in the `intellimagic-agent` section of the `values.yaml` file in the `wxa4z-agent-suite` folder.
 (See [values.yaml](../../wxa4z-agent-suite/values.yaml)).
 
@@ -88,14 +88,14 @@ intellimagic-agent:
 4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
 5. Click **Deploy** to activate the agent and make it available in the live environment.
 
-### Integrated deployment with IBM Z IntelliMagic Vision for z/OS
+### Integrated deployment with IBM Z IntelliMagic Vision
 
 Please note the following information:
 
 1. The URL the agent is running at.  See section below how to retrieve this.
 2. The `AGENT_AUTH_TOKEN` token configured above.
 
-These values are used to configure IBM Z IntelliMagic Vision for z/OS for the agent.
+These values are used to configure IBM Z IntelliMagic Vision for the agent.
 For more information on the configuration steps, see [IBM Z IntelliMagic Vision for z/OS](https://www.ibm.com/docs/en/ibm-z-intellimagic).
 
 
@@ -119,7 +119,7 @@ URL is the value in the _Location_ column.
 This container image of **IBM IntelliMagic agent for Z** is digitally signed to guarantee authenticity and integrity. Use the instructions below to verify the image signature with the provided files.
 
 _Image reference:_  
-`icr.io/ibm-intellimagic-ai/intellimagic-agent:1.1.0`
+`icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.1`
 
 _Files provided:_  
 - `PRD0014693key.pem.cer` – Certificate  
@@ -142,7 +142,7 @@ Before you begin signature verification, ensure you have the following command-l
 To verify the image signature, run the following command:
 
 ```sh
-cosign verify --key PRD0014693key.pem.pub.key icr.io/ibm-intellimagic-ai/intellimagic-agent:1.1.0 | jq .
+cosign verify --key PRD0014693key.pem.pub.key icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.1 | jq .
 ```
 
 If the signature is valid, you'll see details about the signer and the certificate in the output.
@@ -158,18 +158,18 @@ For complete verification, including certificate checks and signature metadata, 
 Identify the signature manifest reference:
 
 ```sh
-cosign triangulate icr.io/ibm-intellimagic-ai/intellimagic-agent:1.1.0
+cosign triangulate icr.io/ibm-intellimagic-agent/intellimagic-agent:1.1.1
 ```
 
 The output should look like this:
 ```sh
-icr.io/ibm-intellimagic-ai/intellimagic-agent:sha256-<digest>.sig
+icr.io/ibm-intellimagic-agent/intellimagic-agent:sha256-<digest>.sig
 ```
 
 You can inspect the signature details with:
 
 ```sh
-crane manifest icr.io/ibm-intellimagic-ai/intellimagic-agent:sha256-<digest>.sig | jq .
+crane manifest icr.io/ibm-intellimagic-agent/intellimagic-agent:sha256-<digest>.sig | jq .
 ```
 
 

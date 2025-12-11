@@ -15,38 +15,41 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.0.0
+version: 1.1.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.0.0"
-
+appVersion: "1.1.0"
 
 dependencies:
+  - name: zrag-agent
+    version: 1.1.0 # match the version in cics-agent/Chart.yaml
+    repository: file://../agent-helm-charts/zrag-agent
+    condition: zrag-agent.enabled
   - name: support-agent
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../agent-helm-charts/support-agent
     condition: support-agent.enabled
   - name: omegamon-insights-agent
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../agent-helm-charts/omegamon-insight-agent-z
     condition: omegamon-insights-agent.enabled
   - name: upgrade-agent
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../agent-helm-charts/upgrade-agent
     condition: upgrade-agent.enabled
   - name: workload-scheduler-agent-z
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../agent-helm-charts/workload-scheduler-agent-z
     condition: workload-scheduler-agent-z.enabled
   - name: automation-insights-agent
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../agent-helm-charts/automation-insight-agent
     condition: automation-insights-agent.enabled
   - name: intellimagic-agent
-    version: 1.1.0
+    version: 1.1.1
     repository: file://../agent-helm-charts/intellimagic-agent
     condition: intellimagic-agent.enabled
   - name: db2z-agent
@@ -54,15 +57,19 @@ dependencies:
     repository: file://../agent-helm-charts/db2z-agent
     condition: db2z-agent.enabled
   - name: ibm-operations-agent-z
-    version: 0.1.0
+    version: 1.1.1
     repository: file://../agent-helm-charts/ibm-operations-agent-z
     condition: ibm-operations-agent-z.enabled
+  - name: ibm-operations-agent-z-spyre
+    version: 1.1.1
+    repository: file://../agent-helm-charts/ibm-operations-agent-z-spyre
+    condition: ibm-operations-agent-z-spyre.enabled
   - name: taz-functional-testing-agent
     version: 0.1.0
     repository: file://../agent-helm-charts/taz-functional-testing-agent
     condition: taz-functional-testing-agent.enabled
   - name: ims-agent
-    version: 1.0.0
+    version: 1.0.1
     repository: file://../agent-helm-charts/ims-agent
     condition: ims-agent.enabled
   - name: cics-agent

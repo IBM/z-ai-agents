@@ -2,5 +2,5 @@ apiVersion: v2
 name: ibm-operations-agent-z
 description: Provides list of critical events from the system. Provides analyze the WLM goals information. Provides WLM utilization of the event and give a summary. Can answer, questions related to retrieving critical events from systems and analyzing WLM utilization.
 type: application
-version: 0.1.0
-appVersion: "1.0.0"
+version: 1.1.1
+appVersion: "1.1.1"

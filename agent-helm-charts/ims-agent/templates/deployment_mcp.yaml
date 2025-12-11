@@ -50,6 +50,11 @@ spec:
           securityContext:
             privileged: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
           env:
             - name: MODEL_CATALOG_PATH
               value: {{ required "MODEL_CATALOG_PATH is required" .Values.env.MODEL_CATALOG_PATH | quote }}
@@ -69,13 +74,23 @@ spec:
             - name: CPD_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
+                  name: {{ $secretName | quote }}
                   key: CPD_USERNAME
             - name: ZOSMF_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: {{ required "Secret name is required" .Values.mcpSecrets.name }}
-                  key: ZOSMF_ENDPOINT
+                  key: ZOSMF_ENDPOINT   
+            - name: IMS_INIT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: IMS_AGENT_TOKEN
+            - name: ZOWE_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: ZOWE_ENABLED
             - name: WML_URL
               valueFrom:
                 secretKeyRef:

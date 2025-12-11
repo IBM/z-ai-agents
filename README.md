@@ -58,6 +58,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 | IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[Configuration Guide](/agent-helm-charts/system-automation-netview-agent/README.md)|
 | IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[Configuration Guide](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
 | IBM Z Support Agent              | `support-agent`          | Foundational | [Configuration Guide](./agent-helm-charts/support-agent/README.md)                   |
+| zRAG Agent          | `zrag-agent`          | Foundational | [Configuration Guide](./agent-helm-charts/zrag-agent/README.md)                   |
 
 
 ---
@@ -71,7 +72,8 @@ wxa4z-agent-suite/ # <— umbrella chart
 | IBM IMS Agents                 | `ims-agent`                    | Product  |[Configuration Guide](/agent-helm-charts/ims-agent/README.md)|
 | IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[Configuration Guide](/agent-helm-charts/intellimagic-agent/README.md)|
 | Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[Configuration Guide](/agent-helm-charts/taz-functional-testing-agent/README.md)|
-| IBM Operations Agent for Z | `ibm-operations-agent-for-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z/README.md)|
+| IBM Operations Agent for Z | `ibm-operations-agent-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z/README.md)|
+| IBM Operations Agent for Z Spyre | `ibm-operations-agent-z-spyre` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z-spyre/README.md)|
 
 ---
 
@@ -304,20 +306,35 @@ helm upgrade wxa4z-agent-suite \
 ```bash
 helm uninstall wxa4z-agent-suite -n <namespace>
 ```
+This removes all agent components and automatically removes their entries from the Watsonx Orchestrate UI. 
 
-#### Uninstall specific agent
+### 4. Removing an Existing Agent
 
-1.Set the `<agent>.enabled` flag to false.
+Removing an agent requires two steps: deleting it from the Watsonx Assistant for Z UI and cleaning up its associated components on OpenShift.
 
-**Example:**
+#### Step 1 — Remove the Agent from the UI
 
-```yaml
-ims-agent:
-  enabled: false
-```
+1. Log in to your CPD instance and open **Watsonx Assistant for Z**.
+2. Navigate to **Build → Agent Builder**.
+3. Select the agent you want to remove.
+4. Click the **options (⋮)** menu in the upper-right corner and choose **Delete**.
 
+This removes the agent only from the UI.
 
-2.Run helm upgrade
+---
+
+#### Step 2 — Clean Up Agent Components on OpenShift
+
+To remove the underlying Kubernetes resources, update the `wxa4z-agent-suite` Helm release:
+
+1. Get the `values.yaml` used during installation.
+2. Set the agent’s `enabled` field to **false**.
+
+   **Example:**
+   ```yaml
+   ims-agent:
+     enabled: false
+3. Run helm upgrade
 
 ```bash
 helm upgrade --install wxa4z-agent-suite \
@@ -327,6 +344,9 @@ helm upgrade --install wxa4z-agent-suite \
   --wait
 ```
 
+#### Note
+> Running a Helm upgrade with enabled=false removes only that agent’s Kubernetes resources.
+The agent will continue to appear in the Watsonx Assistant for Z UI until removed manually via Step 1 above.
 ---
 
 ## Post Install Verification
