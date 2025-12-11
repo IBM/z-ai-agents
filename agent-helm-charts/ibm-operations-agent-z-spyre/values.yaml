@@ -1,31 +1,27 @@
 replicaCount: 1
 
-mcpImage:
-  repository: icr.io/ibm-operations-aai/ibm-operations-agent-z
+image:
+  repository: icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre
   tag: v1.1.1
   pullPolicy: Always
 
 createSecret: false
 
-mcpService:
-  name: wxa4z-ibm-operations-agent-z-mcp-service
+service:
+  name: wxa4z-ibm-operations-agent-z-service
   ports:
-    - name: mcp-client
-      protocol: TCP
-      port: 9001
-      targetPort: 9001
-    - name: mcp-server
-      protocol: TCP
-      port: 9002
-      targetPort: 9002
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 9001
 
-mcpRoute:
-  name: wxa4z-ibm-operations-agent-z-mcp-route
+route:
+  name: wxa4z-ibm-operations-agent-z-route
   annotations:
     hostGenerated: "true"
-  serviceName: wxa4z-ibm-operations-agent-z-mcp-service
+  serviceName: wxa4z-ibm-operations-agent-z-service
   weight: 100
-  targetPort: mcp-client
+  targetPort: http
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
@@ -45,43 +41,30 @@ env:
   SUMMARY_DIR: /data
   GRAPH_RECURSION_LIMIT: "30"
   CONTEXT_LENGTH: '16000'
-  CPD_AUTH_URL: ""
   DEBUG_TOOLSELECTION: 'false'
 
-mcpSecrets:
-  name: ibm-operations-agent-z-mcp-secrets
+secrets:
+  name: ibm-operations-agent-z-secrets
   createSecret: true
   data:
     WATSONX_ML_URL: ""
     WATSONX_DEPLOYMENT_SPACE_ID: ""
-    CPD_USERNAME: ""
-    WATSONX_API_KEY: ""
-    UNITE_CLIENT_ID: ""
-    UNITE_CLIENT_SECRET: ""
-    UNITE_GRANT_TYPE: ""
+    CPD_USERNAME: CPD_USERNAME
+    WATSONX_API_KEY: CLOUD_API_KEY
+    UNITE_CLIENT_ID: UNITE_CLIENT_ID
+    UNITE_CLIENT_SECRET: UNITE_CLIENT_SECRET
+    UNITE_GRANT_TYPE: client_credentials
     UNITE_API_URL: ""
     UNITE_TOKEN_URL: ""
     AGENT_AUTH_TOKEN: ""
-    LANGFUSE_SECRET_KEY: 
-    LANGFUSE_PUBLIC_KEY: 
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
     WATSONX_PROJECT_ID: ""
-    EMBEDDING_MODEL_PATH: "unite_langgraph_agent/agents/models/granite-embedding-english-r2"
-    TOOL_EMBEDDING_PATH: "unite_langgraph_agent/agents/tool_graph/tool_calling_graph/tool_embeddings"
-    WRAPPER_URL: ""
-    WRAPPER_USERNAME: ""
-    WRAPPER_PASSWORD: ""
-    ZCHATOPS_MCP_URL: "http://wxa4z-zchatops-mcp-server-service.wxa4z-aiops.svc.cluster.local:8081/mcp"
-    CONCERT_MCP_SERVER_URL: 'http://0.0.0.0:9002/mcp'
-    CONCERT_MCP_SERVER_HOST: '0.0.0.0'
-    CONCERT_MCP_SERVER_PATH: /mcp
-    CONCERT_MCP_SERVER_PORT: '9002'
-
 
 imagePullSecrets:
-  - name: ibm-operations-image-mcp-pull-secret
+  - name: ibm-operations-image-pull-secret
 
-
-mcpResources:
+resources:
   limits:
     cpu: "2"
     memory: "2Gi"
@@ -89,16 +72,15 @@ mcpResources:
     cpu: "1"
     memory: "1Gi"
 
-mcpPvc:
+pvc:
   storageClass: "ocs-storagecluster-cephfs"
   accessModes:
     - ReadWriteOnce
   enabled: true
   size: 8Gi
 
-
-mcpNetworkPolicy:
-  name: wxa4z-ibm-operations-agent-z-mcp-network-policy
+networkPolicy:
+  name: wxa4z-ibm-operations-agent-z-network-policy
   egress:
     - {}
   ingress:
@@ -127,7 +109,7 @@ bootstrapJob:
       CPD_USERNAME: CPD_USERNAME
   env:
     ORCHESTRATE_ENV_NAME: "wxo-live-instance"
-    CONFIG_PATH: "/ibm-ops-agent-bootstrap-config/ibm_ops_agent_bootstrap_config.yaml"
+    CONFIG_PATH: "/ibm-ops-agent-spyre-bootstrap-config/ibm_ops_agent_spyre_bootstrap_config.yaml"
     HOME: /opt/app-root/src
   resources:
     limits:
@@ -136,7 +118,7 @@ bootstrapJob:
     requests:
       cpu: "500m"
   serviceAccount:
-    name: ibm-ops-agent-bootstrap-job-sa
+    name: ibm-ops-agent-spyre-bootstrap-job-sa
 
 # This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
 registry:

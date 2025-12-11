@@ -54,9 +54,13 @@ dependencies:
     repository: file://../agent-helm-charts/db2z-agent
     condition: db2z-agent.enabled
   - name: ibm-operations-agent-z
-    version: 0.1.0
+    version: 1.1.1
     repository: file://../agent-helm-charts/ibm-operations-agent-z
     condition: ibm-operations-agent-z.enabled
+  - name: ibm-operations-agent-z-spyre
+    version: 1.1.1
+    repository: file://../agent-helm-charts/ibm-operations-agent-z-spyre
+    condition: ibm-operations-agent-z-spyre.enabled
   - name: taz-functional-testing-agent
     version: 0.1.0
     repository: file://../agent-helm-charts/taz-functional-testing-agent

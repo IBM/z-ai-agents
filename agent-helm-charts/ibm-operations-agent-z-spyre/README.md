@@ -1,18 +1,18 @@
-# IBM Operations Agents for Z
+# IBM Operations Agent for Z - Spyre
 
 ## Overview
 
-The IBM® Operations Agent for Z enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
+The IBM® Operations Agent for Z - Spyre enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
 
 The agent uses the conventions that are required by the agent-controller for proper registration and integration with IBM watsonx Orchestrate.
 
 | Field         | Value                                                                |
 |---------------|----------------------------------------------------------------------|
-| Agent Names    | `ibm-operations-agent-z`                                          |
-| Image         | `icr.io/ibm-operations-aai/ibm-operations-agent-z:<tag>`    |
+| Agent Name    |  `ibm-operations-agent-z-spyre`                                             |
+| Images        | `icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:<tag>`    |
 | Endpoint Path | `/v1/wlm_unite_chat`                                                 |
 | Auth Type     | `API_KEY`                                                            |
-| Description   | Answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Searches for relevant AIOps information across Db2, LPAR, IMS, Network, JVM, MQ, Storage, CICSplex, and OMEGAMON. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits such as maximum tasks (MAXTASKS) and concurrent transactions to provide visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, delivers information about CPU health, utilization, and system topology, and validates resource existence. Provides z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. |
+| Description   | Answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides information about CPU health, utilization, and system topology, and validates resource existence. Delivers z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. IBM Operations Agent for Z - Spyre supports Granite models on Spyre. |
 
 ## Agent capabilities
 
@@ -20,7 +20,6 @@ The agent uses the conventions that are required by the agent-controller for pro
 |------------------------------|-----------------------------------|
 | Provide general insight        | Provides information about CICS regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments.  |
 | Track z/OS Metrics | Can track CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and can detect high-consuming transactions or short-on-storage conditions.|
-| OMEGAMON MCP integration | Provides information about Db2, IMS, and JVM, pulled from OMEGAMON via MCP|
 | Monitor data |  Can monitor limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes.|
 | Provide health and system information | For sysplexes and LPARs, provides information about CPU health, utilization, and system topology, and can validate resource existence.|
 | Workload Management insights | Provides z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and can highlight service classes that are not meeting objectives. |
@@ -36,7 +35,7 @@ The following software must be installed and configured:
 
 ## Image Signature Verification Guide
 
-This container image of the **IBM Operations Agent for Z** is digitally signed to guarantee authenticity and integrity.
+This container image of the **IBM Operations Agent for Z - Spyre** is digitally signed to guarantee authenticity and integrity.
 Use the following instructions to verify the image signature with the provided files.
 
 ---
@@ -44,15 +43,14 @@ Use the following instructions to verify the image signature with the provided f
 ### Image reference
 
 ```bash
-icr.io/ibm-operations-aai/ibm-operations-agent-z:v1.1.1
+icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.1
 ```
 ### Files provided
 
-#### IBM Operations Agent for Z
+#### IBM Operations Agent for Z - Spyre
 - **PRD0014680key.pem.cer** – Certificate
 - **PRD0014680key.pem.chain** – CA chain
 - **PRD0014680key.pem.pub.key** – Public key
-
 ---
 
 ### Prerequisites
@@ -72,7 +70,7 @@ To immediately verify the image signature, run the following command:
 
 ```bash
 cosign verify --key PRD0014680key.pem.pub.key \
-  icr.io/ibm-operations-aai/ibm-operations-agent-z:v1.1.1 | jq .
+  icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.1* | jq .
 ```
 
 If the signature is valid, details about the signer and the certificate are shown in the output.
@@ -84,17 +82,17 @@ If the signature is valid, details about the signer and the certificate are show
 Identify the signature manifest reference:
 
 ```bash
-cosign triangulate icr.io/ibm-operations-aai/ibm-operations-agent-z:v1.1.1
+cosign triangulate icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.1
 ```
 Example output:
 
 ```bash
-icr.io/ibm-operations-aai/ibm-operations-agent-z:sha256-<digest>.sig
+icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:sha256-<digest>.sig
 ```
 Inspect the signature details:
 
 ```bash
-crane manifest icr.io/ibm-operations-aai/ibm-operations-agent-z:sha256-<digest>.sig | jq .
+crane manifest icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:sha256-<digest>.sig | jq .
 ```
 This displays the certificate chain and metadata that is embedded in the signature object.
 
@@ -138,7 +136,7 @@ Response verify OK
 | **CPD_ADMIN_PASSWORD** *(On-prem only)* | Password for the CPD admin user. |
 | **ASSISTANT_API_KEY** *(IBM Cloud only)* | IBM Cloud API key (or service credential) for your Assistant instance. <br> **Use:** Required on Cloud; not used on on-prem (CPD uses `CPD_AUTH_URL` with CPD credentials/tokens). |
 
-## Install IBM Operations Agent for Z
+## Install IBM Operations Agent for Z - Spyre
 
 ### Retrieve the entitlement key
 
@@ -148,10 +146,10 @@ Enter the value of this key in the `ibm-operations-agent-z` section of the `valu
 (See [values.yaml](../../wxa4z-agent-suite/values.yaml)).
 
 ```yaml:
-ibm-operations-agent-z:
+ibm-operations-agent-z-spyre:
   ...
     registry:
-        name: ibm-operations-agent-image-pull-secret
+        name: ibm-operations-agent-image-pull-secret-spyre
         server: icr.io
         username: iamapikey
         entitlementKey: entitlementKey
@@ -181,21 +179,11 @@ In the values.yaml file, scroll down to the IBM Operations Agent for Z section a
 | `UNITE_TOKEN_URL`            | URL to retrieve the Unite token                                             |
 | `LANGFUSE_SECRET_KEY`        | Secret key for Langfuse tracing                                             |
 | `LANGFUSE_PUBLIC_KEY`        | Public key for Langfuse tracing                                             |
-| `WRAPPER_URL`                | Wrapper URL                                                                 |
-| `WRAPPER_USERNAME`           | Wrapper username                                                            |
-| `WRAPPER_PASSWORD`           | Wrapper password                                                            |
 | `ASSISTANT_VERSION`          | Assistant API version                                                       |
 | `ASSISTANT_ENV_ID`           | Assistant environment ID                                                    |
 | `ASSISTANT_API_KEY`          | Assistant API key                                                           |
 | `ASSISTANT_SVC_INSTANCE_URL` | Assistant service instance URL                                              |
 ---
-### MCP Keys
-| Key                          | Description                                                                 |
-|------------------------------|-----------------------------------------------------------------------------|
-|`CONCERT_MCP_SERVER_URL`      | MCP URL endpoint|
-|`CONCERT_MCP_SERVER_PATH`     | MCP path, `/mcp`|
-|`ZCHATOPS_MCP_URL`            | ZChatOps MCP URL|
-|`CONCERT_MCP_SERVER_PORT`     | Port for MCP client, `9002`|
 
 #### Other keys
 | Key                       | Description                                                            |
@@ -220,7 +208,7 @@ In the values.yaml file, scroll down to the IBM Operations Agent for Z section a
 Run the following command to create an image pull secret for IBM Cloud Container Registry (ICR):
 
 ```bash
-oc create secret -n <your-namespace> docker-registry ibm-operations-agent-z-mcp-secrets \
+oc create secret -n <your-namespace> docker-registry ibm-operations-agent-z-secrets \
   --docker-server=icr.io \  #replace this with container registry
   --docker-username=iamapikey \ # replace this with container registry username
   --docker-password=<your-api-key> # replace this with container registry password
@@ -237,7 +225,7 @@ In your Helm chart's[ `values.yaml`] , update the image pull secret:
 
 ```yaml
 imagePullSecrets:
-  - name: ibm-operations-agent-z-mcp-secrets
+  - name: ibm-operations-agent-z-secrets
 ```
 
 ---
@@ -247,7 +235,7 @@ imagePullSecrets:
 Finally, install the Helm chart:
 
 ```bash
-helm upgrade --install ibm-operations-agent-z . \
+helm upgrade --install ibm-operations-agent-z-spyre . \
   -n <your-namespace> \
   -f values.yaml
 ```
@@ -278,7 +266,7 @@ These values are available in the shared [values.yaml](../../wxa4z-agent-suite/v
 
 
 ```bash
-ibm-operations-agent-z:
+ibm-operations-agent-z-spyre:
   enabled: true
   acceptLicense: true
 ```
