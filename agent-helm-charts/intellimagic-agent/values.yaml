@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/ibm-intellimagic-ai/intellimagic-agent
-  tag: 1.1.0@sha256:4660a70e7f11edfcbf0a3d1d942d1180c1153b1b573b2a954d622b261a27d59a
+  repository: icr.io/ibm-intellimagic-agent/intellimagic-agent
+  tag: 1.1.1@sha256:d4f7fadcd7ac055e2b25f0b6126519b957f9c14607fc44ae346ebeaac94f7ad7
   pullPolicy: Always
 
 service:
@@ -23,11 +23,13 @@ route:
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 env:
-  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  WATSONX_MODEL_ID: ""
   WATSONX_INSTANCE_ID: "openshift"
   CPD_VERSION: "5.2"
   DEPLOYMENT_TYPE: on-prem
+  # WATSONX_VERIFY_SSL: "true" # Whether to verify SSL certificates for WatsonX API calls (`true`/`false`). Default is `true`.
   LANGFUSE_HOST: ""
   LANGFUSE_TRACING_ENABLED: false
 secrets:
@@ -76,7 +78,7 @@ bootstrapJob:
   imagePullSecrets:
     - name: wxa4z-image-pull-secret
   secret:
-    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     name: intellimagic-agent-bootstrap-job-secret
     data:
       ORCHESTRATE_ENV_TYPE: cpd

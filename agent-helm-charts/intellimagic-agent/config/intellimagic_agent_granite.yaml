@@ -1,8 +1,8 @@
 spec_version: v1
-style: default
+style: react
 display_name: IBM IntelliMagic agent for Z
 name: IBM_IntelliMagic_agent_for_Z
-llm: watsonx/meta-llama/llama-3-3-70b-instruct
+llm: virtual-model/watsonx/ibm/granite-3-3-8b-instruct
 description: >
   A system that recommends IntelliMagic Vision charts and reports. These charts and reports show information on IBM Z system, both from a performance and a configuration perspective. The information shown can include health insights, exceptions, performance metrics and configuration tables. The scope includes Db2, CICS, Storage Systems, Ficon Directors, IMS etc. The recommendations are based on a user-provided topic or problem description.
 instructions: >
