@@ -2,7 +2,7 @@
 
 ## Overview
 
-The IBM® Operations Agent for Z - Spyre enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z. It is a lightweight, non-MCP variant which runs on IBM Spyre and is optimized for Granite, providing a simplified yet powerful solution for environments that do not require MCP integration.
+The IBM® Operations Agent for Z - Spyre enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
 
 The agent uses the conventions that are required by the agent-controller for proper registration and integration with IBM watsonx Orchestrate.
 

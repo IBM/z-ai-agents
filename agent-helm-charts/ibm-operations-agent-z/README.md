@@ -2,7 +2,7 @@
 
 ## Overview
 
-The IBM® Operations Agent for Z enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z. It is designed for environments requiring full MCP support, integrating OMEGAMON MCP Server and Concert for Z MCP Server to deliver deep operational insights and advanced monitoring capabilities. It can handle a broader range of queries thanks to its access to Concert for Z and System Insights tools. This flavour is optimised for Llama and supports deployment on both s390x and x86 architectures, though data will flow outside the Z system for processing.
+The IBM® Operations Agent for Z enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
 
 The agent uses the conventions that are required by the agent-controller for proper registration and integration with IBM watsonx Orchestrate.
 
