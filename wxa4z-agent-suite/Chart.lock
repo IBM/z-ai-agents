@@ -28,9 +28,9 @@ dependencies:
   version: 0.1.0
 - name: ims-agent
   repository: file://../agent-helm-charts/ims-agent
-  version: 1.0.0
+  version: 1.0.1
 - name: cics-agent
   repository: file://../agent-helm-charts/cics-agent
   version: 1.0.0
-digest: sha256:3153157d79138087039e430dd2163c6eb2857d59a590809c3300ee9581d70dfb
-generated: "2025-12-11T14:56:26.384593+05:30"
+digest: sha256:06b85417956557a3d6c220c10e1cf557510f4261e93b84a2644fd3cc044fa80f
+generated: "2025-12-10T07:08:23.825509-08:00"

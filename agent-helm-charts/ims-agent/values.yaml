@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/ibm-ims-ai/ims-agent
-  tag: 1.0.0
+  repository: icr.io/ibm-ims-ai/ims-qa-agent
+  tag: 1.0.1
   pullPolicy: Always
 
 mcpImage:
   repository: icr.io/ibm-ims-ai/ims-mcp-agent
-  tag: 1.0.0
+  tag: 1.0.1
   pullPolicy: Always
 
 service:
@@ -21,15 +21,14 @@ service:
 mcpService:
   name: wxa4z-ims-mcp-agent-service
   ports:
-  - name: mcp-server
-    protocol: TCP
-    port: 8000
-    targetPort: 8000
-  - name: zosmf-agent
-    protocol: TCP
-    port: 8080
-    targetPort: 8080
-
+    - name: mcp-server
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+    - name: zosmf-agent
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
 
 route:
   name: wxa4z-ims-agent-route
@@ -40,7 +39,8 @@ route:
   targetPort: http
   tls:
     termination: edge
-    secretName: wxa4z-agents-tls-secret    
+    secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 mcpRoute:
   name: wxa4z-ims-mcp-agent-route
   annotations:
@@ -51,6 +51,7 @@ mcpRoute:
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 env:
   WATSONX_DEPLOYMENT_SPACE_ID: ""
   WATSONX_ML_URL: ""
@@ -63,8 +64,8 @@ env:
   LANGFUSE_TRACING_ENABLED: false
   MCP_LOG_LEVEL: "INFO"
   LOG_LEVEL: "INFO"
-  LOCAL_EMBEDDING_MODEL: "ibm-granite/granite-embedding-278m-multilingual"    #  Also supports "ibm-granite/granite-embedding-107m-multilingual"
-  MODEL_CATALOG_PATH: "/opt/app-root/src/ims_multi_agent/model_catalog.yaml"
+  LOCAL_EMBEDDING_MODEL: "ibm-granite/granite-embedding-278m-multilingual" #  Also supports "ibm-granite/granite-embedding-107m-multilingual"
+  MODEL_CATALOG_PATH: "/opt/app-root/src/qa_agent/model_catalog.yaml"
   ZOSMF_CONSOLE_NAME: ""
   MCP_SERVER: "http://localhost:8000/mcp"
   IMS_SUBSYSTEM_ID: ""
@@ -73,12 +74,11 @@ env:
   AUTHZ_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
   APPL_ID: "IZUDFLT"
   IMS_ID: "wxa4z%3Aims%3Aagent"
-
 secrets:
   name: wxa4z-ims-agent-secrets
   createSecret: true
   data:
-    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud) 
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
     CPD_USERNAME: cpadmin
     # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
     WATSONX_API_KEY: ""
@@ -95,10 +95,10 @@ mcpSecrets:
   name: wxa4z-ims-mcp-agent-secrets
   createSecret: true
   data:
-    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud) 
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
     CPD_USERNAME: cpadmin
     # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
-    WATSONX_API_KEY: "" 
+    WATSONX_API_KEY: ""
     # External App Credential specific to opensearch wrapper
     ZOSMF_ENDPOINT: ZOSMF_ENDPOINT
     SERVICE_ENDPOINT: ""
@@ -117,7 +117,7 @@ resources:
   requests:
     cpu: "4"
     memory: "4Gi"
-    
+
 mcpResources:
   limits:
     cpu: "2"
@@ -144,16 +144,16 @@ mcpPvc:
 mcpNetworkPolicy:
   name: wxa4z-ims-mcp-agent-network-policy
   egress:
-  - {}
+    - {}
   ingress:
-  - {}
+    - {}
 
 networkPolicy:
   name: wxa4z-ims-agent-network-policy
   egress:
-  - {}
+    - {}
   ingress:
-  - {}
+    - {}
 
 mcpCertSecret:
   name: service-endpoint-cert-secret
@@ -188,11 +188,11 @@ bootstrapJob:
   imagePullSecrets:
     - name: wxa4z-image-pull-secret
   secret:
-    dev_mode: false  # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     name: ims-agent-bootstrap-job-secret
     data:
       ORCHESTRATE_ENV_TYPE: cpd
-      WATSONX_API_KEY: "" 
+      WATSONX_API_KEY: ""
       ORCHESTRATE_ENV_URL: ""
       CPD_USERNAME: cpadmin
   env:
