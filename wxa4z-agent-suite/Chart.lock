@@ -16,7 +16,7 @@ dependencies:
   version: 1.0.0
 - name: intellimagic-agent
   repository: file://../agent-helm-charts/intellimagic-agent
-  version: 1.1.0
+  version: 1.1.1
 - name: db2z-agent
   repository: file://../agent-helm-charts/db2z-agent
   version: 0.1.0
@@ -32,5 +32,5 @@ dependencies:
 - name: cics-agent
   repository: file://../agent-helm-charts/cics-agent
   version: 1.0.0
-digest: sha256:d7bb5f3e66c7f086a6fb45349abe76611c180eff32ca220c09536034307ecff6
-generated: "2025-10-10T11:49:57.317138+01:00"
+digest: sha256:3153157d79138087039e430dd2163c6eb2857d59a590809c3300ee9581d70dfb
+generated: "2025-12-11T14:56:26.384593+05:30"
