@@ -67,14 +67,14 @@ Now run `export FINGERPRINT=$(gpg --fingerprint --with-colons | grep fpr | tr -d
 
 Sign in to skopeo so the container can be pulled with `skopeo login --username <USERNAME> --password <PASSWORD_OR_TOKEN> icr.io`.
 
-Copy the container image to a temporary directory with `skopeo copy docker://icr.io/ibm-cics-ts/cics-ai-agent:topology-1.0.0 dir:./tmp/`.
+Copy the container image to a temporary directory with `skopeo copy docker://icr.io/ibm-cics-ts/cics-ai-agent:topology-v1.0.0 dir:./tmp/`.
   
 This copies blobs, manifests and signatures from the container into the `tmp` directory. The signature will usually be something like `signature-1`.
 <br>
 
 #### Step 3: Validating the signature
 
-You can now verify the signature.. Run `skopeo standalone-verify ./tmp/manifest.json icr.io/ibm-cics-ts/cics-ai-agent:topology-1.0.0 $FINGERPRINT ./tmp/signature-1`
+You can now verify the signature.. Run `skopeo standalone-verify ./tmp/manifest.json icr.io/ibm-cics-ts/cics-ai-agent:topology-v1.0.0 $FINGERPRINT ./tmp/signature-1`
 
 You should see output like this:
 ```Signature verified using fingerprint B83574F1F039B21CDCC4FD5FF884D56B4AA7091A, digest sha256:f2f11696e64395b79a9f5e31b91bae4f8c802ae1548ffd831067b3eb3ed1f077```
@@ -91,12 +91,11 @@ You can now repeat this process for the other signature files in the `tmp` folde
 
 ### Retrieve the entitlement key
 
-The entitlement key is provided as part of the Bill of Materials during the installation process for CICS Transaction Server for z/OS. However, if you need to retrieve it again, follow these steps:
+An entitlement key is required to download the IBM CICS Transaction Server agents for Z container images from the IBM Container Registry. This entitlement key is available at no charge to licensed users of IBM CICS Transaction Server for z/OS.
 
-1. Click the link to sign in to [Shopz](https://www.ibm.com/software/shopzseries/ShopzSeries_public.wss?action=home).
-2. In your catalogue, navigate to **CICS Transaction Server for z/OS**.
-3. In the program files, open the file called 'Entitlement Key' to find the **entitlement key**.
-4. Set the global entitlement key using the CICS product entitlement key:
+To obtain the entitlement key, open a case with IBM Support indicating that you are requesting the entitlement key for IBM CICS Transaction Server agents for Z. 
+
+Once you have an entitlement key, paste it into the Helm chart under the `cics-agent` definitions like so:
 
 ```yaml
 cics-agent:
@@ -140,6 +139,25 @@ WATSONX_PROJECT_URL| Your watsonx URL.
 WATSONX_PROJECT_ID| Identifier for your watsonx Project ID.
 > DO NOT CHANGE VALUES IN `secrets` SECTION of  `values.yaml`
 
+### Self signed certificates
+
+If you are connecting to a service that lives behind a URL with a self-signed certificate, the agent will not communicate with that URL without first providing it with the certificate to validate all requests with.
+
+You will need your endpoints certificates content, which you need to put into `values.yaml` - into the `topologyCertSecret` section, replacing the content already there. **Make sure never to commit or add this certificate to version control.**
+
+If you require more than one certificate, you can use a Terminal to concatenate multiple certificates into a single block of text data. To do so, run `cat cert1.crt cert2.crt > combined.crt`, replacing the firs two `.crt` files with your own certificates. You will also need to ensure new lines are between the certificates `-----BEGIN CERTIFICATE-----` blocks. You are looking for something that looks like:
+```
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+```
+
+This can then be added to the correct value in `values.yaml` inside the `cics-agent` folder.
+
+> Ensure there are no extra lines or white space between certificates and avoid adding white space after the last certificate.
 
 ### Install or upgrade the wxa4z-agent-suite
 
@@ -215,6 +233,24 @@ WATSONX_PROJECT_ID| Identifier for your watsonx Project ID.
 SERVICE_ENDPOINT | Service endpoint URL for agent registration.
 > DO NOT CHANGE VALUES IN `secrets` SECTION of  `values.yaml`
 
+
+### Certificates for MCP access
+
+If you are connecting to CICS, and your MCP server running in CICS uses a self-signed certificate, the agent will not communicate with your MCP server without first providing it with the certificate to validate all requests with.
+
+You will need your endpoints certificates content, which you need to put into `values.yaml` - into the `pdCertSecret` section, replacing the content already there. **Make sure never to commit or add this certificate to version control.**
+
+If you require more than one certificate, you can use a Terminal to concatenate multiple certificates into a single block of text data. To do so, run `cat cert1.crt cert2.crt > combined.crt`, replacing the firs two `.crt` files with your own certificates. You will also need to ensure new lines are between the certificates `-----BEGIN CERTIFICATE-----` blocks. You are looking for something that looks like:
+```
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+```
+
+This can then be added to the correct value in `values.yaml` inside the `cics-agent` folder.
 
 ### Install or upgrade the wxa4z-agent-suite
 

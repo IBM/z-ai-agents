@@ -7,5 +7,9 @@ data:
   cics_agent_bootstrap_config.yaml: |-
 {{ .Files.Get "config/cics_agent_bootstrap_config.yaml" | indent 4 }}
   cics_agent.yaml: |-
+{{- if contains "granite-3-3-8b-instruct" .Values.env.WATSONX_MODEL_ID }}
+{{ .Files.Get "config/cics_agent_granite.yaml" | indent 4 }}
+{{- else }}
 {{ .Files.Get "config/cics_agent.yaml" | indent 4 }}
+{{- end }}
 {{- end }}

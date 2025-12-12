@@ -73,6 +73,6 @@ dependencies:
     repository: file://../agent-helm-charts/ims-agent
     condition: ims-agent.enabled
   - name: cics-agent
-    version: 1.0.0
+    version: 1.1.0
     repository: file://../agent-helm-charts/cics-agent
     condition: cics-agent.enabled
