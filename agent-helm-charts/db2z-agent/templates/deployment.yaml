@@ -41,6 +41,13 @@ spec:
       {{- else }}
         emptyDir: {}
       {{- end }}
+      - name: db-data-volume
+      {{- if .Values.pvc.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Chart.Name }}-db-pvc
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -50,6 +57,8 @@ spec:
             mountPath: /data
           - name: license-volume
             mountPath: /usr/local/lib64/python3.12/site-packages/clidriver/license
+          - name: db-data-volume
+            mountPath: /app/montydb
           ports:
             - containerPort: {{ .Values.service.ports.targetPort }}
           env:
@@ -91,23 +100,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
                   key: ENCRYPT_KEY
-            - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_URI
-            - name: MONGODB_DB_NAME
-              value: {{ .Values.env.MONGODB_DB_NAME }}
-            - name: MONGODB_DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_DB_USERNAME
-            - name: MONGODB_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_DB_PASSWORD
+            - name: DB_NAME
+              value: {{ .Values.env.DB_NAME }}
             - name: LANGFUSE_HOST
               value: {{ .Values.env.LANGFUSE_HOST }}
             - name: LANGFUSE_TRACING_ENABLED
@@ -124,6 +118,16 @@ spec:
                   key: LANGFUSE_SECRET_KEY
             - name: AGENT_ID
               value: {{ .Values.env.AGENT_ID}}
+            - name: DB2_AGENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: DB2_AGENT_TOKEN
+            - name: ZOWE_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: ZOWE_ENABLED
             - name: AUTH_SERVICE_BASE_URL
               value: {{ .Values.env.AUTH_SERVICE_BASE_URL}}
             - name: MCP_SERVER_NAME
@@ -132,6 +136,12 @@ spec:
               value: {{ .Values.env.MCP_SERVER_URL}}
             - name: SERVICE_ENDPOINT
               value: {{ .Values.env.SERVICE_ENDPOINT}}
+            - name: MAX_INPUT_TOKENS
+              value: {{ .Values.env.MAX_INPUT_TOKENS | quote}}
+            - name: MAX_OUTPUT_TOKENS
+              value: {{ .Values.env.MAX_OUTPUT_TOKENS | quote}}
+            - name: HF_HOME
+              value: {{ .Values.env.HF_HOME}}
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
@@ -148,6 +158,8 @@ spec:
             mountPath: /data
           - name: license-volume
             mountPath: /usr/local/lib64/python3.12/site-packages/clidriver/license
+          - name: db-data-volume
+            mountPath: /mcp/montydb
           ports:
             - containerPort: {{ .Values.mcpService.ports.targetPort }}
           env:
@@ -189,23 +201,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
                   key: ENCRYPT_KEY
-            - name: MONGODB_URI
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_URI
-            - name: MONGODB_DB_NAME
-              value: {{ .Values.env.MONGODB_DB_NAME }}
-            - name: MONGODB_DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_DB_USERNAME
-            - name: MONGODB_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_DB_PASSWORD
+            - name: DB_NAME
+              value: {{ .Values.env.DB_NAME }}
             - name: LANGFUSE_HOST
               value: {{ .Values.env.LANGFUSE_HOST }}
             - name: LANGFUSE_TRACING_ENABLED
@@ -222,6 +219,16 @@ spec:
                   key: LANGFUSE_SECRET_KEY
             - name: AGENT_ID
               value: {{ .Values.env.AGENT_ID}}
+            - name: DB2_AGENT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: DB2_AGENT_TOKEN
+            - name: ZOWE_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: ZOWE_ENABLED
             - name: AUTH_SERVICE_BASE_URL
               value: {{ .Values.env.AUTH_SERVICE_BASE_URL}}
             - name: MCP_SERVER_NAME
@@ -237,24 +244,3 @@ spec:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
               memory: {{ .Values.resources.requests.memory }}
-        - name: mongodb
-          image: docker.io/library/mongo:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 27017
-          volumeMounts:
-            - name: data-volume
-              mountPath: /data/db
-          env:
-            - name: MONGO_INITDB_ROOT_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_DB_USERNAME
-            - name: MONGO_INITDB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: MONGODB_DB_PASSWORD
-            - name: MONGO_INITDB_DATABASE
-              value: {{ .Values.env.MONGODB_DB_NAME }}
