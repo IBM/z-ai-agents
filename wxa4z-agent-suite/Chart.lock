@@ -2,29 +2,42 @@ dependencies:
 - name: zrag-agent
   repository: file://../agent-helm-charts/zrag-agent
   version: 1.1.0
+- name: zrag-agent
+  repository: file://../agent-helm-charts/zrag-agent
+  version: 1.1.0
 - name: support-agent
   repository: file://../agent-helm-charts/support-agent
+  version: 1.1.0
   version: 1.1.0
 - name: omegamon-insights-agent
   repository: file://../agent-helm-charts/omegamon-insight-agent-z
   version: 1.1.0
+  version: 1.1.0
 - name: upgrade-agent
   repository: file://../agent-helm-charts/upgrade-agent
+  version: 1.1.0
   version: 1.1.0
 - name: workload-scheduler-agent-z
   repository: file://../agent-helm-charts/workload-scheduler-agent-z
   version: 1.1.0
+  version: 1.1.0
 - name: automation-insights-agent
   repository: file://../agent-helm-charts/automation-insight-agent
+  version: 1.1.0
   version: 1.1.0
 - name: intellimagic-agent
   repository: file://../agent-helm-charts/intellimagic-agent
   version: 1.1.1
+  version: 1.1.1
 - name: db2z-agent
   repository: file://../agent-helm-charts/db2z-agent
-  version: 0.1.0
+  version: 1.1.1
 - name: ibm-operations-agent-z
   repository: file://../agent-helm-charts/ibm-operations-agent-z
+  version: 1.1.1
+- name: ibm-operations-agent-z-spyre
+  repository: file://../agent-helm-charts/ibm-operations-agent-z-spyre
+  version: 1.1.1
   version: 1.1.1
 - name: ibm-operations-agent-z-spyre
   repository: file://../agent-helm-charts/ibm-operations-agent-z-spyre
@@ -35,8 +48,9 @@ dependencies:
 - name: ims-agent
   repository: file://../agent-helm-charts/ims-agent
   version: 1.0.1
+  version: 1.0.1
 - name: cics-agent
   repository: file://../agent-helm-charts/cics-agent
   version: 1.0.0
-digest: sha256:6cb00b9fd5e8c2d61715c58a4ff1041c93548255c1eb61f717c1a0a94c119f74
-generated: "2025-12-11T23:20:51.146123+05:30"
+digest: sha256:079f6af6119a0a8aa59b49fa00594ffd3de43303e50c8d0ed31012c0aa8cb2aa
+generated: "2025-12-12T00:18:11.228689+05:30"

@@ -1,8 +1,8 @@
 spec_version: v1
-style: default
+style: react
 display_name: IBM Db2 for z/OS Agent
 name: IBM_Db2_for_zOS_Agent
-llm: watsonx/meta-llama/llama-3-3-70b-instruct
+llm: virtual-model/watsonx/ibm/granite-3-3-8b-instruct
 description: >
   The IBM Db2 for z/OS Agent provides a conversational experience for interacting with Db2 for z/OS subsystems, making it significantly easier to retrieve and interpret information across multiple Db2 for z/OS environments. By reducing the complexity traditionally associated with navigating system configurations, comparing subsystem data, and handling large volumes of technical information, the agent empowers both technical and non-technical users to gain meaningful insights—without requiring deep expertise in Db2 for z/OS command syntax.
 instructions: >
@@ -18,6 +18,7 @@ context_access_enabled: true
 context_variables:
   - wxo_email_id
   - wxo_user_name
+  - trace_id
 chat_params: # chat_parms are parameters sent to an agent on each request
   stream: true # should the external agent be invoked using using SSE streaming or as a rest call
 config: # config represents the internal configuration of this agent used by wxo

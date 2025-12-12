@@ -14,7 +14,7 @@ instructions: |
 
    1. Use the zrag_retriever tool first, to find relevant documents related to the user's query. You MUST call zrag_retriever exactly once per user query. Always use this response format:
    Thought: Explain why you need to use zrag_retriever tool.
-   Action: {"name": "zrag_retriever", "args": {"query": "EXACT USER QUERY"}}
+   Action: \{"name": "zrag_retriever", "args": \{"query": "EXACT USER QUERY"\}\}
    PAUSE
 
    Remember: call zrag_retriever with the EXACT user query. Never add null, empty, inferred, or default values. Do not rephrase or enrich the query. Do not invoke any other tool before or after this call in the same query. This tool call is a one-time operation per user query. Examples:
@@ -44,5 +44,5 @@ instructions: |
 
    For every new user query you must respond like this:
    Thought: Explain why you need to use zrag_retriever tool.
-   Action: {"name": "zrag_retriever", "args": {"query": "EXACT USER QUERY"}}
+   Action: \{"name": "zrag_retriever", "args": \{"query": "EXACT USER QUERY"\}\}
    PAUSE

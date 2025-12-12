@@ -21,6 +21,7 @@ global:
       WATSONX_ML_URL: "" # Set this to CPD Instance FQDN for on-prem deployments.
       EXTERNAL_WATSONX_API_KEY: "" # Set this to External CPD API Key  only when External IFM is configured for WxO with model gateway.
       WATSONX_PROJECT_ID: "" # Set this to Watsonx project id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project).
+
   # Default image pull secret and registry auth used by many subcharts.
   # Set registry.createSecret to true only when default image pull fails for watsonx assistant for z agents or when using private registry.
   registry:
@@ -30,42 +31,42 @@ global:
     username: cp # Required literal when using entitlement/IAM keys with ICR.
     entitlementKey: "" # entitlement key/IAM APIkey used solely for image pulls.
 
-# +--------------------------------------------------------------------------------------+
-# | ca-trust-sync (cics-agent): merges the target workload’s system CA with the product  |
-# | CA and creates/updates `merged-ca-bundle-secret` in the target namespace.            |
-# | Patches the target Deployment to mount the merged bundle and sets                    |
-# | EXT_CERT_PATH=/etc/ssl/certs/merged-ca/NEW_CA_BUNDLE.CRT; runs in release namespace  |
-# | and operates cross-namespace on the target Deployment/Pods.                          |
-# | NOTE: Do not change these values here; override via Helm values files only if        |
-# | explicitly instructed.                                                               |
-# +--------------------------------------------------------------------------------------+
+  # +--------------------------------------------------------------------------------------+
+  # | ca-trust-sync (cics-agent): merges the target workload’s system CA with the product  |
+  # | CA and creates/updates `merged-ca-bundle-secret` in the target namespace.            |
+  # | Patches the target Deployment to mount the merged bundle and sets                    |
+  # | EXT_CERT_PATH=/etc/ssl/certs/merged-ca/NEW_CA_BUNDLE.CRT; runs in release namespace  |
+  # | and operates cross-namespace on the target Deployment/Pods.                          |
+  # | NOTE: Do not change these values here; override via Helm values files only if        |
+  # | explicitly instructed.                                                               |
+  # +--------------------------------------------------------------------------------------+
 
-caTrustSync:
-  enabled: true
-  # Namespace containing the target Deployment & Pods (merged secret is created here)
-  targetNamespace: cpd-instance-1
-  # Target Deployment and the EXACT container name to exec into
-  targetDeployment: wo-conversation-controller
-  targetContainer: wo-conversation-controller
-  # Source CA secret that exists in the RELEASE namespace (mounted into the Job)
-  sourceSecretName: wxa4z-agents-tls-secret
-  # One or more candidate CA bundle paths inside the target container (first readable wins)
-  caPaths:
-    - /etc/ssl/certs/ca-bundle.crt
-  image: registry.redhat.io/openshift4/ose-cli:v4.14
-  imagePullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: "50m"
-      memory: "100Mi"
-    limits:
-      cpu: "500m"
-      memory: "512Mi"
-  rolloutTimeout: 600s
-  backoffLimit: 3
-  ttlSecondsAfterFinished: 300
-  networkPolicy:
-    allowAll: true # set true only if your cluster is default-deny
+  caTrustSync:
+    enabled: true
+    # Namespace containing the target Deployment & Pods (merged secret is created here)
+    targetNamespace: cpd-instance-1
+    # Target Deployment and the EXACT container name to exec into
+    targetDeployment: wo-conversation-controller
+    targetContainer: wo-conversation-controller
+    # Source CA secret that exists in the RELEASE namespace (mounted into the Job)
+    sourceSecretName: wxa4z-agents-tls-secret
+    # One or more candidate CA bundle paths inside the target container (first readable wins)
+    caPaths:
+      - /etc/ssl/certs/ca-bundle.crt
+    image: registry.redhat.io/openshift4/ose-cli:v4.14
+    imagePullPolicy: IfNotPresent
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "100Mi"
+      limits:
+        cpu: "500m"
+        memory: "512Mi"
+    rolloutTimeout: 600s
+    backoffLimit: 3
+    ttlSecondsAfterFinished: 300
+    networkPolicy:
+      allowAll: true # set true only if your cluster is default-deny
 
 # Set `enabled: true` ONLY for entitled agents. License gating is enforced by
 # chart prechecks; you must also set `acceptLicense: true` for enabled products.
@@ -308,10 +309,10 @@ db2z-agent:
   acceptLicense: false # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
   image:
     repository: icr.io/ibm-db2z-ai/db2z-agent
-    tag: latest@sha256:33650af116be86abf2698ec4d17a00c8f0c96317771cd06b48758f2117ab510a
+    tag: latest@sha256:f2f080c4a3ab899ad6bb124d20197b663a2504347eabec7ab74efb20cad0dfa6
   mcpImage:
     repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-    tag: latest@sha256:82f5f1a9f9967c472ff2d9431bee03091de7b5099f4ce88377bf66953cd18f7b
+    tag: latest@sha256:04171657896a839504ccbae8197f1934fd81926d5467295b7318f133c15465ee
   registry:
     name: db2-image-pull-secret # Dedicated pull secret for this agent.
     server: icr.io
@@ -327,6 +328,7 @@ db2z-agent:
   env:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
     SERVICE_ENDPOINT: ""
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
   secrets:
     data:
       ENCRYPT_KEY: ""
@@ -394,7 +396,7 @@ ibm-operations-agent-z-spyre:
   bootstrapJob:
     enabled: true
     image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
       tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
@@ -444,7 +446,7 @@ taz-functional-testing-agent:
       tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
-    # env:
+  env:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
     API_BASE_URL: ""
     # Understand, to fetch data from database

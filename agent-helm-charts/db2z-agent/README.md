@@ -4,7 +4,7 @@
 IBM Db2 for z/OS Agent is an AI-powered assistant that enables you to easily obtain real-time information about your Db2 for z/OS subsystems and database objects through a simple prompt-based conversational interface. For example, you can ask it what the current value of a particular subsystem parameter is, which buffer pool a particular index uses, or if any utilities are currently running on a subsystem. In addition to providing a response, the agent also explains the method that it used to obtain the response.
 
 ## Architecture support
-IBM Db2 for z/OS Agent is currently supported on `x86_64` architecture.
+IBM Db2 for z/OS Agent is currently supported on `x86_64` and `s390x` architectures.
 
 
 ## Agent capabilities
@@ -28,11 +28,37 @@ Can you give me details about that bufferpool? | Fetches detailed bufferpool inf
 
 
 # Prerequisites:
-- [watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z)
+- [watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z)
 - Db2 for z/OS v13
 * ODBC connectivity to Db2 for z/OS
   - Server verification is recommended but client verification is supported by mounting the license into the deployed container at
     `/usr/local/lib64/python3.12/site-packages/clidriver/license`
+  - Steps for mounting license files
+      - Authenticate with the OpenShift cluster via terminal using the `oc` CLI.
+      - To copy the license files into the designated mounted path, execute the following script.
+            
+
+            NS="OPENSHIFT_NAMESPACE"
+            POD="POD_NAME"  # Name of the pod Agent is deployed on.
+            CTR="CONTAINER_NAME" # Name of MCP server container for e.g. db2z-mcp-server.
+
+            # Local folder to copy (contents of this dir will land under DEST)
+            SRC_DIR="./"  # e.g., "./license"
+            DEST="/usr/local/lib64/python3.12/site-packages/clidriver/license"
+
+            # Create DEST in the container, then extract from STDIN tar stream
+            tar -C "${SRC_DIR}" -cf - . \
+            | oc exec -i -n "${NS}" "${POD}" -c "${CTR}" -- env DEST="${DEST}" \
+              python -c 'import sys, os, tarfile
+            d = os.environ["DEST"]
+            os.makedirs(d, exist_ok=True)
+            with tarfile.open(fileobj=sys.stdin.buffer, mode="r|*") as t:
+                t.extractall(d)
+            ' 
+            
+  - To connect the Agent to Db2, connections need to be created via MCP server. Click the [link](https://www.ibm.com/docs/en/db2-for-zos/13.0.0?topic=configuring-connecting-agent-db2) for more details.
+          
+          
 * A watsonx api key, which is used as the value for the WATSONX_API_KEY environment variable
   - Configured as `WATSONX_API_KEY` environment variable.
 * A watsonx Deployment Space ID or Project ID.
@@ -61,7 +87,7 @@ global:
     entitlementKey: "<WATSONX_ASSISTANT_FOR_Z_ENTITLEMENT_KEY>"
 ```
 
-### Create Shared Variables
+### Create shared variables
 
 Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents?tab=readme-ov-file#1-global-settings) (link to the global GitHub page).
 However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/agent-helm-charts/db2z-agent/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
@@ -78,29 +104,26 @@ In the values.yaml file, scroll down to the IBM Db2 for z/OS Agent section and u
 **For ON-PREM Deployments**
 WATSONX_DEPLOYMENT_TYPE | Deployment environment type (`on_prem`)  
 WML_URL | CPD Instance URL 
-ONPREM_WML_INSTANCE_ID | on-prem wml instance id (always set to `openshift`)
+ONPREM_WML_INSTANCE_ID | On-prem wml instance id (always set to `openshift`)
 CPD_VERSION | CPD version for on-prem deployments (e.g., `5.1`)              
 **For Cloud Deployment**
 WATSONX_DEPLOYMENT_TYPE | Deployment environment type (`cloud`)  
 WML_URL | WML Instance URL  [IBM WML API Reference](https://cloud.ibm.com/apidocs/machine-learning)               |
 **Common For ON-PREM/Cloud Deployment**
-DEPLOYMENT_SPACE_ID | Identifier of the Watson Machine Learning deployment space refer [Prerequesites](#prerequisites) for creating deployment space.
+DEPLOYMENT_SPACE_ID | Identifier of the Watson Machine Learning deployment space. See [Prerequisites](#prerequisites) for creating a deployment space.
 LLM_MODEL | Name  of the large language model to use (`meta-llama/llama-3-1-70b-instruct`)
-MONGODB_DB_NAME |  Name of the mongodb database. For example, `db2zagent`.
-AUTH_SERVICE_BASE_URL | URL of the authorization service the agent needs to be registered.
-MCP_SERVER_NAME | Name of the MCP server.
-MCP_SERVER_URL: | URL of the MCP server that IBM Db2 for z/OS Agent interacts with. 
-SERVICE_ENDPOINT | URL of the service endpoint to generate passticket and user to establish connection of Db2.
-AGENT_SERVICE_PATH | Rest path exposed by the agent.
+DB_NAME |  Name of the database (for example, db2zagent)
+AUTH_SERVICE_BASE_URL | URL of the authorization service the agent needs to be registered
+MCP_SERVER_NAME | Name of the MCP server
+MCP_SERVER_URL: | URL of the MCP server that IBM Db2 for z/OS Agent interacts with
+SERVICE_ENDPOINT | URL of the service endpoint to generate passticket and user to establish connection of Db2
+AGENT_SERVICE_PATH | Rest path exposed by the agent
 ***Secrets***
-MONGODB_URI | Bundled MongoDB container for metadata store.<br />By default, the agent connects to a bundled MongoDB container running on the same Docker network.<br />This container is only accessible to other containers on the same network and is not exposed externally.<br />The values for these CAN be changed but be done so with care to not break the service
-MONGODB_DB_USERNAME | Bundled MongoDB container intial user username
-MONGODB_DB_PASSWORD | Bundled MongoDB container intial user password 
-WATSONX_API_KEY | IBM Cloud API key for cloud or on-prem deployments [How to get cpd api key on-prem](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.1.x?topic=tutorials-generating-api-keys)
+WATSONX_API_KEY | IBM Cloud API key for cloud or on-prem deployments. See [Generating API keys for authentication](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.1.x?topic=tutorials-generating-api-keys)
 AGENT_AUTH_TOKEN | Token used by the agent-controller to register this agent with wxo (API_KEY or Bearer) 
 CPD_USERNAME | CPD username for on-prem deployments (set to empty for cloud)   
-ENCRYPT_KEY | Encrypt key for storing confidential information in mongodb metadata store. See [Generating an encrypt key with Python](#generating-an-encrypt-key-with-python)
-AGENT_SECRET | Authorization token for agents to interact with Authorization service.
+ENCRYPT_KEY | Encrypt key for storing confidential information in montydb metadata store. See [Generating an encrypt key with Python](#generating-an-encrypt-key-with-python)
+DB2_AGENT_TOKEN | Authorization token for agents to interact with Authorization service
 
 
 ## Generating an encrypt key with Python
@@ -162,7 +185,7 @@ After deployment, the agent becomes active and is available for selection in the
 
       - Show me all the indexes under DSN81310 in DWY1.
 
-      - Please retrieve all indexes from utec648.vmec.svl.ibm.com/STLEC1.
+      - Please retrieve all indexes from STLEC1.
 
     Responses are displayed either in a tabular format or as a sentence, depending on the context.
 
