@@ -327,6 +327,7 @@ db2z-agent:
   env:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
     SERVICE_ENDPOINT: ""
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
   secrets:
     data:
       ENCRYPT_KEY: ""
