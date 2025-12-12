@@ -600,3 +600,35 @@ cics-agent:
       -----END CERTIFICATE-----
   imagePullSecrets:
     - name: cics-image-pull-secret
+
+# ---------------------------------------------------------------------------- #
+# Product: compiler-fix-finder-agent
+# ---------------------------------------------------------------------------- #
+
+compiler-fix-finder-agent:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference Compiler Fix Finder Agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-UYYT-82EFMW
+  registry:
+    name: z-compiler-fix-finder-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  image:
+    repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
+    tag: 1.1.0@sha256:2e09f97bc52057ca33752e78e2f5368f578623d82219ab3577b7a3d0b4a34af9
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  # env:
+  # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  secrets:
+    data:
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"

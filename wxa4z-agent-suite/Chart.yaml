@@ -76,3 +76,7 @@ dependencies:
     version: 1.1.0
     repository: file://../agent-helm-charts/cics-agent
     condition: cics-agent.enabled
+  - name: compiler-fix-finder-agent
+    version: 1.0.0
+    repository: file://../agent-helm-charts/compiler-fix-finder-agent
+    condition: compiler-fix-finder-agent.enabled

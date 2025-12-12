@@ -1,0 +1,108 @@
+replicaCount: 1
+
+image:
+  repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
+  tag: 1.1.0@sha256:2e09f97bc52057ca33752e78e2f5368f578623d82219ab3577b7a3d0b4a34af9
+  pullPolicy: Always
+
+service:
+  name: wxa4z-compiler-fix-finder-agent-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+
+route:
+  name: wxa4z-compiler-fix-finder-agent-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-compiler-fix-finder-agent-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+env:
+  WATSONX_DEPLOYMENT_SPACE_ID: ""
+  WATSONX_PROJECT_ID: ""
+  WATSONX_ML_URL: ""
+  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
+  DEPLOYMENT_TYPE: on-prem
+  # CPD_VERSION, needed for on-prem deployments.Example(5.1)
+  CPD_VERSION: "5.2"
+  LANGFUSE_HOST: "LANGFUSE_HOST"
+  LANGFUSE_TRACING_ENABLED: false
+  LANGFUSE_ENABLED: false
+
+secrets:
+  name: wxa4z-compiler-fix-finder-agent-agent-secrets
+  createSecret: true
+  data:
+    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
+    CPD_USERNAME: cpadmin
+    # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: ""
+    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
+
+imagePullSecrets:
+  - name: wxa4z-image-pull-secret
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "2Gi"
+  requests:
+    cpu: "200m"
+    memory: "1Gi"
+
+pvc:
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: true
+  size: 8Gi
+
+networkPolicy:
+  name: wxa4z-compiler-fix-finder-agent-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+bootstrapJob:
+  enabled: true
+  completions: 1
+  parallelism: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 1800
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    pullPolicy: Always
+    overwrite: "true"
+  imagePullSecrets:
+    - name: wxa4z-image-pull-secret
+  secret:
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: compiler-fix-finder-agent-bootstrap-job-secret
+    data:
+      ORCHESTRATE_ENV_TYPE: cpd
+      WATSONX_API_KEY: ""
+      ORCHESTRATE_ENV_URL: ""
+      CPD_USERNAME: cpadmin
+  env:
+    ORCHESTRATE_ENV_NAME: "wxo-live-instance"
+    CONFIG_PATH: "/compiler-fix-finder-agent-bootstrap-config/compiler_fix_finder_agent_bootstrap_config.yaml"
+    HOME: /opt/app-root/src
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+  serviceAccount:
+    name: compiler-fix-finder-agent-bootstrap-job-sa

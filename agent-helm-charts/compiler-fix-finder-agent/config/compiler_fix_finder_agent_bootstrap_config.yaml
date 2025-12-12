@@ -1,0 +1,14 @@
+resources:
+  agents:
+    - name: Compiler_Fix_Finder_Agent
+      kind: orchestrator
+      path: /compiler-fix-finder-agent-bootstrap-config/compiler_fix_finder_agent.yaml
+      collaborators:
+        - name: Compiler_Fix_Finder_Agent_ext
+          kind: external
+          description: This agent helps users to search errors for IBM z/OS compiler fixes
+          route_name: ${COMPILER_FIX_FINDER_AGENT_ROUTE_NAME}
+          route_path: v1/compiler_fix_finder_chat
+          namespace: ${COMPILER_FIX_FINDER_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${AGENT_AUTH_TOKEN}
