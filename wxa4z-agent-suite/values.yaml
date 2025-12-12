@@ -355,7 +355,7 @@ ibm-operations-agent-z:
   bootstrapJob:
     enabled: true
     image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
       tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
