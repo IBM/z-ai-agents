@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-db2z-ai/db2z-agent
-  tag: latest@sha256:33650af116be86abf2698ec4d17a00c8f0c96317771cd06b48758f2117ab510a
+  tag: latest@sha256:f2f080c4a3ab899ad6bb124d20197b663a2504347eabec7ab74efb20cad0dfa6
   pullPolicy: Always
 
 service:
@@ -15,7 +15,7 @@ service:
 
 mcpImage:
   repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-  tag: latest@sha256:82f5f1a9f9967c472ff2d9431bee03091de7b5099f4ce88377bf66953cd18f7b
+  tag: latest@sha256:04171657896a839504ccbae8197f1934fd81926d5467295b7318f133c15465ee
   pullPolicy: Always
 
 mcpService:
@@ -36,6 +36,7 @@ route:
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 
 mcpRoute:
   name: db2z-mcp-route
@@ -55,7 +56,7 @@ env:
   WATSONX_ML_URL: ""
   WATSONX_INSTANCE_ID: openshift
   CPD_VERSION: 5.2
-  MONGODB_DB_NAME: db2zagent
+  DB_NAME: db2zagent
   LANGFUSE_HOST: "LANGFUSE_HOST"
   LANGFUSE_TRACING_ENABLED: false
   AGENT_ID: "wxa4z:db2:agent"
@@ -63,6 +64,9 @@ env:
   MCP_SERVER_NAME: "Db2zMCPServer"
   MCP_SERVER_URL: "http://db2z-mcp-service:9000"
   SERVICE_ENDPOINT: "https://tolec78.vmec.svl.ibm.com:5443"
+  MAX_INPUT_TOKENS: 25000
+  MAX_OUTPUT_TOKENS: 4000
+  HF_HOME: "/app/huggingface"
 
 secrets:
   name: db2z-agent-secrets
@@ -71,14 +75,11 @@ secrets:
     WATSONX_API_KEY: ""
     CPD_USERNAME: cpadmin
     ENCRYPT_KEY: ""
-    # Bundled mongodb container for storing metadata.
-    MONGODB_URI: mongodb://admin:admin@localhost:27017
-    MONGODB_DB_USERNAME: admin
-    MONGODB_DB_PASSWORD: admin
     # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
-    AGENT_AUTH_TOKEN: ""
+    DB2_AGENT_AUTH_TOKEN: ""
     LANGFUSE_SECRET_KEY: "LANGFUSE_SECRET_KEY"
     LANGFUSE_PUBLIC_KEY: "LANGFUSE_PUBLIC_KEY"
+    AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
 imagePullSecrets:
   - name: db2-image-pull-secret
 
