@@ -12,6 +12,10 @@ metadata:
   annotations:
     "wxa4z.ibm.com/agent-secret-name": {{ required "Agent Secret name is required" .Values.secrets.name}}
     "wxa4z.ibm.com/agent-route-name": {{ required "Agent Route name is required" .Values.route.name}}
+    "productID": {{ .Values.ilmtAnnotation.productID}}
+    "productName": {{ .Values.ilmtAnnotation.productName}}
+    "productMetric": {{ .Values.ilmtAnnotation.productMetric}}
+    "productChargedContainers": {{ .Values.ilmtAnnotation.productChargedContainers}}
 spec:
   replicas: {{ required "Replica count is required" .Values.replicaCount }}
   selector:
@@ -27,6 +31,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      - name: cert-volume
+        secret:      
+          secretName: {{ .Values.topologyCertSecret.name }}
       - name: data-volume
       {{- if .Values.pvc.enabled }}
         persistentVolumeClaim:
@@ -39,6 +46,8 @@ spec:
           image: {{ required "Image repository is required" .Values.image.repository }}:{{ required "Image tag is required" .Values.image.tag }}
           imagePullPolicy: {{ required "Image pull policy is required" .Values.image.pullPolicy }}
           volumeMounts:
+          - name: cert-volume
+            mountPath: /home/agentserver/certs
           - name: data-volume
             mountPath: /data
           ports:
@@ -148,11 +157,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
                   key: LANGFUSE_SECRET_KEY
-            - name: ACTIVE_AGENT
+            - name: AGENT_ROUTER_PATH
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
-                  key: ACTIVE_AGENT
+                  key: AGENT_ROUTER_PATH
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}

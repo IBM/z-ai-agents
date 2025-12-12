@@ -6,7 +6,7 @@ resources:
       collaborators:
         - name: CICS_Transaction_Server_Topology_Agent_for_Z_ext
           kind: external
-          description: The CICS (Customer Information Control System) Transaction Server Topology agent can take queries about CICS topologies and provide answers using documentation and subject matter expert data.
+          description: The CICS (Customer Information Control System) Transaction Server Topology agent can take queries about CICS topologies, including CICS Java and JVMs, CMAS, MVS, CPSM, ESSS, TS and servers, environment setups, CICS regions, native APIs, CF tables and indexing, outage mitigation, scaling, resource pools and technical questions and provide answers using documentation and subject matter expert data.
           route_name: ${CICS_AGENT_ROUTE_NAME}
           route_path: /v1/cics_chat/
           namespace: ${CICS_AGENT_NAMESPACE}

@@ -9,14 +9,16 @@
 {{- $hostGen    := default "true" .Values.PDroute.annotations.hostGenerated -}}
 {{- $secretName := default "wxa4z-agents-tls-secret" .Values.PDroute.tls.secretName -}}
 {{- $termOnPrem := default "edge" .Values.PDroute.tls.termination -}}
-
+{{- $globalCaSync   := dig "caTrustSync" "enabled" false .Values.global -}}
+{{- $localEnable    := default false .Values.PDroute.tls.enableTlsCertMount -}}
+{{- $inject         := or $globalCaSync $localEnable -}}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: {{ $name }}
   annotations:
     openshift.io/host.generated: "{{ $hostGen }}"
-    haproxy.router.openshift.io/timeout: "1m"
+    haproxy.router.openshift.io/timeout: "3m"
 spec:
   to:
     kind: Service
@@ -28,7 +30,7 @@ spec:
     # Cloud: always edge (no certs). On-prem: use value (default edge).
     termination: {{ if $isCloud }}edge{{ else }}{{ $termOnPrem }}{{ end }}
     {{- /* Only inject certs when on-prem AND termination=edge */ -}}
-    {{- if and (not $isCloud) (eq (lower $termOnPrem) "edge") }}
+    {{- if and ($inject) (eq (lower $termOnPrem) "edge") }}
     {{- $sec := lookup "v1" "Secret" $nsRelease $secretName -}}
     {{- with (and $sec (index $sec.data "tls.crt")) }}
     certificate: |-

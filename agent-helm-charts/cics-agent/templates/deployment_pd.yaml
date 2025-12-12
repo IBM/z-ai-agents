@@ -12,6 +12,10 @@ metadata:
   annotations:
     "wxa4z.ibm.com/agent-secret-name": {{ required "Agent Secret name is required" .Values.PDsecrets.name}}
     "wxa4z.ibm.com/agent-route-name": {{ required "Agent Route name is required" .Values.PDroute.name}}
+    "productID": {{ .Values.ilmtAnnotation.productID}}
+    "productName": {{ .Values.ilmtAnnotation.productName}}
+    "productMetric": {{ .Values.ilmtAnnotation.productMetric}}
+    "productChargedContainers": {{ .Values.ilmtAnnotation.productChargedContainers}}
 spec:
   replicas: {{ required "Replica count is required" .Values.replicaCount }}
   selector:
@@ -27,6 +31,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+      - name: cert-volume
+        secret:      
+          secretName: {{ .Values.pdCertSecret.name }}
       - name: data-volume
       {{- if .Values.pvc.enabled }}
         persistentVolumeClaim:
@@ -39,6 +46,8 @@ spec:
           image: {{ required "Image repository is required" .Values.PDimage.repository }}:{{ required "Image tag is required" .Values.PDimage.tag }}
           imagePullPolicy: {{ required "Image pull policy is required" .Values.PDimage.pullPolicy }}
           volumeMounts:
+          - name: cert-volume
+            mountPath: /home/agentserver/certs
           - name: data-volume
             mountPath: /data
             subPath: cics_model_instructions.yaml
@@ -104,16 +113,6 @@ spec:
                 secretKeyRef:
                   name: {{ required "Secret name is required" .Values.secrets.name }}
                   key: WRAPPER_URL
-            - name: AGENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: AGENT_ID
-            - name: AUTH_SERVICE_BASE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.secrets.name }}
-                  key: AUTH_SERVICE_BASE_URL 
             - name: INGESTION_URL
               valueFrom:
                 secretKeyRef:
@@ -124,11 +123,6 @@ spec:
                 secretKeyRef:
                   name: {{ required "Secret name is required" .Values.secrets.name }}
                   key: INGESTION_PASSWORD
-            - name: AGENT_AUTH_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: {{ required "Secret name is required" .Values.secrets.name }}
-                  key: AGENT_AUTH_TOKEN
             - name: ONPREM_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -146,23 +140,43 @@ spec:
             - name: LANGFUSE_PUBLIC_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secrets.name }}
+                  name: {{ .Values.PDsecrets.name }}
                   key: LANGFUSE_PUBLIC_KEY
             - name: LANGFUSE_SECRET_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secrets.name }}
+                  name: {{ .Values.PDsecrets.name }}
                   key: LANGFUSE_SECRET_KEY
-            - name: ACTIVE_AGENT
+            - name: AGENT_ROUTER_PATH
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.PDsecrets.name }}
-                  key: ACTIVE_AGENT
+                  key: AGENT_ROUTER_PATH
             - name: SERVICE_ENDPOINT
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.PDsecrets.name }}
                   key: SERVICE_ENDPOINT
+            - name: ZOWE_ENABLED
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: ZOWE_ENABLED
+            - name: AGENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: "wxa4z-authorization-secrets"
+                  key: CICS_AGENT_TOKEN
+            - name: AGENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AGENT_ID
+            - name: AUTH_SERVICE_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.name }}
+                  key: AUTH_SERVICE_BASE_URL
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}

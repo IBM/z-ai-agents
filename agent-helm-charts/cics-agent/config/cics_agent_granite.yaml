@@ -1,8 +1,8 @@
 spec_version: v1
-style: default
+style: react
 display_name: IBM CICS Transaction Server agents for Z
 name: CICS_Transaction_Server_Agents_for_Z
-llm: watsonx/meta-llama/llama-3-3-70b-instruct
+llm: virtual-model/watsonx/ibm/granite-3-3-8b-instruct
 description: >
   The CICS (Customer Information Control System) Transaction Server agent can take queries about CICS concepts, such as topologies and also provide problem determination assistance for transaction error codes.
 instructions: >
@@ -36,6 +36,7 @@ context_access_enabled: true
 context_variables:
   - wxo_email_id
   - wxo_user_name
+  - trace_id
 chat_params: # chat_parms are parameters sent to an agent on each request
   stream: true # should the external agent be invoked using using SSE streaming or as a rest call
 config: # config represents the internal configuration of this agent used by wxo
