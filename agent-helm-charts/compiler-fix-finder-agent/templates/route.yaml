@@ -12,13 +12,15 @@
 {{- $globalCaSync   := dig "caTrustSync" "enabled" false .Values.global -}}
 {{- $localEnable    := default false .Values.route.tls.enableTlsCertMount -}}
 {{- $inject         := or $globalCaSync $localEnable -}}
+
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: {{ $name }}
   annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
     openshift.io/host.generated: "{{ $hostGen }}"
-    haproxy.router.openshift.io/timeout: "3m"
+    haproxy.router.openshift.io/timeout: "1m"
 spec:
   to:
     kind: Service

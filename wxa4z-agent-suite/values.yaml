@@ -534,11 +534,11 @@ cics-agent:
   enabled: false
   acceptLicense: false # Must be true to install. Reference CICS agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-SSLZ-QYC4LH
   image:
-    repository: icr.io/ibm-cics-ai/cics-ai-agent
-    tag: topology-1.0.0@sha256:6f49b62e4cfaf9dae3bf6b28ebbc46a12ba17c0958cea92a60b9e14ea2ee85b7
+    repository: icr.io/ibm-cics-ts/cics-ai-agent
+    tag: topology-1.1.0@sha256:1ec91f5fbe6dcb74598d5689511efe4ed49e57fa28f31fcd0985c018d337358f
   PDimage:
-    repository: icr.io/ibm-cics-ai/cics-ai-agent
-    tag: problem-determination-1.0.0@sha256:fb223b601b72016f8943527333920d394b621b23359a00746980ad89607df474
+    repository: icr.io/ibm-cics-ts/cics-ai-agent
+    tag: problem-determination-1.1.0@sha256:b0158d31a5907d234a3a99f9a5954b91a869daeafd58ebd86a95f3aaccad3f89
   registry:
     name: cics-image-pull-secret
     server: icr.io
@@ -555,6 +555,7 @@ cics-agent:
     MCP_SERVER_URL: "" # URL for MCP server running in CICS
     APPLID: ""
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
   secrets:
     data:
       INGESTION_URL: "" # URL of the service endpoint where documents or data are uploaded for ingestion.
@@ -572,5 +573,62 @@ cics-agent:
       INGESTION_PASSWORD: "" # password for the INGESTION_URL
       AGENT_AUTH_TOKEN: "" # secret used for agent registration with wxo.
       SERVICE_ENDPOINT: "" # URL for non-default Service Endpoint, for use with Auth service
+  pdCertSecret:
+    name: pd-custom-cert-secret
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      Replace this value with the certificate 
+      you create to access your service endpoint.
+      This secret can be manually updated in 
+      your cluster after deployment. It is NOT 
+      recommended that you store secrets in any 
+      git repository. Restart your pod after 
+      updating this secret to reflect changes.
+      -----END CERTIFICATE-----
+
+  topologyCertSecret:
+    name: topology-custom-cert-secret
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      Replace this value with the certificate 
+      you create to access your service endpoint.
+      This secret can be manually updated in 
+      your cluster after deployment. It is NOT 
+      recommended that you store secrets in any 
+      git repository. Restart your pod after 
+      updating this secret to reflect changes.
+      -----END CERTIFICATE-----
   imagePullSecrets:
     - name: cics-image-pull-secret
+
+# ---------------------------------------------------------------------------- #
+# Product: compiler-fix-finder-agent
+# ---------------------------------------------------------------------------- #
+
+compiler-fix-finder-agent:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference Compiler Fix Finder Agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-UYYT-82EFMW
+  registry:
+    name: z-compiler-fix-finder-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  image:
+    repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
+    tag: 1.1.0@sha256:2e09f97bc52057ca33752e78e2f5368f578623d82219ab3577b7a3d0b4a34af9
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  # env:
+  # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  secrets:
+    data:
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"

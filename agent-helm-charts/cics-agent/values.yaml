@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/ibm-cics-ai/cics-ai-agent
-  tag: topology-1.0.0@sha256:6f49b62e4cfaf9dae3bf6b28ebbc46a12ba17c0958cea92a60b9e14ea2ee85b7
+  repository: icr.io/ibm-cics-ts/cics-ai-agent
+  tag: topology-1.1.0@sha256:1ec91f5fbe6dcb74598d5689511efe4ed49e57fa28f31fcd0985c018d337358f
   pullPolicy: Always
 
 PDimage:
-  repository: icr.io/ibm-cics-ai/cics-ai-agent
-  tag: problem-determination-1.0.0@sha256:fb223b601b72016f8943527333920d394b621b23359a00746980ad89607df474
+  repository: icr.io/ibm-cics-ts/cics-ai-agent
+  tag: problem-determination-1.1.0@sha256:b0158d31a5907d234a3a99f9a5954b91a869daeafd58ebd86a95f3aaccad3f89
   pullPolicy: Always
 
 service:
@@ -36,6 +36,7 @@ route:
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 
 PDroute:
   name: wxa4z-cics-pd-route
@@ -47,6 +48,7 @@ PDroute:
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 
 env:
   # Required for on prem installations.
@@ -91,7 +93,7 @@ secrets:
     ### Set these for tracing
     LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
-    ACTIVE_AGENT: "topology"
+    AGENT_ROUTER_PATH: "agents/topology_agent/router"
 
 PDsecrets:
   name: wxa4z-cics-pd-agent-secrets
@@ -121,8 +123,9 @@ PDsecrets:
     ### Set these for tracing
     LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
-    ACTIVE_AGENT: "problem_determination"
+    AGENT_ROUTER_PATH: "agents/problem_determination_agent/router"
     SERVICE_ENDPOINT: ""
+    INSECURE: "True"
 
 imagePullSecrets:
   - name: cics-image-pull-secret
@@ -165,12 +168,44 @@ networkPolicy:
   ingress:
     - {}
 
+pdCertSecret:
+  name: pd-custom-cert-secret
+  cert: |
+    -----BEGIN CERTIFICATE-----
+    Replace this value with the certificate 
+    you create to access your service endpoint.
+    This secret can be manually updated in 
+    your cluster after deployment. It is NOT 
+    recommended that you store secrets in any 
+    git repository. Restart your pod after 
+    updating this secret to reflect changes.
+    -----END CERTIFICATE-----
+
+topologyCertSecret:
+  name: topology-custom-cert-secret
+  cert: |
+    -----BEGIN CERTIFICATE-----
+    Replace this value with the certificate 
+    you create to access your service endpoint.
+    This secret can be manually updated in 
+    your cluster after deployment. It is NOT 
+    recommended that you store secrets in any 
+    git repository. Restart your pod after 
+    updating this secret to reflect changes.
+    -----END CERTIFICATE-----
+
 PDnetworkPolicy:
   name: wxa4z-cics-pd-network-policy
   egress:
     - {}
   ingress:
     - {}
+
+ilmtAnnotation:
+  productID: "d86349db4b554664b9b681d0d7594fa5"
+  productName: "IBM CICS Transaction Server agents for Z"
+  productMetric: "FREE"
+  productChargedContainers: "All"
 
 bootstrapJob:
   enabled: true

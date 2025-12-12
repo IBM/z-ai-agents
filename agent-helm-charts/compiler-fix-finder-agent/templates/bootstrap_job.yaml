@@ -13,7 +13,7 @@ metadata:
     {{- include "wxa4z.annotations" . | nindent 4 }}
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   completions: {{ default 1 .Values.bootstrapJob.completions }}
   parallelism: {{ default 1 .Values.bootstrapJob.parallelism }}
@@ -42,6 +42,8 @@ spec:
           imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
           envFrom:
             - secretRef:
+                name: {{ .Values.secrets.name | quote }}
+            - secretRef:
               {{- if .Values.bootstrapJob.secret.dev_mode}}
                 name: {{ .Values.bootstrapJob.secret.name}}
               {{- else }}
@@ -54,32 +56,19 @@ spec:
                 value: {{ .Values.bootstrapJob.env.CONFIG_PATH}}
               - name: HOME
                 value: {{ .Values.bootstrapJob.env.HOME}}
-              - name: CICS_AGENT_ROUTE_NAME
+              - name: COMPILER_FIX_FINDER_AGENT_ROUTE_NAME
                 value: {{ .Values.route.name | quote }}
-              - name: CICS_PD_AGENT_ROUTE_NAME
-                value: {{ .Values.PDroute.name | quote }}  
-              - name: CICS_AGENT_NAMESPACE
+              - name: COMPILER_FIX_FINDER_AGENT_NAMESPACE
                 value: {{ .Release.Namespace | quote }}
-              - name: CICS_PD_AGENT_NAMESPACE
-                value: {{ .Release.Namespace | quote }}
-              - name: CICS_TS_AGENT_AUTH_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .Values.secrets.name }}
-                    key: AGENT_AUTH_TOKEN
-              - name: CICS_PD_AGENT_AUTH_TOKEN
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .Values.PDsecrets.name }}
-                    key: AGENT_AUTH_TOKEN
           resources:
             {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}
           volumeMounts:
             - name: {{ .Chart.Name }}-bootstrap-config-volume
-              mountPath: /cics-agent-bootstrap-config
+              mountPath: /compiler-fix-finder-agent-bootstrap-config
               readOnly: true
 {{- end }}
 ---
+# templates/job.yaml
 {{- if .Values.bootstrapJob.enabled }}
 apiVersion: batch/v1
 kind: Job
@@ -93,7 +82,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   completions: {{ default 1 .Values.bootstrapJob.completions }}
   parallelism: {{ default 1 .Values.bootstrapJob.parallelism }}
@@ -108,7 +97,7 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: {{ default "default" .Values.bootstrapJob.serviceAccount.name }}
-      {{- with .Values.bootstrapJob.imagePullSecrets }}
+      {{- with .Values.bootstrapJob.imagePullSecrets}}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -124,32 +113,28 @@ spec:
             - secretRef:
                 name: {{ .Values.secrets.name | quote }}
             - secretRef:
-              {{- if .Values.bootstrapJob.secret.dev_mode }}
-                name: {{ .Values.bootstrapJob.secret.name }}
+              {{- if .Values.bootstrapJob.secret.dev_mode}}
+                name: {{ .Values.bootstrapJob.secret.name}}
               {{- else }}
-                name: {{ .Values.global.secrets.name }}
+                name: {{ .Values.global.secrets.name}}
               {{- end }}
           env:
-            - name: IS_CLEANUP_JOB
-              value: "true"
-            - name: ORCHESTRATE_ENV_NAME
-              value: {{ .Values.bootstrapJob.env.ORCHESTRATE_ENV_NAME }}
-            - name: CONFIG_PATH
-              value: {{ .Values.bootstrapJob.env.CONFIG_PATH }}
-            - name: HOME
-              value: {{ .Values.bootstrapJob.env.HOME }}
-            - name: CICS_AGENT_ROUTE_NAME
-              value: {{ .Values.route.name | quote }}
-            - name: CICS_PD_AGENT_ROUTE_NAME
-              value: {{ .Values.route.name | quote }}
-            - name: CICS_AGENT_NAMESPACE
-              value: {{ .Release.Namespace | quote }}
-            - name: CICS_PD_AGENT_NAMESPACE
-              value: {{ .Release.Namespace | quote }}  
+              - name: IS_CLEANUP_JOB
+                value: "true"
+              - name: ORCHESTRATE_ENV_NAME
+                value: {{ .Values.bootstrapJob.env.ORCHESTRATE_ENV_NAME}}
+              - name: CONFIG_PATH
+                value: {{ .Values.bootstrapJob.env.CONFIG_PATH}}
+              - name: HOME
+                value: {{ .Values.bootstrapJob.env.HOME}}
+              - name: COMPILER_FIX_FINDER_AGENT_ROUTE_NAME
+                value: {{ .Values.route.name | quote }}
+              - name: COMPILER_FIX_FINDER_AGENT_NAMESPACE
+                value: {{ .Release.Namespace | quote }}
           resources:
             {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}
           volumeMounts:
             - name: {{ .Chart.Name }}-bootstrap-config-volume
-              mountPath: /cics-agent-bootstrap-config
+              mountPath: /compiler-fix-finder-agent-bootstrap-config
               readOnly: true
 {{- end }}

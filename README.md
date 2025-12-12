@@ -68,6 +68,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 | Name                           | Chart name                     | Category         |  Reference.      |
 | ------------------------------ | ------------------------------ | -----------------| -----------------|
 | IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/cics-agent/README.md)|
+| IBM Z Compilers Fix Finder Agent | `compiler-fix-finder-agent` | Product  |[Configuration Guide](/agent-helm-charts/compiler-fix-finder-agent/README.md)|
 | IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/db2z-agent/README.md)|
 | IBM IMS Agents                 | `ims-agent`                    | Product  |[Configuration Guide](/agent-helm-charts/ims-agent/README.md)|
 | IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[Configuration Guide](/agent-helm-charts/intellimagic-agent/README.md)|
