@@ -18,14 +18,6 @@ mcpService:
       protocol: TCP
       port: 9002
       targetPort: 9002
-    - name: mcp-client
-      protocol: TCP
-      port: 9001
-      targetPort: 9001
-    - name: mcp-server
-      protocol: TCP
-      port: 9002
-      targetPort: 9002
 
 mcpRoute:
   name: wxa4z-ibm-operations-agent-z-mcp-route
@@ -124,6 +116,7 @@ bootstrapJob:
     - name: wxa4z-image-pull-secret
   secret:
     dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
+    name: ibm-operations-agent-bootstrap-job-secret
     data:
       ORCHESTRATE_ENV_TYPE: cpd
       WATSONX_API_KEY: WATSONX_API_KEY
