@@ -3,10 +3,15 @@ replicaCount: 1
 mcpImage:
   repository: icr.io/ibm-operations-aai/ibm-operations-agent-z
   tag: v1.1.1
+mcpImage:
+  repository: icr.io/ibm-operations-aai/ibm-operations-agent-z
+  tag: v1.1.1
   pullPolicy: Always
 
 createSecret: false
 
+mcpService:
+  name: wxa4z-ibm-operations-agent-z-mcp-service
 mcpService:
   name: wxa4z-ibm-operations-agent-z-mcp-service
   ports:
@@ -18,7 +23,17 @@ mcpService:
       protocol: TCP
       port: 9002
       targetPort: 9002
+    - name: mcp-client
+      protocol: TCP
+      port: 9001
+      targetPort: 9001
+    - name: mcp-server
+      protocol: TCP
+      port: 9002
+      targetPort: 9002
 
+mcpRoute:
+  name: wxa4z-ibm-operations-agent-z-mcp-route
 mcpRoute:
   name: wxa4z-ibm-operations-agent-z-mcp-route
   annotations:
@@ -26,9 +41,11 @@ mcpRoute:
   serviceName: wxa4z-ibm-operations-agent-z-mcp-service
   weight: 100
   targetPort: mcp-client
+  targetPort: mcp-client
   tls:
     termination: edge
     secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
     enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 
 env:
@@ -40,20 +57,30 @@ env:
   UNITE_METRIC_INDEX: unite-metrics
   UNITE_EVENT_INDEX: unite-events
   LLM_MODEL: ibm/granite-3-3-8b-instruct
+  LLM_MODEL: ibm/granite-3-3-8b-instruct
   LANGFUSE_HOST: ""
   LANGFUSE_TRACING_ENABLED: false
   SUMMARY_DIR: /data
   GRAPH_RECURSION_LIMIT: "30"
   CONTEXT_LENGTH: "16000"
+  CONTEXT_LENGTH: "16000"
   CPD_AUTH_URL: ""
   DEBUG_TOOLSELECTION: "false"
+  DEBUG_TOOLSELECTION: "false"
 
+mcpSecrets:
+  name: ibm-operations-agent-z-mcp-secrets
 mcpSecrets:
   name: ibm-operations-agent-z-mcp-secrets
   createSecret: true
   data:
     WATSONX_ML_URL: ""
     WATSONX_DEPLOYMENT_SPACE_ID: ""
+    CPD_USERNAME: ""
+    WATSONX_API_KEY: ""
+    UNITE_CLIENT_ID: ""
+    UNITE_CLIENT_SECRET: ""
+    UNITE_GRANT_TYPE: ""
     CPD_USERNAME: ""
     WATSONX_API_KEY: ""
     UNITE_CLIENT_ID: ""
@@ -75,10 +102,21 @@ mcpSecrets:
     CONCERT_MCP_SERVER_HOST: "0.0.0.0"
     CONCERT_MCP_SERVER_PATH: /mcp
     CONCERT_MCP_SERVER_PORT: "9002"
+    EMBEDDING_MODEL_PATH: "unite_langgraph_agent/agents/models/granite-embedding-english-r2"
+    TOOL_EMBEDDING_PATH: "unite_langgraph_agent/agents/tool_graph/tool_calling_graph/tool_embeddings"
+    WRAPPER_URL: ""
+    WRAPPER_USERNAME: ""
+    WRAPPER_PASSWORD: ""
+    ZCHATOPS_MCP_URL: "http://wxa4z-zchatops-mcp-server-service.wxa4z-aiops.svc.cluster.local:8081/mcp"
+    CONCERT_MCP_SERVER_URL: "http://0.0.0.0:9002/mcp"
+    CONCERT_MCP_SERVER_HOST: "0.0.0.0"
+    CONCERT_MCP_SERVER_PATH: /mcp
+    CONCERT_MCP_SERVER_PORT: "9002"
 
 imagePullSecrets:
   - name: ibm-operations-agent-image-pull-secret
 
+mcpResources:
 mcpResources:
   limits:
     cpu: "2"
@@ -88,12 +126,15 @@ mcpResources:
     memory: "1Gi"
 
 mcpPvc:
+mcpPvc:
   storageClass: "ocs-storagecluster-cephfs"
   accessModes:
     - ReadWriteOnce
   enabled: true
   size: 8Gi
 
+mcpNetworkPolicy:
+  name: wxa4z-ibm-operations-agent-z-mcp-network-policy
 mcpNetworkPolicy:
   name: wxa4z-ibm-operations-agent-z-mcp-network-policy
   egress:
@@ -110,11 +151,13 @@ bootstrapJob:
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
     tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
     - name: wxa4z-image-pull-secret
   secret:
+    dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     dev_mode: false # Set this to true if you are installing subchart independently. When using wxa4z-agentic-suite, this should be false.
     name: ibm-operations-agent-bootstrap-job-secret
     data:
