@@ -1,4 +1,4 @@
-# IBM Operations Agents for Z
+# IBM Operations Agent for Z
 
 ## Overview
 

@@ -62,7 +62,7 @@ secrets:
     WATSONX_PROJECT_ID: ""
 
 imagePullSecrets:
-  - name: ibm-operations-image-pull-secret
+  - name: ibm-operations-agent-image-pull-secret-spyre
 
 resources:
   limits:
@@ -122,7 +122,7 @@ bootstrapJob:
 
 # This is the image pull secret for pulling the agent image from icr.io, replace registry.server, registry.username and registry.entitlementKey with your own values.
 registry:
-  name: ibm-operations-image-pull-secret
+  name: ibm-operations-agent-image-pull-secret-spyre
   createSecret: true
   server: icr.io
   username: iamapikey
