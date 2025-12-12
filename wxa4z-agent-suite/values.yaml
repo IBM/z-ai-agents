@@ -12,7 +12,6 @@ global:
   # Shared (non-image) secret available to all subcharts. Intended for bootstrapjobs.
   secrets:
     name: wxa4z-watsonx-credentials # K8s Secret name to be created/used.
-    name: wxa4z-watsonx-credentials # K8s Secret name to be created/used.
     data:
       ORCHESTRATE_ENV_TYPE: cpd # Set this to "cpd", "ibm_iam"(for ibm cloud). Non‑sensitive.
       WATSONX_API_KEY: "" # Set this to CPD API key (on‑prem Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys) or IBM Cloud IAM API key (cloud).
@@ -22,14 +21,7 @@ global:
       WATSONX_ML_URL: "" # Set this to CPD Instance FQDN for on-prem deployments.
       EXTERNAL_WATSONX_API_KEY: "" # Set this to External CPD API Key  only when External IFM is configured for WxO with model gateway.
       WATSONX_PROJECT_ID: "" # Set this to Watsonx project id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project).
-      ORCHESTRATE_ENV_TYPE: cpd # Set this to "cpd", "ibm_iam"(for ibm cloud). Non‑sensitive.
-      WATSONX_API_KEY: "" # Set this to CPD API key (on‑prem Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys) or IBM Cloud IAM API key (cloud).
-      ORCHESTRATE_ENV_URL: "" # Set this to wxo service instance url.
-      CPD_USERNAME: "" # Set this to CPD Username for on-prem deployments.
-      WATSONX_DEPLOYMENT_SPACE_ID: "" # Set this to Watsonx deployment space id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=spaces-creating-deployment) .
-      WATSONX_ML_URL: "" # Set this to CPD Instance FQDN for on-prem deployments.
-      EXTERNAL_WATSONX_API_KEY: "" # Set this to External CPD API Key  only when External IFM is configured for WxO with model gateway.
-      WATSONX_PROJECT_ID: "" # Set this to Watsonx project id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project).
+
   # Default image pull secret and registry auth used by many subcharts.
   # Set registry.createSecret to true only when default image pull fails for watsonx assistant for z agents or when using private registry.
   registry:
@@ -315,7 +307,6 @@ intellimagic-agent:
 db2z-agent:
   enabled: false
   acceptLicense: false # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
-  acceptLicense: false # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
   image:
     repository: icr.io/ibm-db2z-ai/db2z-agent
     tag: latest@sha256:f2f080c4a3ab899ad6bb124d20197b663a2504347eabec7ab74efb20cad0dfa6
@@ -324,7 +315,6 @@ db2z-agent:
     tag: latest@sha256:04171657896a839504ccbae8197f1934fd81926d5467295b7318f133c15465ee
   registry:
     name: db2-image-pull-secret # Dedicated pull secret for this agent.
-    name: db2-image-pull-secret # Dedicated pull secret for this agent.
     server: icr.io
     username: iamapikey
     entitlementKey: ""
@@ -332,7 +322,6 @@ db2z-agent:
     enabled: true
     image:
       repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
       tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
@@ -366,7 +355,7 @@ ibm-operations-agent-z:
   bootstrapJob:
     enabled: true
     image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
       tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
@@ -387,44 +376,6 @@ ibm-operations-agent-z:
 
   imagePullSecrets:
     - name: ibm-operations-agent-image-pull-secret
-  pvc:
-    storageClass: "ocs-storagecluster-cephfs"
-
-# ---------------------------------------------------------------------------- #
-# Product: ibm-operations-agent-z-spyre
-# ---------------------------------------------------------------------------- #
-ibm-operations-agent-z-spyre:
-  enabled: false
-  acceptLicense: false # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
-  image:
-    repository: icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre
-    tag: v1.1.1
-  registry:
-    name: ibm-operations-agent-image-pull-secret-spyre
-    server: icr.io
-    username: iamapikey
-    entitlementKey: entitlementKey
-  bootstrapJob:
-    enabled: true
-    image:
-      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
-      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
-    imagePullSecrets: []
-      # - name: wxa4z-image-pull-secret
-  env:
-    # DEPLOYMENT_TYPE: on-prem      # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
-    LLM_MODEL: "ibm/granite-3-3-8b-instruct"
-  secrets:
-    data:
-      UNITE_CLIENT_ID: ""
-      UNITE_CLIENT_SECRET: ""
-      UNITE_GRANT_TYPE: "client_credentials"
-      UNITE_API_URL: ""
-      UNITE_TOKEN_URL: ""
-      AGENT_AUTH_TOKEN: ""
-      LLM_MODEL: "ibm/granite-3-3-8b-instruct"
-  imagePullSecrets:
-    - name: ibm-operations-agent-image-pull-secret-spyre
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
 
