@@ -53,7 +53,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 | Name                       | Chart name               | Category      |   Reference   |
 | -------------------------- | ------------------------ | ------------- | ------------- |
-| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [Configuration Guide](./agent-helm-charts/system-insight-agent-z/README.md)                  |
+| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [Configuration Guide](./agent-helm-charts/omegamon-insight-agent-z/README.md)                  |
 | IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [Configuration Guide](./agent-helm-charts/upgrade-agent/README.md)                  |
 | IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[Configuration Guide](/agent-helm-charts/system-automation-netview-agent/README.md)|
 | IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[Configuration Guide](/agent-helm-charts/workload-scheduler-agent-z/README.md)|

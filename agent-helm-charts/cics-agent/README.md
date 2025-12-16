@@ -32,7 +32,7 @@ Question routing | Identifies the theme of the user's query and directs it to th
 
 ## Prerequisites
 Ensure the following:
-- [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z) is installed
+- [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.1.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 - The minimum version of z/OSMF is 3.1
 - The agents require a watsonx Project ID.
   - This should be used as WATSONX_PROJECT_ID as an environment variable.
