@@ -309,6 +309,17 @@ helm uninstall wxa4z-agent-suite -n <namespace>
 ```
 This removes all agent components and automatically removes their entries from the Watsonx Orchestrate UI. 
 
+**Uninstall Without Hooks**
+
+If uninstall hooks fail due to wrong CPD config/token/route issues, use:
+
+```bash
+helm uninstall wxa4z-agent-suite -n <namespace> --no-hooks
+```
+
+> Note: Use when uninstall hangs or cleanup hooks fail. Agents may still remain in UI — delete manually from Agent Builder → ⋮ → Delete.
+
+
 ### 4. Removing an Existing Agent
 
 Removing an agent requires two steps: deleting it from the Watsonx Assistant for Z UI and cleaning up its associated components on OpenShift.
