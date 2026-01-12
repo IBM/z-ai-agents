@@ -21,7 +21,7 @@ Ensure the following:
 
 An entitlement key is required to download the IBM Z Compilers Fix Finder Agent container image from the IBM Container Registry. This entitlement key is available at no charge to licensed users of IBM Enterprise COBOL for z/OS.
 
-* To obtain the entitlement key, download the entitlement memo from Agentic AI Tools for IBM Z Compilers website.
+* To obtain the entitlement key, download the entitlement memo from [Agentic AI Tools for IBM Z Compilers](https://early-access.ibm.com/software/support/trial/cst/programwebsite.wss?siteId=2329) website.
 
 Once you have an entitlement key, paste it into the Helm chart under the compiler-fix-finder-agent definitions like so:
 

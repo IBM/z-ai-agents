@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
-  tag: 1.1.0@sha256:2e09f97bc52057ca33752e78e2f5368f578623d82219ab3577b7a3d0b4a34af9
+  tag: 1.1.0@sha256:48d34c04b0a660773440f1f6b85c5ea4ddc33acfbda2f6b37a3951a29dccdfb4
   pullPolicy: Always
 
 service:
