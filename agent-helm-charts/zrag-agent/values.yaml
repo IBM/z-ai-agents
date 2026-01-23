@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/zrag-mcp-server
-  tag: v3.1.0@sha256:945b7f3ffb8d3f196c79f64f101c86777aac609c8f13e3584fd9179383b961fb
+  tag: v3.1.2@sha256:3fb56ac922ebb4e88e1f986e90e918bccd218cf6ee5f500b031da5b7a1a2d9af
   pullPolicy: Always
 
 service:

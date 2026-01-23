@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
-  tag: v3.1.0@sha256:0818001abc2f55c7cddb6e9f1df645188c084f88c7cd2ce4277e950752948736
+  tag: v3.1.2@sha256:21198430d0c1b1a3ad38d659cf22d93a930d3f1d79e04ad5dbeaf669472fe724
   pullPolicy: Always
 
 service:

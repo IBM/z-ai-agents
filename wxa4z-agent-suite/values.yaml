@@ -78,7 +78,7 @@ support-agent:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
-    tag: v3.1.0@sha256:fe2adf8d3bed54d54b7a50ad2e09990305e4a39bdcf08314f47bc215f6c38e88
+    tag: v3.1.2@sha256:2374dbe18c779df26aa77563d9e67bdf37a955399bbd3983ce58e02e3746f062
   bootstrapJob:
     enabled: true
     image:
@@ -110,7 +110,7 @@ omegamon-insights-agent:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
-    tag: v3.1.0@sha256:0943b2917fde42f335508dca9afdcbab2a21dc142f4f5618af97b4ecdb73e0d1
+    tag: v3.1.2@sha256:6c5f1b43d3df8da4ac114a109516a4e7c011b9adf3de589e6b3ddf3ec8842970
   bootstrapJob:
     enabled: true
     image:
@@ -138,7 +138,7 @@ automation-insights-agent:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-system-automation-netview-agent
-    tag: v3.1.0@sha256:fb63122fb3813dcac8d94434f77c6755eb433dd3b1eecb519663772a1dbabb5a
+    tag: v3.1.2@sha256:6b1abae6feb9f2b206599672be295c2853a100ff399848c4a5f1490bc0563036
   bootstrapJob:
     enabled: true
     image:
@@ -166,7 +166,7 @@ upgrade-agent:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
-    tag: v3.1.0@sha256:0818001abc2f55c7cddb6e9f1df645188c084f88c7cd2ce4277e950752948736
+    tag: v3.1.2@sha256:21198430d0c1b1a3ad38d659cf22d93a930d3f1d79e04ad5dbeaf669472fe724
   bootstrapJob:
     enabled: true
     image:
@@ -214,7 +214,7 @@ workload-scheduler-agent-z:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
-    tag: v3.1.0@sha256:5f3093ef9ffdbffac81666e75b86ba50d90880f5519ccc9f7ce802bfacc20987
+    tag: v3.1.2@sha256:f8001ad0a70405f3058f87d12e5ee0717e5cc5ba079788bb673e42c22042e04f
   bootstrapJob:
     enabled: true
     image:
@@ -243,7 +243,7 @@ zrag-agent:
   enabled: true
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/zrag-mcp-server
-    tag: v3.1.0@sha256:945b7f3ffb8d3f196c79f64f101c86777aac609c8f13e3584fd9179383b961fb
+    tag: v3.1.2@sha256:3fb56ac922ebb4e88e1f986e90e918bccd218cf6ee5f500b031da5b7a1a2d9af
   imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   bootstrapJob:
