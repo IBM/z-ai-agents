@@ -49,7 +49,7 @@ secrets:
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
 
 imagePullSecrets:
-  - name: wxa4z-image-pull-secret
+  - name: z-compiler-fix-finder-image-pull-secret
 
 resources:
   limits:
@@ -106,3 +106,10 @@ bootstrapJob:
       cpu: "250m"
   serviceAccount:
     name: compiler-fix-finder-agent-bootstrap-job-sa
+
+registry:
+  name: z-compiler-fix-finder-image-pull-secret
+  createSecret: true
+  server: icr.io
+  username: iamapikey
+  entitlementKey: ""
