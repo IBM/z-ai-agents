@@ -2,7 +2,7 @@ replicaCount: 1
 
 mcpImage:
   repository: icr.io/ibm-operations-aai/ibm-operations-agent-z
-  tag: v1.1.1
+  tag: v1.1.2
   pullPolicy: Always
 
 createSecret: false
@@ -39,7 +39,7 @@ env:
   ONPREM_WML_INSTANCE_ID: openshift
   UNITE_METRIC_INDEX: unite-metrics
   UNITE_EVENT_INDEX: unite-events
-  LLM_MODEL: ibm/granite-3-3-8b-instruct
+  LLM_MODEL: meta-llama/llama-3-3-70b-instruct
   LANGFUSE_HOST: ""
   LANGFUSE_TRACING_ENABLED: false
   SUMMARY_DIR: /data
@@ -65,7 +65,7 @@ mcpSecrets:
     LANGFUSE_SECRET_KEY:
     LANGFUSE_PUBLIC_KEY:
     WATSONX_PROJECT_ID: ""
-    EMBEDDING_MODEL_PATH: "unite_langgraph_agent/agents/models/granite-embedding-english-r2"
+    EMBEDDING_MODEL_PATH: "unite_langgraph_agent/agents/models/slate.30m.english.rtrvr-20240719T181101"
     TOOL_EMBEDDING_PATH: "unite_langgraph_agent/agents/tool_graph/tool_calling_graph/tool_embeddings"
     WRAPPER_URL: ""
     WRAPPER_USERNAME: ""
