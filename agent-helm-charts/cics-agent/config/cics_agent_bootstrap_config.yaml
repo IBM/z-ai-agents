@@ -20,3 +20,19 @@ resources:
           namespace: ${CICS_PD_AGENT_NAMESPACE}
           auth_type: API_KEY
           auth_value_key: ${CICS_PD_AGENT_AUTH_TOKEN}
+        - name: CICS_Transaction_Server_Tool_Calling_Agent_for_Z_ext
+          kind: external
+          description: The CICS (Customer Information Control System) Transaction Server Tool Calling agent can take queries about CICS resources and fetch data when the resource type and identifier or name are provided.
+          route_name: ${CICS_TC_AGENT_ROUTE_NAME}
+          route_path: /v1/cics_tool_calling/
+          namespace: ${CICS_TC_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${CICS_TC_AGENT_AUTH_TOKEN}
+        - name: CICS_Transaction_Server_Followup_Agent_for_Z_ext
+          kind: external
+          description: The CICS (Customer Information Control System) Transaction Server Followup agent can answer followup questions related to responses from other agents. This agent excels at answering followup questions.
+          route_name: ${CICS_FOLLOWUP_AGENT_ROUTE_NAME}
+          route_path: /v1/followup/
+          namespace: ${CICS_FOLLOWUP_AGENT_NAMESPACE}
+          auth_type: API_KEY
+          auth_value_key: ${CICS_FOLLOWUP_AGENT_AUTH_TOKEN}
