@@ -535,10 +535,16 @@ cics-agent:
   acceptLicense: false # Must be true to install. Reference CICS agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-SSLZ-QYC4LH
   image:
     repository: icr.io/ibm-cics-ts/cics-ai-agent
-    tag: topology-1.1.0@sha256:1ec91f5fbe6dcb74598d5689511efe4ed49e57fa28f31fcd0985c018d337358f
+    tag: topology-1.2.0@sha256:5c7604a38d60e0bb0f0c58421e522f46239d0a67975a06e5bc3e5f96a8391268
   PDimage:
     repository: icr.io/ibm-cics-ts/cics-ai-agent
-    tag: problem-determination-1.1.0@sha256:b0158d31a5907d234a3a99f9a5954b91a869daeafd58ebd86a95f3aaccad3f89
+    tag: problem-determination-1.2.0@sha256:75c73daca2e4b5597f8327092079c37e87df8e511cc0f1b0f7f5a8ec8f2ea234
+  followupImage:
+    repository: icr.io/ibm-cics-ts/cics-ai-agent
+    tag: followup-1.2.0@sha256:6e21c7a42e1445d25b2de8ee9cad5263a87d04c7ac95405bdfd3da1bce753401
+  TCimage:
+    repository: icr.io/ibm-cics-ts/cics-ai-agent
+    tag: tool-calling-1.2.0@sha256:e88d6712376fd24c879d349e4be0f72af8493440ed473098a454c8d14e8bcc7b
   registry:
     name: cics-image-pull-secret
     server: icr.io
@@ -547,8 +553,8 @@ cics-agent:
   bootstrapJob:
     enabled: true # Seeds/registers agent resources before controller starts.
     image:
-      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+      repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
+      tag: 3.1.3@sha256:b16b40acc5f51fff59ce5cd9311398df978397e13a92277b54f95709fd581ac1
     imagePullSecrets: [] # Uses global secret by default; override if needed.
       # - name: wxa4z-image-pull-secret
   env:
@@ -573,6 +579,23 @@ cics-agent:
       INGESTION_PASSWORD: "" # password for the INGESTION_URL
       AGENT_AUTH_TOKEN: "" # secret used for agent registration with wxo.
       SERVICE_ENDPOINT: "" # URL for non-default Service Endpoint, for use with Auth service
+  followupSecrets:
+    data:
+      INGESTION_URL: "" # URL of the service endpoint where documents or data are uploaded for ingestion.
+      WRAPPER_URL: "" # URL for the OpenSearch endpoint (zRAG)
+      WRAPPER_USERNAME: "" # username for the OpenSearch wrapper URL (zRAG)
+      WRAPPER_PASSWORD: "" # password for the OpenSearch wrapper URL (zRAG)
+      INGESTION_PASSWORD: "" # password for the INGESTION_URL
+      AGENT_AUTH_TOKEN: "" # secret used for agent registration with wxo.
+  TCsecrets:
+    data:
+      INGESTION_URL: "" # URL of the service endpoint where documents or data are uploaded for ingestion.
+      WRAPPER_URL: "" # URL for the OpenSearch endpoint (zRAG)
+      WRAPPER_USERNAME: "" # username for the OpenSearch wrapper URL (zRAG)
+      WRAPPER_PASSWORD: "" # password for the OpenSearch wrapper URL (zRAG)
+      INGESTION_PASSWORD: "" # password for the INGESTION_URL
+      AGENT_AUTH_TOKEN: "" # secret used for agent registration with wxo.
+      SERVICE_ENDPOINT: "" # URL for non-default Service Endpoint, for use with Auth service
   pdCertSecret:
     name: pd-custom-cert-secret
     cert: |
@@ -588,6 +611,32 @@ cics-agent:
 
   topologyCertSecret:
     name: topology-custom-cert-secret
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      Replace this value with the certificate
+      you create to access your service endpoint.
+      This secret can be manually updated in
+      your cluster after deployment. It is NOT
+      recommended that you store secrets in any
+      git repository. Restart your pod after
+      updating this secret to reflect changes.
+      -----END CERTIFICATE-----
+
+  followupCertSecret:
+    name: followup-custom-cert-secret
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      Replace this value with the certificate
+      you create to access your service endpoint.
+      This secret can be manually updated in
+      your cluster after deployment. It is NOT
+      recommended that you store secrets in any
+      git repository. Restart your pod after
+      updating this secret to reflect changes.
+      -----END CERTIFICATE-----
+
+  tcCertSecret:
+    name: tc-custom-cert-secret
     cert: |
       -----BEGIN CERTIFICATE-----
       Replace this value with the certificate

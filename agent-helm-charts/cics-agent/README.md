@@ -3,9 +3,11 @@
 ## Overview
 The IBM CICS Transaction Server agents for Z (CICS agent) can answer questions about CICS topology and assist with problem determination when given transaction error codes. It provides targeted responses to questions, drawing on a variety of data sources to deliver context-aware guidance, best practice recommendations, and actionable next steps.
 
-The CICS agent provides the following agents: 
+The CICS agent provides the following agents:
 - CICS topology agent.
 - CICS problem determination agent.
+- CICS tool calling agent.
+- CICS followup agent.
 - CICS routing agent(installed as part of the watsonx Assistant for Z set up).
 
 For information about CICS TS for z/OS, see https://www.ibm.com/docs/en/cics-ts/6.x
@@ -26,13 +28,25 @@ Interacts with live CICS systems  | 	Executes read-only commands to retrieve rea
 Tool Integration | Provides visibility into live CICS system behavior through MCP, including information about transaction and programs. This helps to maintain situational awareness and to support informed decision-making during investigations.
 Extracts DFHAC message | Parses and interprets DFHAC error messages to support troubleshooting.
 Adaptive response strategy | Dynamically responds using live system data when this data is available, or falls back to static documentation when it is not, depending on server availability.
+**CICS tool calling agent**
+Live System Queries | Executes targeted queries against live CICS systems to retrieve real-time resource information, including programs, transactions, files, dynamic storage areas, and system parameters.
+MCP Tool Integration | Leverages MCP (Model Context Protocol) tools to interact with CICS regions and CICSplexes, providing visibility into current system state and configuration.
+Resource Parsing | Intelligently parses user queries to identify specific CICS resources and their IDs, then selects appropriate tools to retrieve the requested information.
+Context-Aware Responses | Generates summaries of live data with explanations of field values and their implications, helping users understand the current state of their CICS environment.
+Multi-Resource Support | Handles queries about multiple resources simultaneously, processing each resource and consolidating results into a comprehensive response.
+**CICS followup agent**
+Follow-up Question Handling | Processes follow-up questions by analyzing conversation history to resolve ambiguous references and maintain context across multi-turn conversations.
+Relevance Checking | Validates that queries are CICS-related before processing, ensuring the agent stays focused on its domain expertise.
+Documentation Retrieval | Uses RAG (Retrieval-Augmented Generation) to search and rank relevant CICS documentation based on user queries and conversation context.
+Context Resolution | Resolves pronouns and implicit references (e.g., "it", "that value") by examining conversation history to identify specific CICS terms and concepts.
+Intent-Aware Search | Classifies query intent (informational, clarification, troubleshooting, comparison) to optimize documentation search strategies.
 **CICS routing agent**
 Question routing | Identifies the theme of the user's query and directs it to the most appropriate agent, ensuring the question is handled by the agent best suited to resolve it.
 
 
 ## Prerequisites
 Ensure the following:
-- [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.1.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z) is installed
 - The minimum version of z/OSMF is 3.1
 - The agents require a watsonx Project ID.
   - This should be used as WATSONX_PROJECT_ID as an environment variable.
@@ -277,6 +291,8 @@ helm upgrade --install wxa4z-agent-suite \
 
 After deployment, the agent becomes active and is available for selection in the live environment.
 
+------------------------------------------------------------
+
 1. From the main menu, click **Chat**.
 2. Choose your agent from the list.
 3. Enter your queries using the AI Assistant.
@@ -291,3 +307,184 @@ After deployment, the agent becomes active and is available for selection in the
 4. Verify that the responses returned by the AI Assistant are accurate.
 
 ------------------------------------------------------------
+
+## Tool calling agent configuration
+
+### Create Shared Variables
+
+Some variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents/blob/main/README.md#1-global-settings).
+However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file, the values that you specify in the values.yaml file will override the shared ones.
+
+### Configure the values.yaml file
+
+To enable the CICS tool calling agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
+
+In the values.yaml file, scroll down to the CICS Agent section and update the keys as outlined in the following table.
+
+| Key       |            Description                  |
+|------------------------------|-----------------------------------|
+| **Environment variables**
+| WATSONX_MODEL_ID | Default model to use in LLM calls.
+| MODEL_CATALOG_PATH | File path to the YAML configuration file.
+| MCP_SERVER_URL | URL endpoint for the MCP Server within CICS.
+| APPLID| The VTAM Generic APPLID for the target CICS system that hosts the MCP Server.
+| **Secrets**
+| WATSONX_API_KEY| Your watsonx API key.
+| AGENT_ID| Unique identifier for the Agent instance, used to distinguish it within the watsonx Orchestrate.
+| AGENT_SECRET | Secret key used to securely authenticate the agent.
+| WATSONX_PROJECT_URL| Your watsonx URL.
+| WATSONX_PROJECT_ID| Identifier for your watsonx Project ID.
+| SERVICE_ENDPOINT | Service endpoint URL for agent registration.
+| > DO NOT CHANGE VALUES IN `secrets` SECTION of  `values.yaml`
+
+
+### Certificates for MCP access
+
+If you are connecting to CICS, and your MCP server running in CICS uses a self-signed certificate, the agent will not communicate with your MCP server without first providing it with the certificate to validate all requests with.
+
+You will need your endpoints certificates content, which you need to put into `values.yaml` - into the `tcCertSecret` section, replacing the content already there. **Make sure never to commit or add this certificate to version control.**
+
+If you require more than one certificate, you can use a Terminal to concatenate multiple certificates into a single block of text data. To do so, run `cat cert1.crt cert2.crt > combined.crt`, replacing the firs two `.crt` files with your own certificates. You will also need to ensure new lines are between the certificates `-----BEGIN CERTIFICATE-----` blocks. You are looking for something that looks like:
+```
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+```
+
+This can then be added to the correct value in `values.yaml` inside the `cics-agent` folder.
+
+### Install or upgrade the wxa4z-agent-suite
+
+> <div class="note note"><span class="notetitle">Note:</span> If you're installing multiple agents, you can configure the <a href="https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml">values.yaml</a> file for all the agents you wish to install. After the file is updated, run the command below to install them all at once.</div>
+
+Use the following command to install or upgrade the wxa4z_agent_suite:
+
+```yaml
+helm upgrade --install wxa4z-agent-suite \
+  ./wxa4z-agent-suite \
+  -n <wxa4z-namespace> \
+  -f <path_to>/values.yaml --wait
+```
+
+## Deploy the agent
+
+1. Log in to IBM watsonx Orchestrate.
+2. From the main menu, navigate to **Build** > **Agent Builder**.
+3. Select the **Tool Calling Agent** tile.
+4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
+5. Click **Deploy** to activate the agent and make it available in the live environment.
+
+## Test your agent
+
+After deployment, the agent becomes active and is available for selection in the live environment.
+
+1. From the main menu, click **Chat**.
+2. Choose your agent from the list.
+3. Enter your queries using the AI Assistant.
+   For example:
+
+    - What is the status of program PROG1?
+
+    - Tell me about transaction TXN1 in region REGION1 in plex PLEX1
+
+    - Give me information on DSA CDSA
+
+    Responses are displayed either in a tabular format or as a sentence, depending on the context.
+
+4. Verify that the responses returned by the AI Assistant are accurate.
+
+------------------------------------------------------------
+
+## Followup agent configuration
+
+### Create Shared Variables
+
+Some variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents/blob/main/README.md#1-global-settings).
+However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file, the values that you specify in the values.yaml file will override the shared ones.
+
+### Configure the values.yaml file
+
+To enable the CICS followup agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
+
+In the values.yaml file, scroll down to the CICS Agent section and update the keys as outlined in the following table.
+
+| Key       |            Description                  |
+|------------------------------|-----------------------------------|
+| **Environment variables**
+| WATSONX_MODEL_ID | Default model to use in LLM calls.
+| MODEL_CATALOG_PATH | File path to the YAML configuration file.
+| **Secrets**
+| WATSONX_API_KEY| Your watsonx API key.
+| WRAPPER_USERNAME| The username for the Z RAG instance in your cluster.
+| WRAPPER_PASSWORD| The password for the Z RAG instance in your cluster.
+| WRAPPER_URL| The URL for the Z RAG instance in your cluster.
+| INGESTION_URL| Endpoint URL for the data ingestion.
+| INGESTION_PASSWORD| Password that is used to authenticate with the ingestion service.
+| AGENT_ID| Unique identifier for the Agent instance, used to distinguish it within the watsonx Orchestrate.
+| AGENT_SECRET | Secret key used to securely authenticate the agent.
+| WATSONX_PROJECT_URL| Your watsonx URL.
+| WATSONX_PROJECT_ID| Identifier for your watsonx Project ID.
+| > DO NOT CHANGE VALUES IN `secrets` SECTION of  `values.yaml`
+
+### Self signed certificates
+
+If you are connecting to a service that lives behind a URL with a self-signed certificate, the agent will not communicate with that URL without first providing it with the certificate to validate all requests with.
+
+You will need your endpoints certificates content, which you need to put into `values.yaml` - into the `followupCertSecret` section, replacing the content already there. **Make sure never to commit or add this certificate to version control.**
+
+If you require more than one certificate, you can use a Terminal to concatenate multiple certificates into a single block of text data. To do so, run `cat cert1.crt cert2.crt > combined.crt`, replacing the firs two `.crt` files with your own certificates. You will also need to ensure new lines are between the certificates `-----BEGIN CERTIFICATE-----` blocks. You are looking for something that looks like:
+```
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+ENCODED DATA IN HERE
+-----END CERTIFICATE-----
+```
+
+This can then be added to the correct value in `values.yaml` inside the `cics-agent` folder.
+
+> Ensure there are no extra lines or white space between certificates and avoid adding white space after the last certificate.
+
+### Install or upgrade the wxa4z-agent-suite
+
+> <div class="note note"><span class="notetitle">Note:</span> If you're installing multiple agents, you can configure the <a href="https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml">values.yaml</a> file for all the agents you wish to install. After the file is updated, run the command below to install them all at once.</div>
+
+Use the following command to install or upgrade the wxa4z_agent_suite:
+
+```yaml
+helm upgrade --install wxa4z-agent-suite \
+  ./wxa4z-agent-suite \
+  -n <wxa4z-namespace> \
+  -f <path_to>/values.yaml --wait
+```
+
+## Deploy the agent
+
+1. Log in to IBM watsonx Orchestrate.
+2. From the main menu, navigate to **Build** > **Agent Builder**.
+3. Select the **Followup Agent** tile.
+4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
+5. Click **Deploy** to activate the agent and make it available in the live environment.
+
+## Test your agent
+
+After deployment, the agent becomes active and is available for selection in the live environment.
+
+1. From the main menu, click **Chat**.
+2. Choose your agent from the list.
+3. Enter your queries using the AI Assistant.
+   For example:
+
+    - Tell me more about that routing value
+
+    - Tell me more about that dynamic thing
+
+    - Can you tell me a bit more about why them fields would be blank 
+
+    Responses are displayed either in a tabular format or as a sentence, depending on the context.
+
+4. Verify that the responses returned by the AI Assistant are accurate.

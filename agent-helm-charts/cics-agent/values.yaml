@@ -1,13 +1,23 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: topology-1.1.0@sha256:1ec91f5fbe6dcb74598d5689511efe4ed49e57fa28f31fcd0985c018d337358f
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: topology-1.2.0-RC3@sha256:5711401a26e7b159221f0f5f4ad4f6b5cca9573558da327dfb2d60ed82d409ee
   pullPolicy: Always
 
 PDimage:
-  repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: problem-determination-1.1.0@sha256:b0158d31a5907d234a3a99f9a5954b91a869daeafd58ebd86a95f3aaccad3f89
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: problem-determination-1.2.0-RC1@sha256:71d72b9f3cd3186d1efab885e87c0b604131d48f7f1f6ea550a4ce62df39fe72
+  pullPolicy: Always
+
+followupImage:
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: followup-1.2.0-RC3@sha256:f56a1d8d6242d5c7217db2efc4930cca6e38cdbf099188a51dc9f663f9524714
+  pullPolicy: Always
+
+TCimage:
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: tool-calling-agent-1.2.0-RC-LPAR-test@sha256:fcf86951af55e03b2ff648f6a767f09e09fd7f1db7635b7af66e54ed89a110af
   pullPolicy: Always
 
 service:
@@ -20,6 +30,21 @@ service:
 
 PDservice:
   name: wxa4z-cics-pd-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+
+followupService:
+  name: wxa4z-cics-followup-service
+  ports:
+    name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8000
+TCservice:
+  name: wxa4z-cics-tc-service
   ports:
     name: http
     protocol: TCP
@@ -43,6 +68,29 @@ PDroute:
   annotations:
     hostGenerated: "true"
   serviceName: wxa4z-cics-pd-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
+
+followupRoute:
+  name: wxa4z-cics-followup-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-cics-followup-service
+  weight: 100
+  targetPort: http
+  tls:
+    termination: edge
+    secretName: wxa4z-agents-tls-secret
+    enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
+TCroute:
+  name: wxa4z-cics-tc-route
+  annotations:
+    hostGenerated: "true"
+  serviceName: wxa4z-cics-tc-service
   weight: 100
   targetPort: http
   tls:
@@ -127,6 +175,65 @@ PDsecrets:
     SERVICE_ENDPOINT: ""
     INSECURE: "True"
 
+followupSecrets:
+  name: wxa4z-cics-followup-agent-secrets
+  createSecret: true
+  data:
+    ### Set for on-prem deployments, leave blank otherwise.
+    CPD_USERNAME: cpadmin
+    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: ""
+    ### Values set for zRAG
+    WRAPPER_USERNAME: ""
+    WRAPPER_PASSWORD: ""
+    WRAPPER_URL: ""
+    ### Set these to ingest documents on start-up
+    INGESTION_URL: ""
+    INGESTION_PASSWORD: ""
+    ### Values fed through during deployment
+    AGENT_ID: "wxa4z:cics:agent"
+    AUTH_SERVICE_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
+    AGENT_AUTH_TOKEN: ""
+    ### Only set next 2 for cloud deployments, leave blank otherwise.
+    WATSONX_PROJECT_URL: ""
+    WATSONX_PROJECT_ID: ""
+    ### Set these for tracing
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
+    AGENT_ROUTER_PATH: "agents/followup_agent/router"
+
+TCsecrets:
+  name: wxa4z-cics-tc-agent-secrets
+  createSecret: true
+  data:
+    ### Set for on-prem deployments, leave blank otherwise.
+    CPD_USERNAME: cpadmin
+    ### Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    WATSONX_API_KEY: ""
+    ### Values set for zRAG
+    WRAPPER_USERNAME: ""
+    WRAPPER_PASSWORD: ""
+    WRAPPER_URL: ""
+    ### Set these to ingest documents on start-up
+    INGESTION_URL: ""
+    INGESTION_PASSWORD: ""
+    ### Set this to the URL for the MCP server in CICS
+    MCP_SERVER_URL: MCP_SERVER_URL
+    APPLID: "APPLID"
+    ### Values fed through during deployment
+    AGENT_ID: "wxa4z:cics:agent"
+    AUTH_SERVICE_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
+    AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
+    ### Only set next 2 for cloud deployments, leave blank otherwise.
+    WATSONX_PROJECT_URL: "WATSONX_PROJECT_URL"
+    WATSONX_PROJECT_ID: "WATSONX_PROJECT_ID"
+    ### Set these for tracing
+    LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
+    LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
+    AGENT_ROUTER_PATH: "agents/tool_calling_agent/router"
+    SERVICE_ENDPOINT: ""
+    INSECURE: "True"
+
 imagePullSecrets:
   - name: cics-image-pull-secret
 
@@ -155,6 +262,22 @@ pvc:
 
 PDpvc:
   name: cics-pd-agent-pvc
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: false
+  size: 8Gi
+
+followupPvc:
+  name: cics-followup-agent-pvc
+  storageClass: "ocs-storagecluster-cephfs"
+  accessModes:
+    - ReadWriteOnce
+  enabled: false
+  size: 8Gi
+
+TCpvc:
+  name: cics-tc-agent-pvc
   storageClass: "ocs-storagecluster-cephfs"
   accessModes:
     - ReadWriteOnce
@@ -194,8 +317,49 @@ topologyCertSecret:
     updating this secret to reflect changes.
     -----END CERTIFICATE-----
 
+followupCertSecret:
+  name: followup-custom-cert-secret
+  cert: |
+    -----BEGIN CERTIFICATE-----
+    Replace this value with the certificate 
+    you create to access your service endpoint.
+    This secret can be manually updated in 
+    your cluster after deployment. It is NOT 
+    recommended that you store secrets in any 
+    git repository. Restart your pod after 
+    updating this secret to reflect changes.
+    -----END CERTIFICATE-----
+
+
+tcCertSecret:
+  name: tc-custom-cert-secret
+  cert: |
+    -----BEGIN CERTIFICATE-----
+    Replace this value with the certificate 
+    you create to access your service endpoint.
+    This secret can be manually updated in 
+    your cluster after deployment. It is NOT 
+    recommended that you store secrets in any 
+    git repository. Restart your pod after 
+    updating this secret to reflect changes.
+    -----END CERTIFICATE-----
+
 PDnetworkPolicy:
   name: wxa4z-cics-pd-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+followupNetworkPolicy:
+  name: wxa4z-cics-followup-network-policy
+  egress:
+    - {}
+  ingress:
+    - {}
+
+TCnetworkPolicy:
+  name: wxa4z-cics-tc-network-policy
   egress:
     - {}
   ingress:
@@ -214,8 +378,8 @@ bootstrapJob:
   backoffLimit: 2
   activeDeadlineSeconds: 1800
   image:
-    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/wxa4z-agent-bootstrapper
+    tag: 3.1.3@sha256:b16b40acc5f51fff59ce5cd9311398df978397e13a92277b54f95709fd581ac1
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:

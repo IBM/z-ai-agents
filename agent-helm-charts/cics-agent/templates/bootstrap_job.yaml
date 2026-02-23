@@ -57,10 +57,18 @@ spec:
               - name: CICS_AGENT_ROUTE_NAME
                 value: {{ .Values.route.name | quote }}
               - name: CICS_PD_AGENT_ROUTE_NAME
-                value: {{ .Values.PDroute.name | quote }}  
+                value: {{ .Values.PDroute.name | quote }}
+              - name: CICS_FOLLOWUP_AGENT_ROUTE_NAME
+                value: {{ .Values.followupRoute.name | quote }}
+              - name: CICS_TC_AGENT_ROUTE_NAME
+                value: {{ .Values.TCroute.name | quote }}
               - name: CICS_AGENT_NAMESPACE
                 value: {{ .Release.Namespace | quote }}
               - name: CICS_PD_AGENT_NAMESPACE
+                value: {{ .Release.Namespace | quote }}
+              - name: CICS_FOLLOWUP_AGENT_NAMESPACE
+                value: {{ .Release.Namespace | quote }}
+              - name: CICS_TC_AGENT_NAMESPACE
                 value: {{ .Release.Namespace | quote }}
               - name: CICS_TS_AGENT_AUTH_TOKEN
                 valueFrom:
@@ -71,6 +79,16 @@ spec:
                 valueFrom:
                   secretKeyRef:
                     name: {{ .Values.PDsecrets.name }}
+                    key: AGENT_AUTH_TOKEN
+              - name: CICS_FOLLOWUP_AGENT_AUTH_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.followupSecrets.name }}
+                    key: AGENT_AUTH_TOKEN
+              - name: CICS_TC_AGENT_AUTH_TOKEN
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.TCsecrets.name }}
                     key: AGENT_AUTH_TOKEN
           resources:
             {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}
@@ -142,10 +160,18 @@ spec:
               value: {{ .Values.route.name | quote }}
             - name: CICS_PD_AGENT_ROUTE_NAME
               value: {{ .Values.route.name | quote }}
+            - name: CICS_FOLLOWUP_AGENT_ROUTE_NAME
+              value: {{ .Values.route.name | quote }}
             - name: CICS_AGENT_NAMESPACE
               value: {{ .Release.Namespace | quote }}
             - name: CICS_PD_AGENT_NAMESPACE
               value: {{ .Release.Namespace | quote }}  
+            - name: CICS_FOLLOWUP_AGENT_NAMESPACE
+              value: {{ .Release.Namespace | quote }}  
+            - name: CICS_TC_AGENT_ROUTE_NAME
+              value: {{ .Values.TCroute.name | quote }}
+            - name: CICS_TC_AGENT_NAMESPACE
+              value: {{ .Release.Namespace | quote }}
           resources:
             {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}
           volumeMounts:
