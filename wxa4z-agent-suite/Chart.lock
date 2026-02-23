@@ -37,9 +37,9 @@ dependencies:
   version: 1.0.1
 - name: cics-agent
   repository: file://../agent-helm-charts/cics-agent
-  version: 1.1.0
+  version: 1.2.0
 - name: compiler-fix-finder-agent
   repository: file://../agent-helm-charts/compiler-fix-finder-agent
   version: 1.0.0
-digest: sha256:e81a1d3fbbc8e0ed246c3c26fa4c1c4510f5782e0b9334ded6d9a8bf425cf664
-generated: "2025-12-12T09:47:31.567197-05:00"
+digest: sha256:03c0185cf4d4b4968e13be716f56a5cf4021da450a3df0219426d530d34139a9
+generated: "2026-02-20T17:23:26.626876Z"
