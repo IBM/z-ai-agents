@@ -43,7 +43,7 @@ Use the following instructions to verify the image signature with the provided f
 ### Image reference
 
 ```bash
-icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.1
+icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.2
 ```
 ### Files provided
 
@@ -70,7 +70,7 @@ To immediately verify the image signature, run the following command:
 
 ```bash
 cosign verify --key PRD0014680key.pem.pub.key \
-  icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.1* | jq .
+  icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.2* | jq .
 ```
 
 If the signature is valid, details about the signer and the certificate are shown in the output.
@@ -82,7 +82,7 @@ If the signature is valid, details about the signer and the certificate are show
 Identify the signature manifest reference:
 
 ```bash
-cosign triangulate icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.1
+cosign triangulate icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.2
 ```
 Example output:
 

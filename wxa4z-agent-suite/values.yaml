@@ -346,7 +346,7 @@ ibm-operations-agent-z:
   acceptLicense: false # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
   mcpImage:
     repository: icr.io/ibm-operations-aai/ibm-operations-agent-z
-    tag: v1.1.1
+    tag: v1.1.2
   registry:
     name: ibm-operations-agent-image-pull-secret
     server: icr.io
@@ -387,7 +387,7 @@ ibm-operations-agent-z-spyre:
   acceptLicense: false # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
   image:
     repository: icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre
-    tag: v1.1.1
+    tag: v1.1.2
   registry:
     name: ibm-operations-agent-image-pull-secret-spyre
     server: icr.io
@@ -577,12 +577,12 @@ cics-agent:
     name: pd-custom-cert-secret
     cert: |
       -----BEGIN CERTIFICATE-----
-      Replace this value with the certificate 
+      Replace this value with the certificate
       you create to access your service endpoint.
-      This secret can be manually updated in 
-      your cluster after deployment. It is NOT 
-      recommended that you store secrets in any 
-      git repository. Restart your pod after 
+      This secret can be manually updated in
+      your cluster after deployment. It is NOT
+      recommended that you store secrets in any
+      git repository. Restart your pod after
       updating this secret to reflect changes.
       -----END CERTIFICATE-----
 
@@ -590,12 +590,12 @@ cics-agent:
     name: topology-custom-cert-secret
     cert: |
       -----BEGIN CERTIFICATE-----
-      Replace this value with the certificate 
+      Replace this value with the certificate
       you create to access your service endpoint.
-      This secret can be manually updated in 
-      your cluster after deployment. It is NOT 
-      recommended that you store secrets in any 
-      git repository. Restart your pod after 
+      This secret can be manually updated in
+      your cluster after deployment. It is NOT
+      recommended that you store secrets in any
+      git repository. Restart your pod after
       updating this secret to reflect changes.
       -----END CERTIFICATE-----
   imagePullSecrets:

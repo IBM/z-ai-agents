@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre
-  tag: v1.1.1
+  tag: v1.1.2
   pullPolicy: Always
 
 createSecret: false
