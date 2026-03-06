@@ -309,10 +309,10 @@ db2z-agent:
   acceptLicense: false # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
   image:
     repository: icr.io/ibm-db2z-ai/db2z-agent
-    tag: latest@sha256:f2f080c4a3ab899ad6bb124d20197b663a2504347eabec7ab74efb20cad0dfa6
+    tag: latest@sha256:da2bd55651bdd6069952e8275ff7293b5aa90feb48e269f7238db90f1d93cf6a
   mcpImage:
     repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-    tag: latest@sha256:04171657896a839504ccbae8197f1934fd81926d5467295b7318f133c15465ee
+    tag: latest@sha256:bf6c7edd53d75237ae555054a8f2ea8e777bc3eb15bf2d047294947cab308768
   registry:
     name: db2-image-pull-secret # Dedicated pull secret for this agent.
     server: icr.io
@@ -322,7 +322,7 @@ db2z-agent:
     enabled: true
     image:
       repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
   env:
