@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-db2z-ai/db2z-agent
-  tag: latest@sha256:f2f080c4a3ab899ad6bb124d20197b663a2504347eabec7ab74efb20cad0dfa6
+  tag: latest@sha256:da2bd55651bdd6069952e8275ff7293b5aa90feb48e269f7238db90f1d93cf6a
   pullPolicy: Always
 
 service:
@@ -15,7 +15,7 @@ service:
 
 mcpImage:
   repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-  tag: latest@sha256:04171657896a839504ccbae8197f1934fd81926d5467295b7318f133c15465ee
+  tag: latest@sha256:bf6c7edd53d75237ae555054a8f2ea8e777bc3eb15bf2d047294947cab308768
   pullPolicy: Always
 
 mcpService:
