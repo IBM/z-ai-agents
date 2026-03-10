@@ -1,6 +1,6 @@
 spec_version: v1
 style: default
-display_name: IBM Z Compiler Fix Finder Agent
+display_name: IBM Z Compilers Fix Finder Agent
 name: Compiler_Fix_Finder_Agent
 llm: watsonx/meta-llama/llama-3-3-70b-instruct
 description: >
@@ -15,12 +15,13 @@ collaborators:
   - Compiler_Fix_Finder_Agent_ext
 tools: []
 welcome_content:
-  welcome_message: "IBM Z Compiler Fix Finder Agent"
+  welcome_message: "IBM Z Compilers Fix Finder Agent"
   description: "Ask a question to get started."
 context_access_enabled: true
 context_variables:
   - wxo_email_id
   - wxo_user_name
+  - wxo_tenant_id
 chat_params: # chat_parms are parameters sent to an agent on each request
   stream: true # should the external agent be invoked using using SSE streaming or as a rest call
 config: # config represents the internal configuration of this agent used by wxo
