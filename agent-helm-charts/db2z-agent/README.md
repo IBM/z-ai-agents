@@ -28,7 +28,7 @@ Can you give me details about that bufferpool? | Fetches detailed bufferpool inf
 
 
 # Prerequisites:
-- [watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z)
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z)
 - Db2 for z/OS v13
 * ODBC connectivity to Db2 for z/OS
   - Server verification is recommended but client verification is supported by mounting the license into the deployed container at
@@ -61,10 +61,9 @@ Can you give me details about that bufferpool? | Fetches detailed bufferpool inf
           
 * A watsonx api key, which is used as the value for the WATSONX_API_KEY environment variable
   - Configured as `WATSONX_API_KEY` environment variable.
-* A watsonx Deployment Space ID or Project ID.
-  - See [create deployment space](https://www.ibm.com/docs/en/watsonx/w-and-w/2.1.0?topic=spaces-creating-deployment) for instructions. To get the `space GUID`, open your deployment space, and click the `Manage` tab.
-  - Use this value as `WATSONX_DEPLOYMENT_SPACE_ID` or `WATSONX_PROJECT_ID` environment variable.
-
+* One of the following deployment options:
+  - A watsonx Deployment Space ID or a watsonx Project ID. See Creating deployment spaces for instructions for creating a deployment space and for obtaining the GUID for the space. You will specify the GUID value on the WATSONX_DEPLOYMENT_SPACE_ID or the WATSONX_PROJECT_ID environment variable in a subsequent step.
+  - IFM-Lite enabled in your environment. If IFM-Lite is enabled in your environment, do not assign a value to the WATSONX_DEPLOYMENT_SPACE_ID or WATSONX_PROJECT_ID environment variable.
 
 ## Install the IBM Db2 for z/OS Agent
 
@@ -110,7 +109,7 @@ CPD_VERSION | CPD version for on-prem deployments (e.g., `5.1`)
 WATSONX_DEPLOYMENT_TYPE | Deployment environment type (`cloud`)  
 WML_URL | WML Instance URL  [IBM WML API Reference](https://cloud.ibm.com/apidocs/machine-learning)               |
 **Common For ON-PREM/Cloud Deployment**
-DEPLOYMENT_SPACE_ID | Identifier of the Watson Machine Learning deployment space. See [Prerequisites](#prerequisites) for creating a deployment space.
+WATSONX_DEPLOYMENT_SPACE_ID | GUID for watsonx deployment space. If IFM-Lite is enabled in your environment, do not specify a value for this variable.
 LLM_MODEL | Name  of the large language model to use (`meta-llama/llama-3-1-70b-instruct`)
 DB_NAME |  Name of the database (for example, db2zagent)
 AUTH_SERVICE_BASE_URL | URL of the authorization service the agent needs to be registered
