@@ -28,7 +28,7 @@ Can you give me details about that bufferpool? | Fetches detailed bufferpool inf
 
 
 # Prerequisites:
-- [watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z)
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z)
 - Db2 for z/OS v13
 * ODBC connectivity to Db2 for z/OS
   - Server verification is recommended but client verification is supported by mounting the license into the deployed container at
