@@ -44,7 +44,7 @@ A native agent configured to use the MCP tools:
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.1.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 - OpenSearch backend with zRAG wrapper service is deployed and accessible
 - WatsonX AI endpoint is configured (either IBM Cloud SaaS or CPD on-premises)
 - Knowledge base is ingested into OpenSearch with appropriate indices

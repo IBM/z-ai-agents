@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
-  tag: v3.1.2@sha256:6c5f1b43d3df8da4ac114a109516a4e7c011b9adf3de589e6b3ddf3ec8842970
+  tag: v3.2.0@sha256:6d4056d12bdfbec569a1697173388cf0a1770394660e747537a79e0194364290
   pullPolicy: Always
 
 service:
@@ -37,6 +37,7 @@ env:
   LANGFUSE_ENABLED: false
   MAX_LLM_CONTEXT_MESSAGES_COUNT: 50
   MODEL_CATALOG_PATH: "model_catalog.yaml"
+  ZCHATOPS_MCP_URL: "http://wxa4z-zchatops-mcp-server-service.wxa4z-aiops.svc.cluster.local:8081"
 secrets:
   name: wxa4z-omegamon-insight-agent-secrets
   createSecret: true
@@ -86,7 +87,7 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
