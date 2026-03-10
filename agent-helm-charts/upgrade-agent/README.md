@@ -9,10 +9,9 @@ The IBM Z Upgrade agent enables system programmers to perform z/OS upgrades thro
 |------------------------------|-----------------------------------|
 | Lists software products        | Provides a comprehensive list of software products for a given system    |
 Lists software instance details | Shows detailed metadata of a given software instance such as its Name, Description, Global Zone, Target Zone, and so on.
-Retrieves missing FIXCATs by software instance | Identifies missing FIXCAT Updates for specific software instances and systems.
+Retrieves missing FIXCATs by software instance | Identifies missing FXCAT Updates for specific software instances and systems.
 Retrieves missing FIXCATs by software product | Identifies missing FIXCAT updates for software instances associated with the specified products and systems.
-Retrieves missing CRITICAL updates by software instance | Identifies missing  CRITICAL Updates such as HIPERs and PEs for specific software instances and systems.
-Acquires missing FIXCAT and CRITICAL updates | Retrieves the required PTFs for the specified RESOLVERS or FIXCAT names.
+Acquires missing FIXCAT updates | Retrieves the required PTFs for the specified RESOLVERS or FIXCAT names.
 Monitors PTF acquisition job status| Tracks the progress and current status of background jobs initiated to acquire PTFs.
 Installs the acquired PTFs | Begins the installation or update process for the requested PTFs.
 Retrieves the installation or update status | Retrieves the status of installation or update processes using either the process ID or the names of the software instance and system.
@@ -27,7 +26,7 @@ Retrieve Content from agent documentation stored in ZRAG |  Answers the upgrade
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z]( https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- [watsonx Assistant for Z]( https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 - The minimum version of z/OSMF is 3.1
 
 ## Install the IBM Z Upgrade Agent
@@ -55,12 +54,12 @@ global:
 
 ### Create Shared Variables
 
-Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables]([https://github.ibm.com/wxa4z/agent-deployment-charts/tree/readme-update?tab=readme-ov-file#step-2-create-shared-variablescreate-once-reuse-everywhere) (link to the global GitHub page).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
+Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents/blob/main/README.md#1-global-settings) (link to the global GitHub page).
+However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
 
 ### Configure the values.yaml file
 
-To enable the IBM Z Upgrade Agent, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
+To enable the IBM Z Upgrade Agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
 
 In the values.yaml file, scroll down to the Upgrade Agent section and update the keys as outlined in the following table.
 
@@ -95,7 +94,7 @@ INGESTION_PASSWORD | User name for accessing the INGESTION_URL endpoint.
  Please refer to this document for information on these varaibles <link to the doc>
 ### Install or upgrade the wxa4z-agent-suite
 
-> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
+> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
 
 
 Use the following command to install or upgrade the wxa4z_agent_suite:

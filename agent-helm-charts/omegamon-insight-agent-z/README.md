@@ -21,19 +21,19 @@ The IBM Z OMEGAMON Insights Agent enables system programmers to retrieve and ana
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
-- The [AIOps integration server](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=deploying-configuring-aiops-your-cluster) is installed
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- The [AIOps integration server](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=deploying-configuring-aiops-your-cluster) is installed
 
 ## Install the IBM Z OMEGAMON Insights Agent
 
 ### Create Shared Variables
 
 Certain variables are common across all agents. To configure these shared variables, refer to [Create Shared Variables](../../README.md#1-global-settings).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
+However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
 
 ### Configure the values.yaml file
 
-To enable the IBM Z OMEGAMON Insights Agent, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
+To enable the IBM Z OMEGAMON Insights Agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
 
 In the values.yaml file, scroll down to the omegamon-insights-agent section and update the keys as outlined in the following table.
 
@@ -43,13 +43,13 @@ In the values.yaml file, scroll down to the omegamon-insights-agent section and 
 WATSONX_MODEL_ID | LLM Model Used by the Agent. For example, "meta-llama/llama-3-70b-instruct".
 **Secrets**
 AIOPS_BASE_URL | The endpoint URL for the ZchatOps server.
-AIOPS_TOKEN | Optional. Token for connecting to the ZChatOps server. Agents automatically fetch the token by default; this value is used as a fallback if automatic token retrieval fails.
+AIOPS_TOKEN | Token for connecting to the ZchatOps server.
 AGENT_AUTH_TOKEN | Authentication token for the agent.
 
 
 ### Install or upgrade the wxa4z-agent-suite
 
-> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
+> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
 
 Use the following command to install or upgrade the wxa4z_agent_suite:
 
