@@ -113,6 +113,8 @@ spec:
                   key: LANGFUSE_SECRET_KEY
             - name: PYTHONWARNINGS
               value: "ignore::SyntaxWarning"
+            - name: ZCHATOPS_MCP_URL
+              value: {{ .Values.env.ZCHATOPS_MCP_URL | quote }}
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
