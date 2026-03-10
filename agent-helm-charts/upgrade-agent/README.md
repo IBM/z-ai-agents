@@ -26,7 +26,7 @@ Retrieve Content from agent documentation stored in ZRAG |  Answers the upgrade
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z]( https://www.ibm.com/docs/watsonx/waz/3.1.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- [watsonx Assistant for Z]( https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 - The minimum version of z/OSMF is 3.1
 
 ## Install the IBM Z Upgrade Agent
