@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
-  tag: 1.1.0@sha256:48d34c04b0a660773440f1f6b85c5ea4ddc33acfbda2f6b37a3951a29dccdfb4
+  tag: 1.2.0@sha256:11bc5c3a376fe759dacb48bcef47c93d2e8a0469e58811f1737d3fb62eb56368
   pullPolicy: Always
 
 service:
@@ -81,7 +81,7 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
