@@ -40,7 +40,7 @@ The IBM IMS Agents software can answer general IMS command-related questions, su
 
 Ensure that the following software is installed:
 
-- [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z)
+- [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=install-watsonx-assistant-z)
 - IMS 15.5 or later
   - You will need to order IMS 15.6 from Shopz to get the required entitlement key, but you do not need to install 15.6.
   - In the IMS config requirement ensure 'CMDMCS=B, C, R or Y' in the DFSPBxxx member that is used to start IMS. Additionally, these sources about [mcs-console](https://www.ibm.com/docs/en/ims/15.6.0?topic=commands-using-multiple-console-support-mcs-consoles) and [cmdmcs](https://www.ibm.com/docs/en/ims/15.6.0?topic=parameters-cmdmcs-parameter-procedures) can be used to set up IMS properly.
@@ -198,13 +198,13 @@ Additionally, you can update the `mcpCertSecret` section of the `values.yaml` fi
 | WRAPPER_PASSWORD | Password for accessing the WRAPPER_URL endpoint.  |
 | WRAPPER_URL      | The OpenSearch URL.                               |
 
-> [View information about how to get OpenSearch wrapper](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=cluster-acquiring-zassistantdeploy-endpoint-retrieving-user-credentials)​
+> [View information about how to get OpenSearch wrapper](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=cluster-acquiring-zassistantdeploy-endpoint-retrieving-user-credentials)​
 
 ### Additional steps for the Q/A container image (ims-agent:1.0.0)
 
 #### Ensure OpenSearch is deployed to your cluster
 
-The general IMS Q/A agent relies on an instance of an OpenSearch vector database. If OpenSearch is not already deployed to your cluster, [follow instructions on how to deploy an instance.](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=cluster-deploying-zassistantdeploy-your)
+The general IMS Q/A agent relies on an instance of an OpenSearch vector database. If OpenSearch is not already deployed to your cluster, [follow instructions on how to deploy an instance.](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=cluster-deploying-zassistantdeploy-your)
 
 #### Configure local embeddings
 
@@ -219,7 +219,7 @@ You can explicitly select which model to use by adding and setting the `LOCAL_EM
 
 #### Ensure the authorization service is deployed to your cluster
 
-Various MCP tools rely on the authorization service to communicate with your z/OS system. If the authorization service has not yet been deployed to your cluster, [follow instructions to deploy it.](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=cluster-deploying-zassistantdeploy-your) Additionally, [follow instructions to enable pass-ticket generation](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=deploying-token-exchange-service-passticket-generation) for a specified APPL ID.
+Various MCP tools rely on the authorization service to communicate with your z/OS system. If the authorization service has not yet been deployed to your cluster, [follow instructions to deploy it.](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=cluster-deploying-zassistantdeploy-your) Additionally, [follow instructions to enable pass-ticket generation](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=deploying-token-exchange-service-passticket-generation) for a specified APPL ID.
 
 #### Configuring your z/OSMF certificate for the MCP container image
 
