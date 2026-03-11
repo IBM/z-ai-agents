@@ -21,8 +21,8 @@ The IBM Z OMEGAMON Insights Agent enables system programmers to retrieve and ana
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.1.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
-- The [AIOps integration server](https://www.ibm.com/docs/en/watsonx/waz/3.1.0?topic=deploying-configuring-aiops-your-cluster) is installed
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- The [AIOps integration server](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=deploying-configuring-aiops-your-cluster) is installed
 
 ## Install the IBM Z OMEGAMON Insights Agent
 

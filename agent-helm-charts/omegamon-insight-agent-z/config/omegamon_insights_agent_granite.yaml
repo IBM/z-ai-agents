@@ -19,6 +19,7 @@ context_variables:
   - wxo_email_id
   - wxo_user_name
   - trace_id
+  - wxo_tenant_id
 chat_params: # chat_parms are parameters sent to an agent on each request
   stream: true # should the external agent be invoked using using SSE streaming or as a rest call
 config: # config represents the internal configuration of this agent used by wxo

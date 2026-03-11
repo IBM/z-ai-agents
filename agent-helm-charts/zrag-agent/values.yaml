@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/zrag-mcp-server
-  tag: v3.1.2@sha256:3fb56ac922ebb4e88e1f986e90e918bccd218cf6ee5f500b031da5b7a1a2d9af
+  tag: v3.2.0@sha256:9f1acd2fe09a6e856c9dab32c2dba3a5b9ed8ff1ab86f0879ecfe72f8aaa1a57
   pullPolicy: Always
 
 service:
@@ -101,7 +101,7 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
