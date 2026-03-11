@@ -2,12 +2,12 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-ims-ai/ims-qa-agent
-  tag: 1.0.1
+  tag: 1.0.2
   pullPolicy: Always
 
 mcpImage:
   repository: icr.io/ibm-ims-ai/ims-mcp-agent
-  tag: 1.0.1
+  tag: 1.0.2
   pullPolicy: Always
 
 service:
@@ -182,7 +182,7 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
