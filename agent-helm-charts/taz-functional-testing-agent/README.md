@@ -40,6 +40,8 @@ The following prerequisites must be completed:
 - Additional details regarding prerequisites can be found in the - [Functional Testing
 ](https://www.ibm.com/docs/en/test-accelerator-for-z/2.0.0?topic=functional-testing)
 
+- **Architectures:** `amd64`
+
 ## Install the IBM Z Functional Test Agent
 
 For installation guidance, refer to [Installing the Functional Testing VS Code extension](https://www.ibm.com/docs/en/test-accelerator-for-z/2.0.0?topic=testing-installation)
