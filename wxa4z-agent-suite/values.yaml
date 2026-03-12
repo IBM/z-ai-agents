@@ -671,12 +671,12 @@ compiler-fix-finder-agent:
       tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
-  # env:
-  # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+  env:
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
   secrets:
     data:
       AGENT_AUTH_TOKEN: ""
-  imagePullSecrets: []
-  # - name: wxa4z-image-pull-secret
+  imagePullSecrets:
+    - name: z-compiler-fix-finder-image-pull-secret
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
