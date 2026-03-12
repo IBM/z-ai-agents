@@ -8,14 +8,15 @@ data:
   JCL_PATH: |
     //SMPNTS   DD PATH='{{ .Values.ptfJob.SMPNTS }}',PATHDISP=KEEP
     //SMPWKDIR DD PATH='{{ .Values.ptfJob.SMPWDIR_PATH }}',PATHDISP=KEEP
-    //SMPJHOME DD PATH='{{ .Values.ptfJob.SMPJHOME }}/'
-    //SMPCPATH DD PATH='{{ .Values.ptfJob.SMPCPATH }}/'
+    //SMPJHOME DD PATH='{{ .Values.ptfJob.SMPJHOME }}'
+    //SMPCPATH DD PATH='{{ .Values.ptfJob.SMPCPATH }}'
   CLIENT_CONFIG: |
     <CLIENT
       downloadmethod="{{ .Values.ptfJob.DOWNLOAD_METHOD }}"
       downloadkeyring="{{ .Values.ptfJob.DOWNLOADKEYRING }}"
       javahome="{{ .Values.ptfJob.SMPJHOME }}"
-      classpath="{{ .Values.ptfJob.SMPCPATH }}">
+      classpath="{{ .Values.ptfJob.SMPCPATH }}"
+      signaturekeyring="{{ .Values.ptfJob.SIGNATUREKEYRING }}">
     </CLIENT>
   ORDERSERVER_CONFIG: |
     <ORDERSERVER

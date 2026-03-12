@@ -1,14 +1,14 @@
 resources:
   agents:
-    - name: IBM Operations Agent for Z
+    - name: IBM_Operations_agent_for_Z
       kind: orchestrator
       path: /ibm-ops-agent-bootstrap-config/ibm_ops_agent.yaml
       collaborators:
         - name: IBM_Operations_agent_for_Z_ext
           kind: external
-          description: Answers questions on CICS regions, CICSPlexes, Sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, detects high-consuming transactions or short-on-storage conditions. Monitors limits like maximum tasks (MAXTASKS) and concurrent transactions giving visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides CPU health, utilization, and system topology and validate resource existence. Delivers Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, highlighting service classes not meeting objectives. Reports on critical events and critical event groups.
-          route_name: ${IBM_OPS_AGENT_ROUTE_NAME}
+          description: Answers questions on CICS regions, CICSPlexes, Sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, detects high-consuming transactions or short-on-storage conditions. Monitors limits like maximum tasks (MAXTASKS) and concurrent transactions giving visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides CPU health, utilization, and system topology and validate resource existence. Delivers Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, highlighting service classes not meeting objectives. Reports on critical events and critical event groups. Able to run with Granite on Spyre.
+          route_name: ${IBM_OPS_AGENT_MCP_ROUTE_NAME}
           route_path: /v1/wlm_unite_chat
-          namespace: ${IBM_OPS_AGENT_NAMESPACE}
+          namespace: ${IBM_OPS_AGENT_MCP_NAMESPACE}
           auth_type: API_KEY
           auth_value_key: ${AGENT_AUTH_TOKEN}

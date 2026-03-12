@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ required "service.name is required"  .Values.TCservice.name }}
+spec:
+  selector:
+    app: {{ required "Chart.Name is required"  .Chart.Name }}-tc
+  ports:
+    - name: {{ required "service.ports.name is required" .Values.TCservice.ports.name }}
+      protocol: {{ required "service.ports.protocol is required" .Values.TCservice.ports.protocol }}
+      port: {{ required "service.ports.port is required" .Values.TCservice.ports.port }}
+      targetPort: {{ required "service.ports.targetPort is required" .Values.TCservice.ports.targetPort }}

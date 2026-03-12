@@ -13,7 +13,7 @@ metadata:
     {{- include "wxa4z.annotations" . | nindent 4 }}
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   completions: {{ default 1 .Values.bootstrapJob.completions }}
   parallelism: {{ default 1 .Values.bootstrapJob.parallelism }}
@@ -38,10 +38,10 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-bootstrap-job
           image: "{{ .Values.bootstrapJob.image.repository }}:{{ .Values.bootstrapJob.image.tag }}"
-          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+          imagePullPolicy: {{ default "IfNotPresent" .Values.mcpImage.pullPolicy }}
           envFrom:
             - secretRef:
-                name: {{ .Values.secrets.name | quote }}
+                name: {{ .Values.mcpSecrets.name | quote }}
             - secretRef:
               {{- if .Values.bootstrapJob.secret.dev_mode}}
                 name: {{ .Values.bootstrapJob.secret.name}}
@@ -55,9 +55,9 @@ spec:
                 value: {{ .Values.bootstrapJob.env.CONFIG_PATH}}
               - name: HOME
                 value: {{ .Values.bootstrapJob.env.HOME}}
-              - name: IBM_OPS_AGENT_ROUTE_NAME
-                value: {{ .Values.route.name | quote }}
-              - name: IBM_OPS_AGENT_NAMESPACE
+              - name: IBM_OPS_AGENT_MCP_ROUTE_NAME
+                value: {{ .Values.mcpRoute.name | quote }}
+              - name: IBM_OPS_AGENT_MCP_NAMESPACE
                 value: {{ .Release.Namespace | quote }}
           resources:
             {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}
@@ -81,7 +81,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-delete
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   completions: {{ default 1 .Values.bootstrapJob.completions }}
   parallelism: {{ default 1 .Values.bootstrapJob.parallelism }}
@@ -106,10 +106,10 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-cleanup-job
           image: "{{ .Values.bootstrapJob.image.repository }}:{{ .Values.bootstrapJob.image.tag }}"
-          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+          imagePullPolicy: {{ default "IfNotPresent" .Values.mcpImage.pullPolicy }}
           envFrom:
             - secretRef:
-                name: {{ .Values.secrets.name | quote }}
+                name: {{ .Values.mcpSecrets.name | quote }}
             - secretRef:
               {{- if .Values.bootstrapJob.secret.dev_mode}}
                 name: {{ .Values.bootstrapJob.secret.name}}
@@ -125,9 +125,9 @@ spec:
                 value: {{ .Values.bootstrapJob.env.CONFIG_PATH}}
               - name: HOME
                 value: {{ .Values.bootstrapJob.env.HOME}}
-              - name: IBM_OPS_AGENT_ROUTE_NAME
-                value: {{ .Values.route.name | quote }}
-              - name: IBM_OPS_AGENT_NAMESPACE
+              - name: IBM_OPS_AGENT_MCP_ROUTE_NAME
+                value: {{ .Values.mcpRoute.name | quote }}
+              - name: IBM_OPS_AGENT_MCP_NAMESPACE
                 value: {{ .Release.Namespace | quote }}
           resources:
             {{- toYaml .Values.bootstrapJob.resources | nindent 12 }}

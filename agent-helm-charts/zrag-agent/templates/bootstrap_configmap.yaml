@@ -1,0 +1,17 @@
+{{- if .Values.bootstrapJob.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-bootstrap-config
+  annotations:
+    {{- include "wxa4z.annotations" . | nindent 4 }}
+data:
+  zrag_agent_bootstrap_config.yaml: |-
+{{ .Files.Get "config/zrag_agent_bootstrap_config.yaml" | indent 4 }}
+  zrag_agent.yaml: |-
+{{- if contains "granite-3-3-8b-instruct" .Values.configmap.MODEL_ID }}
+{{ .Files.Get "config/zrag_agent_granite.yaml" | indent 4 }}
+{{- else }}
+{{ .Files.Get "config/zrag_agent.yaml" | indent 4 }}
+{{- end }}
+{{- end }}

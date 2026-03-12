@@ -4,6 +4,7 @@ metadata:
   name: {{ .Values.mcpRoute.name }}
   annotations:
     openshift.io/host.generated: "{{ .Values.mcpRoute.annotations.hostGenerated | default "true" }}"
+    haproxy.router.openshift.io/timeout: "3m"
 spec:
   to:
     kind: Service

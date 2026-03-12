@@ -7,5 +7,9 @@ data:
   automation_insight_agent_bootstrap_config.yaml: |-
 {{ .Files.Get "config/automation_insight_agent_bootstrap_config.yaml" | indent 4 }}
   automation_insight_agent.yaml: |-
+{{- if contains "granite-3-3-8b-instruct" .Values.env.WATSONX_MODEL_ID }}
+{{ .Files.Get "config/automation_insight_agent_granite.yaml" | indent 4 }}
+{{- else }}
 {{ .Files.Get "config/automation_insight_agent.yaml" | indent 4 }}
+{{- end }}
 {{- end }}

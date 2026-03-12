@@ -9,5 +9,9 @@ data:
   support_agent_bootstrap_config.yaml: |-
 {{ .Files.Get "config/support_agent_bootstrap_config.yaml" | indent 4 }}
   support_agent.yaml: |-
+{{- if contains "granite-3-3-8b-instruct" .Values.env.WATSONX_MODEL_ID }}
+{{ .Files.Get "config/support_agent_granite.yaml" | indent 4 }}
+{{- else }}
 {{ .Files.Get "config/support_agent.yaml" | indent 4 }}
+{{- end }}
 {{- end }}

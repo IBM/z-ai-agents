@@ -1,0 +1,16 @@
+{{- if .Values.followupPvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Chart.Name }}-followup-pvc
+spec:
+  {{- with .Values.followupPvc.accessModes}}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.followupPvc.size }}
+  storageClassName: {{ .Values.followupPvc.storageClass }}
+  volumeMode: Filesystem
+{{- end }}

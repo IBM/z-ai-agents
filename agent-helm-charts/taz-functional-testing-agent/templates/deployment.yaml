@@ -108,11 +108,11 @@ spec:
               value: {{ .Values.env.API_BASE_URL }}
             - name: CFG_URI
               value: {{ .Values.env.CFG_URI}}
-            -name: UNDERSTAND_API_ENDPOINT
+            - name: UNDERSTAND_API_ENDPOINT
               value: {{ .Values.env.UNDERSTAND_API_ENDPOINT}}
-            -name: AD_HOST
+            - name: AD_HOST
               value: {{ .Values.env.AD_HOST}}
-            -name: ZOOKEEPER_HOST_PORT
+            - name: ZOOKEEPER_HOST_PORT
               value: {{ .Values.env.ZOOKEEPER_HOST_PORT}}
             - name: UNDERSTAND_API_KEY
               valueFrom:

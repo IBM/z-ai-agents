@@ -1,7 +1,7 @@
-{{- if .Values.caTrustSync.enabled }}
+{{- if .Values.global.caTrustSync.enabled }}
 {{- $jobName := printf "%s-ca-trust-sync-job" .Chart.Name -}}
-{{- $capaths  := default (list "/etc/ssl/certs/ca-bundle.crt") .Values.caTrustSync.caPaths -}}
-{{- $timeout  := default "300s" .Values.caTrustSync.rolloutTimeout -}}
+{{- $capaths  := default (list "/etc/ssl/certs/ca-bundle.crt") .Values.global.caTrustSync.caPaths -}}
+{{- $timeout  := default "300s" .Values.global.caTrustSync.rolloutTimeout -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -15,14 +15,15 @@ metadata:
     {{- include "wxa4z.annotations" . | nindent 4 }}
     "helm.sh/hook": post-install,post-upgrade
     # Keep failed Jobs for troubleshooting; remove succeeded ones; recreate before a new hook run.
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-weight": "12"
+    "helm.sh/hook-delete-policy": before-hook-creation
     kubernetes.io/description: >
       ca-trust-sync: merge the target workload's system CA with the product CA; create/update
       'merged-ca-bundle-secret' in the target namespace; ensure it is mounted; set EXT_CERT_PATH;
       and wait for the deployment to become Available.
 spec:
-  backoffLimit: {{ default 1 .Values.caTrustSync.backoffLimit }}
-  ttlSecondsAfterFinished: {{ default 300 .Values.caTrustSync.ttlSecondsAfterFinished }}
+  backoffLimit: {{ default 3 .Values.global.caTrustSync.backoffLimit }}
+  ttlSecondsAfterFinished: {{ default 300 .Values.global.caTrustSync.ttlSecondsAfterFinished }}
   template:
     metadata:
       labels:
@@ -33,31 +34,31 @@ spec:
     spec:
       serviceAccountName: {{ .Chart.Name }}-ca-trust-sync-sa
       automountServiceAccountToken: true
-      restartPolicy: OnFailure
+      restartPolicy: Never
       securityContext:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: ca-trust-sync
-          image: {{ required "caTrustSync.image is required" .Values.caTrustSync.image }}
-          imagePullPolicy: {{ default "IfNotPresent" .Values.caTrustSync.imagePullPolicy }}
+          image: {{ required "caTrustSync.image is required" .Values.global.caTrustSync.image }}
+          imagePullPolicy: {{ default "IfNotPresent" .Values.global.caTrustSync.imagePullPolicy }}
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-{{- with .Values.caTrustSync.resources }}
+{{- with .Values.global.caTrustSync.resources }}
           resources:
 {{ toYaml . | indent 12 }}
 {{- end }}
           env:
             - name: TARGET_NAMESPACE
-              value: "{{ required "caTrustSync.targetNamespace is required" .Values.caTrustSync.targetNamespace }}"
+              value: "{{ required "caTrustSync.targetNamespace is required" .Values.global.caTrustSync.targetNamespace }}"
             - name: TARGET_DEPLOYMENT
-              value: "{{ required "caTrustSync.targetDeployment is required" .Values.caTrustSync.targetDeployment }}"
+              value: "{{ required "caTrustSync.targetDeployment is required" .Values.global.caTrustSync.targetDeployment }}"
             - name: TARGET_CONTAINER
-              value: "{{ required "caTrustSync.targetContainer is required" .Values.caTrustSync.targetContainer }}"
+              value: "{{ required "caTrustSync.targetContainer is required" .Values.global.caTrustSync.targetContainer }}"
             - name: TLS_SECRET_NAME
-              value: "{{ required "caTrustSync.sourceSecretName is required" .Values.caTrustSync.sourceSecretName }}"
+              value: "{{ required "caTrustSync.sourceSecretName is required" .Values.global.caTrustSync.sourceSecretName }}"
             - name: CA_PATHS
               value: "{{ join " " $capaths }}"
           volumeMounts:
@@ -218,7 +219,7 @@ spec:
       volumes:
         - name: tls-secret
           secret:
-            secretName: {{ required "caTrustSync.sourceSecretName is required" .Values.caTrustSync.sourceSecretName }}
+            secretName: {{ required "caTrustSync.sourceSecretName is required" .Values.global.caTrustSync.sourceSecretName }}
         - name: tmp
           emptyDir: {}
 {{- end }}

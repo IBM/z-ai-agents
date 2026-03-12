@@ -1,0 +1,16 @@
+{{- if .Values.TCpvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.TCpvc.name }}
+spec:
+  {{- with .Values.TCpvc.accessModes}}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.TCpvc.size }}
+  storageClassName: {{ .Values.TCpvc.storageClass }}
+  volumeMode: Filesystem
+{{- end }}

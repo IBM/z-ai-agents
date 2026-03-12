@@ -1,4 +1,4 @@
-# z-ai-agents - Deployment Guide
+# IBM Z AI Agents - Deployment Guide
 
 Install and operate the [IBM watsonx Assistant for Z – Agent Suite](/wxa4z-agent-suite/) Helm chart on OpenShift. Deploy multiple z/OS agents with one command, using shared configuration and per‑agent overrides.
 
@@ -53,12 +53,28 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 | Name                       | Chart name               | Category      |   Reference   |
 | -------------------------- | ------------------------ | ------------- | ------------- |
-| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [README](./agent-helm-charts/system-insight-agent-z/README.md)                  |
-| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./agent-helm-charts/upgrade-agent/README.md)                  |
-| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](/agent-helm-charts/system-automation-netview-agent/README.md)|
-| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
-| IBM Z Support Agent              | `support-agent`          | Foundational | [README](./agent-helm-charts/support-agent/README.md)                   |
+| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [Configuration Guide](./agent-helm-charts/omegamon-insight-agent-z/README.md)                  |
+| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [Configuration Guide](./agent-helm-charts/upgrade-agent/README.md)                  |
+| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[Configuration Guide](/agent-helm-charts/system-automation-netview-agent/README.md)|
+| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[Configuration Guide](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
+| IBM Z Support Agent              | `support-agent`          | Foundational | [Configuration Guide](./agent-helm-charts/support-agent/README.md)                   |
+| zRAG Agent          | `zrag-agent`          | Foundational | [Configuration Guide](./agent-helm-charts/zrag-agent/README.md)                   |
 
+
+---
+
+### Prebuilt IBM Z product agents
+
+| Name                           | Chart name                     | Category         |  Reference.      |
+| ------------------------------ | ------------------------------ | -----------------| -----------------|
+| IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/cics-agent/README.md)|
+| IBM Z Compilers Fix Finder Agent | `compiler-fix-finder-agent` | Product  |[Configuration Guide](/agent-helm-charts/compiler-fix-finder-agent/README.md)|
+| IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/db2z-agent/README.md)|
+| IBM IMS Agents                 | `ims-agent`                    | Product  |[Configuration Guide](/agent-helm-charts/ims-agent/README.md)|
+| IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[Configuration Guide](/agent-helm-charts/intellimagic-agent/README.md)|
+| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[Configuration Guide](/agent-helm-charts/taz-functional-testing-agent/README.md)|
+| IBM Operations Agent for Z | `ibm-operations-agent-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z/README.md)|
+| IBM Operations Agent for Z Spyre | `ibm-operations-agent-z-spyre` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z-spyre/README.md)|
 
 ---
 
@@ -291,20 +307,46 @@ helm upgrade wxa4z-agent-suite \
 ```bash
 helm uninstall wxa4z-agent-suite -n <namespace>
 ```
+This removes all agent components and automatically removes their entries from the Watsonx Orchestrate UI. 
 
-#### Uninstall specific agent
+**Uninstall Without Hooks**
 
-1.Set the `<agent>.enabled` flag to false.
+If uninstall hooks fail due to wrong CPD config/token/route issues, use:
 
-**Example:**
-
-```yaml
-ims-agent:
-  enabled: false
+```bash
+helm uninstall wxa4z-agent-suite -n <namespace> --no-hooks
 ```
 
+> Note: Use when uninstall hangs or cleanup hooks fail. Agents may still remain in UI — delete manually from Agent Builder → ⋮ → Delete.
 
-2.Run helm upgrade
+
+### 4. Removing an Existing Agent
+
+Removing an agent requires two steps: deleting it from the Watsonx Assistant for Z UI and cleaning up its associated components on OpenShift.
+
+#### Step 1 — Remove the Agent from the UI
+
+1. Log in to your CPD instance and open **Watsonx Assistant for Z**.
+2. Navigate to **Build → Agent Builder**.
+3. Select the agent you want to remove.
+4. Click the **options (⋮)** menu in the upper-right corner and choose **Delete**.
+
+This removes the agent only from the UI.
+
+---
+
+#### Step 2 — Clean Up Agent Components on OpenShift
+
+To remove the underlying Kubernetes resources, update the `wxa4z-agent-suite` Helm release:
+
+1. Get the `values.yaml` used during installation.
+2. Set the agent’s `enabled` field to **false**.
+
+   **Example:**
+   ```yaml
+   ims-agent:
+     enabled: false
+3. Run helm upgrade
 
 ```bash
 helm upgrade --install wxa4z-agent-suite \
@@ -314,6 +356,9 @@ helm upgrade --install wxa4z-agent-suite \
   --wait
 ```
 
+#### Note
+> Running a Helm upgrade with enabled=false removes only that agent’s Kubernetes resources.
+The agent will continue to appear in the Watsonx Assistant for Z UI until removed manually via Step 1 above.
 ---
 
 ## Post Install Verification

@@ -1,0 +1,16 @@
+{{- if .Values.PDpvc.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.PDpvc.name }}
+spec:
+  {{- with .Values.PDpvc.accessModes}}
+  accessModes:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.PDpvc.size }}
+  storageClassName: {{ .Values.PDpvc.storageClass }}
+  volumeMode: Filesystem
+{{- end }}

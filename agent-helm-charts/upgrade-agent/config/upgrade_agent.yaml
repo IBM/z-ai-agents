@@ -21,3 +21,8 @@ context_access_enabled: true
 context_variables:
   - wxo_email_id
   - wxo_user_name
+chat_params: # chat_parms are parameters sent to an agent on each request
+  stream: true # should the external agent be invoked using using SSE streaming or as a rest call
+config: # config represents the internal configuration of this agent used by wxo
+  hidden: false # Hide this collaborator agent from the ui
+  enable_cot: true
