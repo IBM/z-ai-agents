@@ -338,16 +338,16 @@ db2z-agent:
     storageClass: "ocs-storagecluster-cephfs"
 
 # ---------------------------------------------------------------------------- #
-# Product: ibm-operations-agent-z
+# Product: ibm-concert-agent-z
 # ---------------------------------------------------------------------------- #
-ibm-operations-agent-z:
+ibm-concert-agent-z:
   enabled: false
-  acceptLicense: false # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
+  acceptLicense: false # Must be true to install. Reference Concert agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-KACZ-65ZZRN
   mcpImage:
-    repository: icr.io/ibm-operations-aai/ibm-operations-agent-z
-    tag: v1.1.2
+    repository: icr.io/ibm-operations-aai/ibm-concert-z-agent
+    tag: v1.2.0
   registry:
-    name: ibm-operations-agent-image-pull-secret
+    name: ibm-concert-agent-image-pull-secret
     server: icr.io
     username: iamapikey
     entitlementKey: entitlementKey
@@ -355,7 +355,7 @@ ibm-operations-agent-z:
     enabled: true
     image:
       repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
   env:
@@ -369,26 +369,32 @@ ibm-operations-agent-z:
       UNITE_API_URL: ""
       UNITE_TOKEN_URL: ""
       AGENT_AUTH_TOKEN: ""
-      WRAPPER_URL: "" # URL for the OpenSearch endpoint (zRAG)
+      WRAPPER_URL: "http://wxa4z-opensearch-wrapper.wxa4z-zad.svc.cluster.local/v1/query" #(zRAG)
       WRAPPER_USERNAME: "" # username for the OpenSearch wrapper URL (zRAG)
       WRAPPER_PASSWORD: "" # password for the OpenSearch wrapper URL (zRAG)
+      CONCERT_MCP_SERVER_HOST: "0.0.0.0"
+      OMEGAMON_MCP_URL: ""
+      WORKLOAD_MCP_URL: ""
+      AUTOMATION_MCP_URL: ""
+      UNITE_LEGACY_API_URL: ""
+      UNITE_AGENTIC_API_URL: ""
 
   imagePullSecrets:
-    - name: ibm-operations-agent-image-pull-secret
+    - name: ibm-concert-agent-image-pull-secret
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
 
 # ---------------------------------------------------------------------------- #
-# Product: ibm-operations-agent-z-spyre
+# Product: ibm-concert-agent-z-spyre
 # ---------------------------------------------------------------------------- #
-ibm-operations-agent-z-spyre:
+ibm-concert-agent-z-spyre:
   enabled: false
-  acceptLicense: false # Must be true to install. Reference Operations agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-VLHP-TZCRZX
+  acceptLicense: false # Must be true to install. Reference Concert agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-KACZ-65ZZRN
   image:
-    repository: icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre
-    tag: v1.1.2
+    repository: icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre
+    tag: v1.2.0
   registry:
-    name: ibm-operations-agent-image-pull-secret-spyre
+    name: ibm-concert-agent-image-pull-secret-spyre
     server: icr.io
     username: iamapikey
     entitlementKey: entitlementKey
@@ -396,7 +402,7 @@ ibm-operations-agent-z-spyre:
     enabled: true
     image:
       repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     imagePullSecrets: []
       # - name: wxa4z-image-pull-secret
   env:
@@ -412,10 +418,9 @@ ibm-operations-agent-z-spyre:
       AGENT_AUTH_TOKEN: ""
       LLM_MODEL: "ibm/granite-3-3-8b-instruct"
   imagePullSecrets:
-    - name: ibm-operations-agent-image-pull-secret-spyre
+    - name: ibm-concert-agent-image-pull-secret-spyre
   pvc:
     storageClass: "ocs-storagecluster-cephfs"
-
 # ---------------------------------------------------------------------------- #
 # Product: taz-functional-testing-agent
 # ---------------------------------------------------------------------------- #
