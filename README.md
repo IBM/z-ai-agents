@@ -82,7 +82,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 > **This site hosts only the Agent Deployment Guide, not the agents themselves. A valid entitlement must be obtained before agents can be properly deployed.**
 
-> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**. By installing the **IBM watsonx Assistant for Z Foundational Agents** in accordance with the instructions provided herein, you acknowledge and agree to comply with the terms of the **[IBM watsonx Assistant for Z License](https://www.ibm.com/support/customer/csol/terms/?id=L-EZAK-KGTP3H)**. 
+> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**. By installing the **IBM watsonx Assistant for Z Foundational Agents** in accordance with the instructions provided herein, you acknowledge and agree to comply with the terms of the **[IBM watsonx Assistant for Z License](https://www.ibm.com/support/customer/csol/terms/?id=L-CXGZ-TW5PCC)**. 
 
 > For **Prebuilt IBM Z product agents**, a separate entitlement must be obtained for each corresponding product.
 
