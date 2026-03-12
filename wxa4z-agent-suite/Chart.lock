@@ -23,12 +23,12 @@ dependencies:
 - name: db2z-agent
   repository: file://../agent-helm-charts/db2z-agent
   version: 1.1.1
-- name: ibm-operations-agent-z
-  repository: file://../agent-helm-charts/ibm-operations-agent-z
-  version: 1.1.2
-- name: ibm-operations-agent-z-spyre
-  repository: file://../agent-helm-charts/ibm-operations-agent-z-spyre
-  version: 1.1.2
+- name: ibm-concert-agent-z
+  repository: file://../agent-helm-charts/ibm-concert-agent-z
+  version: 1.2.0
+- name: ibm-concert-agent-z-spyre
+  repository: file://../agent-helm-charts/ibm-concert-agent-z-spyre
+  version: 1.2.0
 - name: taz-functional-testing-agent
   repository: file://../agent-helm-charts/taz-functional-testing-agent
   version: 0.1.0
@@ -41,5 +41,5 @@ dependencies:
 - name: compiler-fix-finder-agent
   repository: file://../agent-helm-charts/compiler-fix-finder-agent
   version: 1.0.0
-digest: sha256:7ea6c08e4b7fa428dd35a32d07830f3d9eaf4179cf821cd772c66b7a6e161646
-generated: "2026-03-11T07:18:26.41609-07:00"
+digest: sha256:3ae8467ebe7c15619a06c84fbeff73241e19c72a2c62f3ad7535f4e9aa618255
+generated: "2026-03-12T07:00:03.985150773-07:00"

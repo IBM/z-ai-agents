@@ -5,22 +5,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Chart.Name }}-mcp
+  name: {{ .Chart.Name }}-mcp-server
   labels:
-    app: {{ .Chart.Name }}
+    app: {{ .Chart.Name }}-mcp-server
     "wxa4z.ibm.com/agent": "true"
   annotations:
     "wxa4z.ibm.com/agent-secret-name": {{ .Values.mcpSecrets.name }}
-    "wxa4z.ibm.com/agent-route-name": {{ .Values.mcpRoute.name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}
+      app: {{ .Chart.Name }}-mcp-server
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}
+        app: {{ .Chart.Name }}-mcp-server
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -30,21 +29,21 @@ spec:
         - name: data-volume
           {{- if .Values.pvc.enabled }}
           persistentVolumeClaim:
-            claimName: ibm-operations-agent-z-mcp-pvc
+            claimName: ibm-concert-agent-z-mcp-server-pvc
           {{- else }}
           emptyDir: {}
           {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ .Chart.Name }}-mcp-server
           image: {{ .Values.mcpImage.repository }}:{{ .Values.mcpImage.tag }}
           imagePullPolicy: {{ .Values.mcpImage.pullPolicy }}
           volumeMounts:
             - name: data-volume
               mountPath: /data
           ports:
-            {{- range .Values.mcpService.ports }}
+            {{- range .Values.mcpServerService.ports }}
             - containerPort: {{ .targetPort }}
-              name: {{ .name }} 
+              name: {{ .name }}
             {{- end }}
           env:
             {{- range $key, $val := .Values.env }}
@@ -53,6 +52,8 @@ spec:
             {{- end }}
             - name: PYTHONWARNINGS
               value: "ignore::SyntaxWarning"
+            - name: SERVICE_MODE
+              value: "server"
             - name: WATSONX_DEPLOYMENT_SPACE_ID
               valueFrom:
                 secretKeyRef:
@@ -93,3 +94,4 @@ spec:
             requests:
               cpu: {{ .Values.mcpResources.requests.cpu }}
               memory: {{ .Values.mcpResources.requests.memory }}
+
