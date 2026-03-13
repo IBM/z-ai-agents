@@ -79,6 +79,7 @@ support-agent:
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
     tag: v3.2.0@sha256:c522684c0764efa04178fd7b0b1354de838d63bc2f6c620bf0638a44a91d93c7
+  bootstrapJob:
     enabled: true
     image:
       repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
