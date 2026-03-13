@@ -1,18 +1,18 @@
-# IBM Operations Agent for Z - Spyre
+# IBM Concert for Z Agent- Spyre
 
 ## Overview
 
-The IBM® Operations Agent for Z - Spyre enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
+The IBM® Concert Agent for Z - Spyre enables you to use natural language to query the IBM Z® data that is collected by IBM Concert® for Z.
 
 The agent uses the conventions that are required by the agent-controller for proper registration and integration with IBM watsonx Orchestrate.
 
 | Field         | Value                                                                |
 |---------------|----------------------------------------------------------------------|
-| Agent Name    |  `ibm-operations-agent-z-spyre`                                             |
-| Images        | `icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:<tag>`    |
+| Agent Name    |  `ibm-concert-agent-z-spyre`                                             |
+| Images        | `icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre:<tag>`    |
 | Endpoint Path | `/v1/wlm_unite_chat`                                                 |
 | Auth Type     | `API_KEY`                                                            |
-| Description   | Operations Agent for Z – Spyre is a lightweight variant without MCP support, runs on IBM Spyre, and is optimized for Granite, providing a simplified yet powerful solution for environments that do not require MCP integration. It answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides information about CPU health, utilization, and system topology, and validates resource existence. Delivers z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. IBM Operations Agent for Z - Spyre supports Granite models on Spyre. |
+| Description   | Answers questions about CICS® regions, CICSPlexes, sysplexes, LPARs, and workloads in z/OS environments. Tracks CPU utilization, I/O activity, transaction volumes, response times, and storage availability, and detects high-consuming transactions or short-on-storage conditions. Monitors limits, such as maximum tasks (MAXTASKS) and concurrent transactions, to give visibility into active CICSPlexes, their regions, and transaction classes. For sysplexes and LPARs, the agent provides information about CPU health, utilization, and system topology, and validates resource existence. Delivers z/OS Workload Management (WLM) insights, including transaction rates, response times, performance indexes, and goal achievements, and highlights service classes that are not meeting objectives. Reports critical events and critical event groups. IBM Concert for Z Agent - Spyre supports Granite models on Spyre. |
 
 ## Agent capabilities
 
@@ -35,7 +35,7 @@ The following software must be installed and configured:
 
 ## Image Signature Verification Guide
 
-This container image of the **IBM Operations Agent for Z - Spyre** is digitally signed to guarantee authenticity and integrity.
+This container image of the **IBM Concert for Z Agent - Spyre** is digitally signed to guarantee authenticity and integrity.
 Use the following instructions to verify the image signature with the provided files.
 
 ---
@@ -43,11 +43,11 @@ Use the following instructions to verify the image signature with the provided f
 ### Image reference
 
 ```bash
-icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.2
+icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre:v1.2.0
 ```
 ### Files provided
 
-#### IBM Operations Agent for Z - Spyre
+#### IBM Concert for Z Agent - Spyre
 - **PRD0014680key.pem.cer** – Certificate
 - **PRD0014680key.pem.chain** – CA chain
 - **PRD0014680key.pem.pub.key** – Public key
@@ -70,7 +70,7 @@ To immediately verify the image signature, run the following command:
 
 ```bash
 cosign verify --key PRD0014680key.pem.pub.key \
-  icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.2* | jq .
+  icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre:v1.2.0* | jq .
 ```
 
 If the signature is valid, details about the signer and the certificate are shown in the output.
@@ -82,17 +82,17 @@ If the signature is valid, details about the signer and the certificate are show
 Identify the signature manifest reference:
 
 ```bash
-cosign triangulate icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:v1.1.2
+cosign triangulate icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre:v1.2.0
 ```
 Example output:
 
 ```bash
-icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:sha256-<digest>.sig
+icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre:sha256-<digest>.sig
 ```
 Inspect the signature details:
 
 ```bash
-crane manifest icr.io/ibm-operations-aai/ibm-operations-agent-z-spyre:sha256-<digest>.sig | jq .
+crane manifest icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre:sha256-<digest>.sig | jq .
 ```
 This displays the certificate chain and metadata that is embedded in the signature object.
 
@@ -136,20 +136,20 @@ Response verify OK
 | **CPD_ADMIN_PASSWORD** *(On-prem only)* | Password for the CPD admin user. |
 | **ASSISTANT_API_KEY** *(IBM Cloud only)* | IBM Cloud API key (or service credential) for your Assistant instance. <br> **Use:** Required on Cloud; not used on on-prem (CPD uses `CPD_AUTH_URL` with CPD credentials/tokens). |
 
-## Install IBM Operations Agent for Z - Spyre
+## Install IBM Concert for Z Agent - Spyre
 
 ### Retrieve the entitlement key
 
 The entitlement key is shipped as part of IBM Concert for Z
 > **Note**: In the Shopz memo, this key is referred to as an API key.
-Enter the value of this key in the `ibm-operations-agent-z` section of the `values.yaml` file in the `wxa4z-agent-suite` folder.
+Enter the value of this key in the `ibm-concert-agent-z` section of the `values.yaml` file in the `wxa4z-agent-suite` folder.
 (See [values.yaml](../../wxa4z-agent-suite/values.yaml)).
 
 ```yaml:
-ibm-operations-agent-z-spyre:
+ibm-concert-agent-z-spyre:
   ...
     registry:
-        name: ibm-operations-agent-image-pull-secret-spyre
+        name: ibm-concert-agent-image-pull-secret-spyre
         server: icr.io
         username: iamapikey
         entitlementKey: entitlementKey
@@ -162,9 +162,9 @@ However, if any of these shared variables are also defined in your agent-specifi
 
 ### Configure the values.yaml file
 
-To enable the IBM Operations Agent for Z, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
+To enable the IBM Concert for Z Agent, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
 
-In the values.yaml file, scroll down to the IBM Operations Agent for Z section and update the keys as outlined in the following table.
+In the values.yaml file, scroll down to the IBM Concert for Z Agent section and update the keys as outlined in the following table.
 
 **SET VALUES FOR BELOW KEYS IN `env` SECTION of `values.yaml` as required**
 
@@ -208,7 +208,7 @@ In the values.yaml file, scroll down to the IBM Operations Agent for Z section a
 Run the following command to create an image pull secret for IBM Cloud Container Registry (ICR):
 
 ```bash
-oc create secret -n <your-namespace> docker-registry ibm-operations-agent-z-secrets \
+oc create secret -n <your-namespace> docker-registry ibm-concert-agent-z-secrets \
   --docker-server=icr.io \  #replace this with container registry
   --docker-username=iamapikey \ # replace this with container registry username
   --docker-password=<your-api-key> # replace this with container registry password
@@ -225,7 +225,7 @@ In your Helm chart's[ `values.yaml`] , update the image pull secret:
 
 ```yaml
 imagePullSecrets:
-  - name: ibm-operations-agent-z-secrets
+  - name: ibm-concert-agent-z-secrets
 ```
 
 ---
@@ -235,7 +235,7 @@ imagePullSecrets:
 Finally, install the Helm chart:
 
 ```bash
-helm upgrade --install ibm-operations-agent-z-spyre . \
+helm upgrade --install ibm-concert-agent-z-spyre . \
   -n <your-namespace> \
   -f values.yaml
 ```
@@ -258,7 +258,7 @@ helm upgrade --install wxa4z-agent-suite \
 
 ## Enabling the Agent and Accepting the License
 
-The WXA4Z-suite install will only install the IBM Operations Agent for Z if it is enabled and the license is accepted. To enable IBM Operations Agent for Z change the values of the following keys:
+The WXA4Z-suite install will only install the IBM Concert for Z Agent if it is enabled and the license is accepted. To enable IBM Concert for Z Agent change the values of the following keys:
 
 The enabled key should be set to true.
 The acceptLicense key should be set to true. Setting this to true implies that you agree to the license terms.
@@ -266,7 +266,7 @@ These values are available in the shared [values.yaml](../../wxa4z-agent-suite/v
 
 
 ```bash
-ibm-operations-agent-z-spyre:
+ibm-concert-agent-z-spyre:
   enabled: true
   acceptLicense: true
 ```
@@ -275,7 +275,7 @@ ibm-operations-agent-z-spyre:
 
 1. Log in to watsonx Orchestrate.
 2. From the main menu, navigate to **Build** > **Agent Builder**.
-3. Select the **IBM Operations Agent for Z** tile.
+3. Select the **IBM Concert for Z Agent** tile.
 4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
 5. Click **Deploy** to activate the agent and make it available in the live environment.
 
@@ -285,7 +285,7 @@ After deployment, the agent becomes active and is available for selection in the
 
 1. Log in to watsonx Orchestrate.
 2. From the main menu, click **Chat**.
-2. Choose **IBM Operations Agent for Z** from the list.
+2. Choose **IBM Concert for Z Agent** from the list.
 3. Enter your queries using the AI Assistant.
 Responses are displayed either in a tabular format or as a sentence, depending on the context.
 4. Verify that the responses returned by the AI Assistant are accurate.

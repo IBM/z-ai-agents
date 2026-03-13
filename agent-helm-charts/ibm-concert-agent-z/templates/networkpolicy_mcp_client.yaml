@@ -1,11 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ .Values.mcpNetworkPolicy.name }}
+  name: {{ .Values.mcpNetworkPolicy.name }}-mcp-client
 spec:
   podSelector:
     matchLabels:
-      app: {{ .Chart.Name }}
+      app: {{ .Chart.Name }}-mcp-client
   policyTypes:
   - Egress
   - Ingress

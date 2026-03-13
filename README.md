@@ -73,8 +73,8 @@ wxa4z-agent-suite/ # <— umbrella chart
 | IBM IMS Agents                 | `ims-agent`                    | Product  |[Configuration Guide](/agent-helm-charts/ims-agent/README.md)|
 | IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[Configuration Guide](/agent-helm-charts/intellimagic-agent/README.md)|
 | Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[Configuration Guide](/agent-helm-charts/taz-functional-testing-agent/README.md)|
-| IBM Operations Agent for Z | `ibm-operations-agent-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z/README.md)|
-| IBM Operations Agent for Z Spyre | `ibm-operations-agent-z-spyre` | Product  |[Configuration Guide](/agent-helm-charts/ibm-operations-agent-z-spyre/README.md)|
+| IBM Concert for Z Agent | `ibm-concert-agent-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-concert-agent-z/README.md)|
+| IBM Concert for Z Agent Spyre | `ibm-concert-agent-z-spyre` | Product  |[Configuration Guide](/agent-helm-charts/ibm-concert-agent-z-spyre/README.md)|
 
 ---
 
@@ -82,7 +82,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 > **This site hosts only the Agent Deployment Guide, not the agents themselves. A valid entitlement must be obtained before agents can be properly deployed.**
 
-> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**. By installing the **IBM watsonx Assistant for Z Foundational Agents** in accordance with the instructions provided herein, you acknowledge and agree to comply with the terms of the **[IBM watsonx Assistant for Z License](https://www.ibm.com/support/customer/csol/terms/?id=L-CXGZ-TW5PCC)**. 
+> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**. By installing the **IBM watsonx Assistant for Z Foundational Agents** in accordance with the instructions provided herein, you acknowledge and agree to comply with the terms of the **[IBM watsonx Assistant for Z License](https://www.ibm.com/support/customer/csol/terms/?id=L-CXGZ-TW5PCC)**.
 
 > For **Prebuilt IBM Z product agents**, a separate entitlement must be obtained for each corresponding product.
 
@@ -307,7 +307,7 @@ helm upgrade wxa4z-agent-suite \
 ```bash
 helm uninstall wxa4z-agent-suite -n <namespace>
 ```
-This removes all agent components and automatically removes their entries from the Watsonx Orchestrate UI. 
+This removes all agent components and automatically removes their entries from the Watsonx Orchestrate UI.
 
 **Uninstall Without Hooks**
 
