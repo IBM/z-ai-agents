@@ -417,6 +417,8 @@ ibm-concert-agent-z-spyre:
       UNITE_TOKEN_URL: ""
       AGENT_AUTH_TOKEN: ""
       LLM_MODEL: "ibm/granite-3-3-8b-instruct"
+      UNITE_LEGACY_API_URL: ""
+      UNITE_AGENTIC_API_URL: ""
   imagePullSecrets:
     - name: ibm-concert-agent-image-pull-secret-spyre
   pvc:
