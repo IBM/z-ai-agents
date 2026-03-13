@@ -13,7 +13,7 @@ The IBM Z Compilers Fix Finder Agent helps compiler users find any potential fix
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 
 ## IBM Z Compilers Fix Finder Agent
 
