@@ -422,7 +422,7 @@ ibm-operations-agent-z-spyre:
 
 taz-functional-testing-agent:
   enabled: false
-  acceptLicense: false # Must be true to install. Reference TAZ license: https://www.ibm.com/support/customer/csol/terms/?id=L-MNLJ-24A2MK
+  acceptLicense: false # Must be true to install. Reference TAZ license: https://www.ibm.com/support/customer/csol/terms/?id=L-MRAT-FBNKJC
   mainApp:
     image:
       repository: cp.icr.io/cp/ibm-taz-functional-testing/taz-functional-testing-agent
