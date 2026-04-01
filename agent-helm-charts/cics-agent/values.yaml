@@ -2,22 +2,22 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: topology-1.2.0@sha256:5c7604a38d60e0bb0f0c58421e522f46239d0a67975a06e5bc3e5f96a8391268
+  tag: topology-1.2.1@sha256:47bfa39842895a5e77273e5e2a5e31d22119ee97bcc941cdacc57ed096b6c743
   pullPolicy: Always
 
 PDimage:
   repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: problem-determination-1.2.0@sha256:75c73daca2e4b5597f8327092079c37e87df8e511cc0f1b0f7f5a8ec8f2ea234
+  tag: problem-determination-1.2.1@sha256:1c75abc9bded41373c88ef951e3412fdeba9d86d81c6a107a2d3259625cbee94
   pullPolicy: Always
 
 followupImage:
   repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: followup-1.2.0@sha256:6e21c7a42e1445d25b2de8ee9cad5263a87d04c7ac95405bdfd3da1bce753401
+  tag: followup-1.2.1@sha256:025d64bc81ee29fe4298441a47b73321b1f873513a8e13e2904ac465d8e47ed7
   pullPolicy: Always
 
 TCimage:
   repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: tool-calling-1.2.0@sha256:e88d6712376fd24c879d349e4be0f72af8493440ed473098a454c8d14e8bcc7b
+  tag: tool-calling-1.2.1@sha256:73e2cef1179d9f6d3659a0b2815ced854461a92ef789e7068b81f0ed75c90bd3
   pullPolicy: Always
 
 service:
