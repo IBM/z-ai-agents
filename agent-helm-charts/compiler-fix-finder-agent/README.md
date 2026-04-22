@@ -13,7 +13,7 @@ The IBM Z Compilers Fix Finder Agent helps compiler users find any potential fix
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 
 ## IBM Z Compilers Fix Finder Agent
 
@@ -49,18 +49,26 @@ In the values.yaml file, scroll down to the automation-insights-agent section an
 | Key       |            Description                  |
 |------------------------------|-----------------------------------|
 **Environment variables**                                                        |
-**For on-prem deployments**
-DEPLOYMENT_TYPE | Deployment environment type (`on_prem`)  
+**Container deployment**
+DEPLOYMENT_TYPE | Deployment environment type (`on-prem` or `cloud` based on **container** deployment environment)
+**Model Access (on-prem model deployment)**
+MODEL_RUNTIME | Deployment environment type (`on-prem`)
 WML_URL | URL for the on-premises Watson Machine Learning (WML) service
 CPD_VERSION | CPD version for on-prem deployments (e.g., `5.1`)             
 CPD_USERNAME | Username for accessing the Cloud Pak for Data (CPD) environment
 ONPREM_WML_INSTANCE_ID | Identifier for the Watson Machine Learning instance (always set to `openshift`)
-**For cloud deployment**
-DEPLOYMENT_TYPE | Deployment environment type (`cloud`)
-WML_URL | URL for the cloud [Watson Machine Learning API](https://cloud.ibm.com/apidocs/machine-learning)
-**For on-prem and cloud deployments**
 DEPLOYMENT_SPACE_ID | Watsonx AI deployment space ID
 WATSONX_API_KEY | API key for authenticating with IBM Cloud services or CPD instance
+**Model Access (WatsonX cloud model deployment)**
+MODEL_RUNTIME | Deployment environment type (`cloud`)
+WML_URL | URL for the cloud [Watson Machine Learning API](https://cloud.ibm.com/apidocs/machine-learning)
+DEPLOYMENT_SPACE_ID | Watsonx AI deployment space ID
+WATSONX_API_KEY | API key for authenticating with IBM Cloud services or CPD instance
+**Model Access (Red Hat AI Inference Server / Other)**
+MODEL_RUNTIME | Deployment environment type (`openai_protocol`)
+LLM_BASE_URL | URL for the model
+LLM_API_KEY | API key for authenticating with the service
+**Model Settings**
 LLM_MODEL | Model ID for the on-premises Large Language Model (LLM) (e.g.,ibm/granite-3-8b-instruct)
 **Secrets**
 AGENT_AUTH_TOKEN | Authentication token for the agent

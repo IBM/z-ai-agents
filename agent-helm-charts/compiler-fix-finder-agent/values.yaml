@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
-  tag: 1.2.0@sha256:11bc5c3a376fe759dacb48bcef47c93d2e8a0469e58811f1737d3fb62eb56368
+  tag: 1.1.2@sha256:95acd00bf399ef3103c6924495c5f0b5c5e03fb8581ba9312f7cb256001fbad1
   pullPolicy: Always
 
 service:
@@ -27,23 +27,28 @@ env:
   WATSONX_DEPLOYMENT_SPACE_ID: ""
   WATSONX_PROJECT_ID: ""
   WATSONX_ML_URL: ""
-  WATSONX_MODEL_ID: meta-llama/llama-3-3-70b-instruct
-  DEPLOYMENT_TYPE: on-prem
-  # CPD_VERSION, needed for on-prem deployments.Example(5.1)
+  LLM_BASE_URL: ""
+  LLM_MODEL: meta-llama/llama-3-3-70b-instruct
+  # Set this to cloud, on-prem, or openai_protocol depending on service used
+  MODEL_RUNTIME: ""
+  # CPD_VERSION, needed for on-prem deployments. Example(5.1)
   CPD_VERSION: "5.2"
   LANGFUSE_HOST: "LANGFUSE_HOST"
   LANGFUSE_TRACING_ENABLED: false
   LANGFUSE_ENABLED: false
+  MAX_COMPLETION_TOKENS: 4096
 
 secrets:
   name: wxa4z-compiler-fix-finder-agent-agent-secrets
   createSecret: true
   data:
-    # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
+    # CPD USERNAME, needed for on-prem only. (set it to empty for cloud)
     CPD_USERNAME: cpadmin
-    # Set this to CPD API Key for on-prem Install, For IBM Cloud, use IBM Cloud IAM API KEY
+    # Set this to CPD API Key for on-prem Install, for IBM Cloud, use IBM Cloud IAM API KEY
     WATSONX_API_KEY: ""
-    # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+    # Set this to the respective service API key if not using WatsonX
+    LLM_API_KEY: ""
+    # This is the auth token for communication with agent. This field (value can be anything api_key or bearer token) is referred to by agent-controller for agent registration with wxo
     AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
     LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY

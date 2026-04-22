@@ -50,6 +50,11 @@ spec:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
                   key: CPD_USERNAME
+            - name: LLM_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name:  {{ $secretName | quote }}
+                  key: LLM_BASE_URL
             - name: WML_URL
               valueFrom:
                 secretKeyRef:
@@ -65,9 +70,12 @@ spec:
             - name: CPD_VERSION
               value: "{{ .Values.env.CPD_VERSION }}"
             - name: LLM_MODEL
-              value: {{ .Values.env.WATSONX_MODEL_ID }}
-            - name: DEPLOYMENT_TYPE
-              value: {{ required "A valid deployment type is required!" .Values.env.DEPLOYMENT_TYPE }}
+              value: {{ .Values.env.LLM_MODEL }}
+            - name: MODEL_RUNTIME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: MODEL_RUNTIME
             - name: LANGFUSE_HOST
               value: {{ .Values.env.LANGFUSE_HOST }}
             - name: LANGFUSE_TRACING_ENABLED
@@ -79,6 +87,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
                   key: AGENT_AUTH_TOKEN
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name:  {{ $secretName | quote }}
+                  key: LLM_API_KEY
             - name: WATSONX_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -94,6 +107,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
                   key: LANGFUSE_SECRET_KEY
+            - name: MAX_COMPLETION_TOKENS
+              value: {{ .Values.env.MAX_COMPLETION_TOKENS | quote }}
             - name: PYTHONWARNINGS
               value: "ignore::SyntaxWarning"
           resources:
