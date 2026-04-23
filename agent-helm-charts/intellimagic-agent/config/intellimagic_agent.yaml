@@ -14,10 +14,28 @@ instructions: >
 collaborators:
   - IBM_IntelliMagic_agent_for_Z_ext
 tools: []
+welcome_content:
+  welcome_message: "IBM IntelliMagic agent for Z"
+  description: "Ask a question to get started."
+starter_prompts:
+  prompts:
+    - title: "Storage System Throughput"
+      subtitle: "Can you show me the storage system throughput?"
+      prompt: "Can you show me the storage system throughput?"
+      id: "001"
+    - title: "Show me CICS performance"
+      subtitle: "Show me CICS performance"
+      prompt: "Show me CICS performance"
+      id: "002"
+    - title: "Show me DB2 performance"
+      subtitle: "Show me DB2 performance"
+      prompt: "Show me DB2 performance"
+      id: "003"
 context_access_enabled: true
 context_variables:
   - wxo_email_id
   - wxo_user_name
+  - wxo_tenant_id
 chat_params: # chat_parms are parameters sent to an agent on each request
   stream: true # should the external agent be invoked using using SSE streaming or as a rest call
 config: # config represents the internal configuration of this agent used by wxo
