@@ -1,7 +1,7 @@
 # zRAG Agent
 
 ## Overview
-The zRAG Agent provides technical support for mainframe and enterprise systems through the Watson Assistant for Z chat interface. It leverages the zRAG (z/OS Retrieval-Augmented Generation) knowledge base to deliver accurate, citation-backed responses by integrating with IBM's documentation repositories and custom enterprise documentation.
+The zRAG Agent provides technical support for mainframe and enterprise systems through the Watson Assistant for Z chat interface. It leverages the zRAG (z/OS Retrieval-Augmented Generation) knowledge base to deliver accurate, citation-backed responses by integrating with IBM's documentation repositories and custom enterprise documentation. This is a `NATIVE` Orchestrate agent that uses the `zrag_retriever` MCP tool for retrieving information relevant to the query and then routes the results to the LLM to generate answers.
 
 ## Agent capabilities
 
@@ -9,8 +9,6 @@ The zRAG Agent provides technical support for mainframe and enterprise systems t
 |------------------------------|-----------------------------------|
 | Document retrieval        | Queries the zRAG backend to fetch relevant technical documentation from IBM docs, Redbooks, and custom enterprise content    |
 | Health monitoring | Performs health checks on the zRAG MCP server, returning server status and configuration information
-| AI-powered answers with citations | Generates comprehensive, expert-level answers grounded in retrieved documentation with automatic inline citations and reference sections
-| Compact responses for agents | Provides streamlined responses optimized for multi-turn agent conversations, reducing token usage by 80% while maintaining answer quality
 | Streaming responses | Delivers real-time token-by-token generation for improved user experience
 | Multi-source knowledge base | Searches across IBM product documentation, Redbooks, customer-specific docs, and agent documentation with configurable weights
 
@@ -28,10 +26,25 @@ An MCP (Model Context Protocol) toolkit imported on Orchestrate that provides 4 
 
 ### 2. zRAG Native Agent
 A native agent configured to use the MCP tools:
-- Uses 2 MCP tools: **health_check** and **zrag_retriever**
+- Uses only 2 MCP tools from the toolkit: **health_check** and **zrag_retriever**
 - Streaming is enabled by default
 - Built on React-style agent architecture for iterative reasoning
-- Configured with **meta-llama/llama-3-3-70b-instruct** LLM
+- Configured with **meta-llama/llama-3-3-70b-instruct** on x86 and **virtual-model/watsonx/ibm/granite-3-3-8b-instruct** on s390x architectures respectively.
+- Supports multilingual retrieval. The supported languages are:
+   1. English
+   2. French
+   3. Japanese
+   4. German
+   5. Portuguese
+   6. Spanish
+   7. Italian
+   8. Finnish
+   9. Arabic
+   10. Chinese
+   11. Czech
+   12. Dutch
+   13. Korean
+   14. Thai
 
 ### Sequence Flow
 1. User enters a query in the zRAG Agent chat interface
@@ -172,65 +185,6 @@ After deployment, the agent becomes active and is available for selection in the
     Responses are displayed with comprehensive technical explanations, inline citations [1], [2], and a sources section with clickable documentation links.
 
 4. Verify that the responses returned by the AI Assistant are accurate and include proper citations with relevance scores.
-
-## Custom Search Configurations for zRAG Retriever
-
-The zRAG retriever supports advanced search configurations that can be customized to optimize document retrieval. These parameters can be configured in two ways:
-
-### Configuration Methods
-
-#### Method 1: Using ADK CLI (Environment Variables)
-
-You can set connection credentials using the ADK CLI, which are internally referred to as environment variables. This method is demonstrated in the [zRAG MCP deployment notebook](https://github.ibm.com/wxa4z/zrag-mcp-server/blob/main/deployment/zrag_mcp_deployment_notebook.ipynb).
-
-Example:
-```bash
-orchestrate connections set-credentials \
-  -a zrag-mcp \
-  --env draft \
-  -e "ZRAG_DEFAULT_RERANK=true" \
-  -e "ZRAG_DEFAULT_SEARCH_TYPE=reranked_fusion" \
-  -e "ZRAG_DEFAULT_IBM_INDICES=*_ibm_docs_slate,*_ibm_redbooks_slate"
-```
-
-#### Method 2: Using Orchestrate UI
-
-1. Navigate to the **Orchestrate Connections** page
-2. Click on the **Credentials** tab
-3. Select your connection ID
-4. Click **Edit**
-5. In the pop-up window, set the credentials as key/value pairs:
-   - Key: Parameter name (e.g., `ZRAG_DEFAULT_RERANK`)
-   - Value: Parameter value (e.g., `true`)
-6. Once completed, click **Done**
-
-### Available zrag_retriever Parameters
-
-The following parameters can be configured to customize the search behavior:
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `query` | string | Required | Search query |
-| `rerank` | boolean | true | Enable reranking of search results |
-| `search_type` | string | "reranked_fusion" | Search algorithm: "keyword", "semantic", "fusion", "reranked_fusion" |
-| `ibm_indices` | string | "*_ibm_docs_slate,*_ibm_redbooks_slate" | Comma-separated list of IBM documentation indices |
-| `customer_indices` | string | "" | Comma-separated list of customer-specific indices |
-| `metadata_product_weight` | float | 0.5 | Weight for product documentation (0.0-1.0) |
-| `metadata_customer_weight` | float | 0.5 | Weight for customer documentation (0.0-1.0) |
-| `metadata_agent_weight` | float | 0.0 | Weight for agent documentation (0.0-1.0) |
-| `dynamic_filtering` | boolean | true | Enable dynamic filtering based on query context |
-| `topics_enable` | string | "" | Comma-separated list of topics to include |
-| `topics_disable` | string | "" | Comma-separated list of topics to exclude |
-
-### Configuration Best Practices
-
-- **Reranking**: Keep enabled (`true`) for improved relevance in production environments
-- **Search Type**: Use `reranked_fusion` for best results, which combines keyword and semantic search with reranking
-- **Index Selection**: Configure indices based on your documentation sources to reduce search scope and improve performance
-- **Document Weights**: Adjust weights based on the relative importance of different documentation sources for your use case
-- **Dynamic Filtering**: Enable to allow the system to automatically filter results based on query context
-
-For more detailed information about these parameters and their usage, refer to the [zRAG MCP Server README](https://github.ibm.com/wxa4z/zrag-mcp-server/blob/main/Readme.md).
 
 ## Troubleshooting installation errors
 If you run into any errors during installation, see [Troubleshooting link](https://github.ibm.com/wxa4z/agent-deployment-charts/tree/main/agent-helm-charts/zrag-agent) for troubleshooting steps.

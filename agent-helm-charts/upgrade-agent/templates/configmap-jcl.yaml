@@ -24,3 +24,6 @@ data:
       keyring="{{ .Values.ptfJob.KEYRING }}"
       certificate="{{ .Values.ptfJob.CERT_NAME }}">
     </ORDERSERVER>
+  JCL_ACCOUNT: "{{ .Values.ptfJob.JCL_ACCOUNT }}"
+  JCL_CLASS: "{{ .Values.ptfJob.JCL_CLASS }}"
+  JCL_MSGCLASS: "{{ .Values.ptfJob.JCL_MSGCLASS }}"

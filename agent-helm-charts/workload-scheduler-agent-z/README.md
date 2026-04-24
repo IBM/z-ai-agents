@@ -39,7 +39,7 @@ In the values.yaml file, scroll down to the workload-scheduler-agent-z section a
 WATSONX_MODEL_ID | LLM Model Used by the Agent. For example, "meta-llama/llama-3-70b-instruct".
 **Secrets**
 AIOPS_BASE_URL | The endpoint URL for the ZchatOps server.
-AIOPS_TOKEN | Token for connecting to the ZchatOps server.
+AIOPS_TOKEN | Optional. Token for connecting to the ZChatOps server. Agents automatically fetch the token by default; this value is used as a fallback if automatic token retrieval fails.
 AGENT_AUTH_TOKEN | Authentication token for the agent.
 
 

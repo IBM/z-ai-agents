@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
-  tag: v3.2.0@sha256:c522684c0764efa04178fd7b0b1354de838d63bc2f6c620bf0638a44a91d93c7
+  repository: cp.stg.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+  tag: v3.2.1@sha256:24345c310c501bc1b03dab788382c94c2954e978a71f67be6e207a854807872d
   pullPolicy: Always
 
 service:
@@ -38,6 +38,8 @@ env:
   SEND_DUMP_JOB_TEMPLATE: ""
   MODEL_CATALOG_PATH: /opt/app-root/src/model_instruction_catalog/model_catalog.yaml
   ENABLE_LANGFUSE_TRACES: "false"
+  MODEL_RUNTIME: ""
+  MAX_COMPLETION_TOKENS: "4096"
 
 secrets:
   name: wxa4z-support-agent-agent-secrets
@@ -57,6 +59,8 @@ secrets:
     AGENT_AUTH_TOKEN: ""
     LANGFUSE_SECRET_KEY: "LANGFUSE_SECRET_KEY"
     LANGFUSE_PUBLIC_KEY: "LANGFUSE_PUBLIC_KEY"
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 imagePullSecrets:
   - name: wxa4z-image-pull-secret
