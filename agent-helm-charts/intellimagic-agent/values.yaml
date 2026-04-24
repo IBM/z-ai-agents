@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-intellimagic-agent/intellimagic-agent
-  tag: 1.1.1.2@sha256:cbaa7b3224a7340d9967dd620d186a527820fc7eb15f648fe319f9bcaddfa7b6
+  tag: 1.1.1.3@sha256:e69d67d3e21cdde1aa239a536f8dede7fbd8923819151ca637cd46d61b764760
   pullPolicy: Always
 
 service:
@@ -25,10 +25,11 @@ route:
     secretName: wxa4z-agents-tls-secret
     enableTlsCertMount: false # Set to true to mount TLS certs from secret when deploying standalone helm-chart.
 env:
-  WATSONX_MODEL_ID: ""
+  LLM_MODEL: ""
   WATSONX_INSTANCE_ID: "openshift"
   CPD_VERSION: "5.2"
   DEPLOYMENT_TYPE: on-prem
+  MODEL_RUNTIME: ""
   # WATSONX_VERIFY_SSL: "true" # Whether to verify SSL certificates for WatsonX API calls (`true`/`false`). Default is `true`.
   LANGFUSE_HOST: ""
   LANGFUSE_TRACING_ENABLED: false
@@ -72,7 +73,7 @@ bootstrapJob:
   activeDeadlineSeconds: 1800
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:
@@ -83,6 +84,7 @@ bootstrapJob:
     data:
       ORCHESTRATE_ENV_TYPE: cpd
       WATSONX_API_KEY: ""
+      LLM_API_KEY: ""
       ORCHESTRATE_ENV_URL: ""
       CPD_USERNAME: ""
   env:

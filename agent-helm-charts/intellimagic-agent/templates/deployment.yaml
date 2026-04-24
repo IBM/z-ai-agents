@@ -47,19 +47,19 @@ spec:
           ports:
             - containerPort: {{ required "Service target port is required" .Values.service.ports.targetPort }}
           env:
-            - name: WATSONX_MODEL_ID
-              value: {{ required "A valid WATSONX_MODEL_ID is required in env" .Values.env.WATSONX_MODEL_ID | quote }}
-            - name: WATSONX_ML_URL
+            - name: LLM_MODEL
+              value: {{ required "A valid LLM_MODEL is required in env" .Values.env.LLM_MODEL | quote }}
+            - name: LLM_BASE_URL
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
-                  key: WATSONX_ML_URL
+                  key: LLM_BASE_URL
             - name: WATSONX_DEPLOYMENT_SPACE_ID
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
                   key: WATSONX_DEPLOYMENT_SPACE_ID
-            {{- if ne .Values.env.DEPLOYMENT_TYPE "cloud" }}
+            {{- if eq .Values.env.MODEL_RUNTIME "on-prem" }}
             - name: WATSONX_INSTANCE_ID
               value: {{ required "WATSONX_INSTANCE_ID is required" .Values.env.WATSONX_INSTANCE_ID | quote }}
             - name: CPD_USERNAME
@@ -70,13 +70,16 @@ spec:
             - name: CPD_VERSION
               value: {{ required "CPD_VERSION is required" .Values.env.CPD_VERSION | quote }}
             {{- end }}
-            - name: DEPLOYMENT_TYPE
-              value: {{ required "DEPLOYMENT_TYPE is required" .Values.env.DEPLOYMENT_TYPE | quote }}
-            - name: WATSONX_API_KEY
+            - name: MODEL_RUNTIME
               valueFrom:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
-                  key: WATSONX_API_KEY
+                  key: MODEL_RUNTIME
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: LLM_API_KEY
             {{- if hasKey .Values.env "WATSONX_VERIFY_SSL" }}
             - name: VERIFY_SSL
               value: {{ .Values.env.WATSONX_VERIFY_SSL | quote }}
