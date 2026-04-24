@@ -74,6 +74,10 @@ env:
   AUTHZ_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
   APPL_ID: "IZUDFLT"
   IMS_ID: "wxa4z%3Aims%3Aagent"
+  MODEL_RUNTIME: ""
+  LLM_BASE_URL: ""
+  LLM_API_KEY: ""
+  
 secrets:
   name: wxa4z-ims-agent-secrets
   createSecret: true
@@ -106,6 +110,7 @@ mcpSecrets:
     AGENT_AUTH_TOKEN: ""
     LANGFUSE_SECRET_KEY: ""
     LANGFUSE_PUBLIC_KEY: ""
+
 
 imagePullSecrets:
   - name: ims-image-pull-secret

@@ -21,7 +21,9 @@ global:
       WATSONX_ML_URL: "" # Set this to CPD Instance FQDN for on-prem deployments.
       EXTERNAL_WATSONX_API_KEY: "" # Set this to External CPD API Key  only when External IFM is configured for WxO with model gateway.
       WATSONX_PROJECT_ID: "" # Set this to Watsonx project id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project).
-
+      MODEL_RUNTIME: "" # "on-prem" for watsonx ai on cpd,"cloud" for watsonx ai on saas, openai_protocol for inferencing stack with open ai protocol.
+      LLM_BASE_URL: "" # Set this to inferencing stack url when MODEL_RUNTIME is set to openai_protocol
+      LLM_API_KEY: "" # Set this to inferencing stack API KEY when MODEL_RUNTIME is set to openai_protocol
   # Default image pull secret and registry auth used by many subcharts.
   # Set registry.createSecret to true only when default image pull fails for watsonx assistant for z agents or when using private registry.
   registry:
