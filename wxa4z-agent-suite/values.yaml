@@ -276,7 +276,7 @@ intellimagic-agent:
   acceptLicense: false # Must be true to install. Reference Intellimagic agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-WZGZ-XWN8JA
   image:
     repository: icr.io/ibm-intellimagic-agent/intellimagic-agent
-    tag: 1.1.1.2@sha256:cbaa7b3224a7340d9967dd620d186a527820fc7eb15f648fe319f9bcaddfa7b6
+    tag: 1.1.1.3@sha256:e69d67d3e21cdde1aa239a536f8dede7fbd8923819151ca637cd46d61b764760
   registry:
     name: intellimagic-image-pull-secret
     server: icr.io
@@ -309,10 +309,10 @@ db2z-agent:
   acceptLicense: false # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
   image:
     repository: icr.io/ibm-db2z-ai/db2z-agent
-    tag: latest@sha256:da2bd55651bdd6069952e8275ff7293b5aa90feb48e269f7238db90f1d93cf6a
+    tag: latest@sha256:e741a1022a082a200031d1fa24fce75ec3ca3962b6391372bc2b2dfcd1d05ac2
   mcpImage:
     repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-    tag: latest@sha256:bf6c7edd53d75237ae555054a8f2ea8e777bc3eb15bf2d047294947cab308768
+    tag: latest@sha256:fd8fa81956aec89d8cfaad10518ed7ad86cccc7734025c74bd5d02a0f88eea05
   registry:
     name: db2-image-pull-secret # Dedicated pull secret for this agent.
     server: icr.io
@@ -329,6 +329,7 @@ db2z-agent:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
     SERVICE_ENDPOINT: ""
     WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+    MAX_COMPLETION_TOKENS: 4096
   secrets:
     data:
       ENCRYPT_KEY: ""
@@ -671,7 +672,7 @@ compiler-fix-finder-agent:
     entitlementKey: ""
   image:
     repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
-    tag: 1.2.0@sha256:11bc5c3a376fe759dacb48bcef47c93d2e8a0469e58811f1737d3fb62eb56368
+    tag: 1.1.2@sha256:95acd00bf399ef3103c6924495c5f0b5c5e03fb8581ba9312f7cb256001fbad1
   bootstrapJob:
     enabled: true
     image:
@@ -680,7 +681,8 @@ compiler-fix-finder-agent:
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   env:
-    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+    LLM_MODEL: "ibm/granite-3-3-8b-instruct"
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
   secrets:
     data:
       AGENT_AUTH_TOKEN: ""

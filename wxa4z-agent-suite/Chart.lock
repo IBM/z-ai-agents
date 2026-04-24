@@ -40,6 +40,6 @@ dependencies:
   version: 1.2.1
 - name: compiler-fix-finder-agent
   repository: file://../agent-helm-charts/compiler-fix-finder-agent
-  version: 1.0.0
-digest: sha256:81b214e8ce0a27c7c50ba4fd00022538db84bc48cad127f39e8d94db3388af5e
-generated: "2026-04-23T14:51:08.82521676-07:00"
+  version: 1.1.2
+digest: sha256:ec0be44840f918fc1ac2ae4f19678d4cd15946eabc893f0d1f33fbb6b57fb7ec
+generated: "2026-04-01T12:10:48.710794+01:00"
