@@ -672,7 +672,7 @@ compiler-fix-finder-agent:
     entitlementKey: ""
   image:
     repository: icr.io/zoscp/ibm-z-compilers-fix-finder-agent
-    tag: 1.2.0@sha256:11bc5c3a376fe759dacb48bcef47c93d2e8a0469e58811f1737d3fb62eb56368
+    tag: 1.1.2@sha256:95acd00bf399ef3103c6924495c5f0b5c5e03fb8581ba9312f7cb256001fbad1
   bootstrapJob:
     enabled: true
     image:
@@ -681,7 +681,8 @@ compiler-fix-finder-agent:
     imagePullSecrets: []
     # - name: wxa4z-image-pull-secret
   env:
-    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+    LLM_MODEL: "ibm/granite-3-3-8b-instruct"
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
   secrets:
     data:
       AGENT_AUTH_TOKEN: ""
