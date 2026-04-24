@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-db2z-ai/db2z-agent
-  tag: latest@sha256:da2bd55651bdd6069952e8275ff7293b5aa90feb48e269f7238db90f1d93cf6a
+  tag: latest@sha256:e741a1022a082a200031d1fa24fce75ec3ca3962b6391372bc2b2dfcd1d05ac2
   pullPolicy: Always
 
 service:
@@ -15,7 +15,7 @@ service:
 
 mcpImage:
   repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-  tag: latest@sha256:bf6c7edd53d75237ae555054a8f2ea8e777bc3eb15bf2d047294947cab308768
+  tag: latest@sha256:fd8fa81956aec89d8cfaad10518ed7ad86cccc7734025c74bd5d02a0f88eea05
   pullPolicy: Always
 
 mcpService:
@@ -67,6 +67,7 @@ env:
   MAX_INPUT_TOKENS: 25000
   MAX_OUTPUT_TOKENS: 4000
   HF_HOME: "/app/huggingface"
+  MAX_COMPLETION_TOKENS: 4096
 
 secrets:
   name: db2z-agent-secrets
@@ -80,6 +81,9 @@ secrets:
     LANGFUSE_SECRET_KEY: "LANGFUSE_SECRET_KEY"
     LANGFUSE_PUBLIC_KEY: "LANGFUSE_PUBLIC_KEY"
     AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 imagePullSecrets:
   - name: db2-image-pull-secret
 

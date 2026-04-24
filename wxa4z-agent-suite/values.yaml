@@ -309,10 +309,10 @@ db2z-agent:
   acceptLicense: false # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
   image:
     repository: icr.io/ibm-db2z-ai/db2z-agent
-    tag: latest@sha256:da2bd55651bdd6069952e8275ff7293b5aa90feb48e269f7238db90f1d93cf6a
+    tag: latest@sha256:e741a1022a082a200031d1fa24fce75ec3ca3962b6391372bc2b2dfcd1d05ac2
   mcpImage:
     repository: icr.io/ibm-db2z-ai/db2z-mcp-server
-    tag: latest@sha256:bf6c7edd53d75237ae555054a8f2ea8e777bc3eb15bf2d047294947cab308768
+    tag: latest@sha256:fd8fa81956aec89d8cfaad10518ed7ad86cccc7734025c74bd5d02a0f88eea05
   registry:
     name: db2-image-pull-secret # Dedicated pull secret for this agent.
     server: icr.io
@@ -329,6 +329,7 @@ db2z-agent:
     # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
     SERVICE_ENDPOINT: ""
     WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+    MAX_COMPLETION_TOKENS: 4096
   secrets:
     data:
       ENCRYPT_KEY: ""
