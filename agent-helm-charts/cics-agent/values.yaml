@@ -1,23 +1,23 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: topology-1.2.1@sha256:47bfa39842895a5e77273e5e2a5e31d22119ee97bcc941cdacc57ed096b6c743
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: topology-1.2.2-RC@sha256:4d67c497567ae21d2f31079a1c736d667313b0b113c6a78a760f33efa3db255e
   pullPolicy: Always
 
 PDimage:
-  repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: problem-determination-1.2.1@sha256:1c75abc9bded41373c88ef951e3412fdeba9d86d81c6a107a2d3259625cbee94
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: problem-determination-1.2.2-RC@sha256:a0f462f35f891967f5f7ac95b4f424fae79bb502d921ddeb25ff1bb36a9b7c54
   pullPolicy: Always
 
 followupImage:
-  repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: followup-1.2.1@sha256:025d64bc81ee29fe4298441a47b73321b1f873513a8e13e2904ac465d8e47ed7
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: followup-1.2.2-RC@sha256:75dc5094f7bb08ce1a92021e34c5886975cc1f870d02615a61b5b1833f84d1b4
   pullPolicy: Always
 
 TCimage:
-  repository: icr.io/ibm-cics-ts/cics-ai-agent
-  tag: tool-calling-1.2.1@sha256:73e2cef1179d9f6d3659a0b2815ced854461a92ef789e7068b81f0ed75c90bd3
+  repository: icr.io/wxa4z-agentic-dev-cr/cics-ai-agent
+  tag: tool-calling-1.2.2-RC1@sha256:5c3a0eefbe19df03087529a8372cb1c182eef89e18a0224027801832cdcd92b0
   pullPolicy: Always
 
 service:
@@ -142,6 +142,9 @@ secrets:
     LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
     AGENT_ROUTER_PATH: "agents/topology_agent/router"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 PDsecrets:
   name: wxa4z-cics-pd-agent-secrets
@@ -174,6 +177,9 @@ PDsecrets:
     AGENT_ROUTER_PATH: "agents/problem_determination_agent/router"
     SERVICE_ENDPOINT: ""
     INSECURE: "True"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 followupSecrets:
   name: wxa4z-cics-followup-agent-secrets
@@ -201,6 +207,9 @@ followupSecrets:
     LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
     AGENT_ROUTER_PATH: "agents/followup_agent/router"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 TCsecrets:
   name: wxa4z-cics-tc-agent-secrets
@@ -233,6 +242,9 @@ TCsecrets:
     AGENT_ROUTER_PATH: "agents/tool_calling_agent/router"
     SERVICE_ENDPOINT: ""
     INSECURE: "True"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 imagePullSecrets:
   - name: cics-image-pull-secret
@@ -329,7 +341,6 @@ followupCertSecret:
     git repository. Restart your pod after 
     updating this secret to reflect changes.
     -----END CERTIFICATE-----
-
 
 tcCertSecret:
   name: tc-custom-cert-secret

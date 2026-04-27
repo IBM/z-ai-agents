@@ -1,4 +1,13 @@
 {{- if .Values.bootstrapJob.enabled }}
+{{- $isGranite := contains "granite-3-3-8b-instruct" .Values.env.LLM_MODEL }}
+{{- $modelRuntime := default "" (or (get (get (get (get .Values "global" | default dict) "secrets" | default dict) "data" | default dict) "MODEL_RUNTIME") (get (get .Values "env" | default dict) "MODEL_RUNTIME")) -}}
+{{- $isOpenAI := contains "openai_protocol" $modelRuntime }}
+{{- $AgentContent := .Files.Get "config/ibm_concert_agent_granite.yaml" }}
+
+{{- if and $isGranite $isOpenAI }}
+  {{- $AgentContent = $AgentContent | replace "virtual-model/watsonx/ibm/granite-3-3-8b-instruct" "virtual-model/openai/ibm/granite-3-3-8b-instruct" }}
+{{- end }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,5 +16,6 @@ data:
   ibm_concert_agent_spyre_bootstrap_config.yaml: |-
 {{ .Files.Get "config/ibm_concert_agent_spyre_bootstrap_config.yaml" | indent 4 }}
   ibm_concert_agent_granite.yaml: |-
-{{ .Files.Get "config/ibm_concert_agent_granite.yaml" | indent 4 }}
+{{- $AgentContent | nindent 4 }}
+
 {{- end }}

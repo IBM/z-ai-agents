@@ -1,4 +1,14 @@
 {{- if .Values.bootstrapJob.enabled }}
+{{- $isGranite := contains "granite-3-3-8b-instruct" .Values.env.WATSONX_MODEL_ID }}
+{{- $modelRuntime := default "" (or (get (get (get (get .Values "global" | default dict) "secrets" | default dict) "data" | default dict) "MODEL_RUNTIME") (get (get .Values "env" | default dict) "MODEL_RUNTIME")) -}}
+{{- $isOpenAI := contains "openai_protocol" $modelRuntime }}
+{{- $AgentFile := ternary "config/ims_agent_granite.yaml" "config/ims_agent.yaml" $isGranite }}
+{{- $AgentContent := .Files.Get $AgentFile }}
+
+{{- if and $isGranite $isOpenAI }}
+  {{- $AgentContent = $AgentContent | replace "virtual-model/watsonx/ibm/granite-3-3-8b-instruct" "virtual-model/openai/ibm/granite-3-3-8b-instruct" }}
+{{- end }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7,9 +17,6 @@ data:
   ims_agent_bootstrap_config.yaml: |-
 {{ .Files.Get "config/ims_agent_bootstrap_config.yaml" | indent 4 }}
   ims_agent.yaml: |-
-{{- if contains "granite-3-3-8b-instruct" .Values.env.WATSONX_MODEL_ID }}
-{{ .Files.Get "config/ims_agent_granite.yaml" | indent 4 }}
-{{- else }}
-{{ .Files.Get "config/ims_agent.yaml" | indent 4 }}
-{{- end }}
+{{- $AgentContent | nindent 4 }}
+
 {{- end }}

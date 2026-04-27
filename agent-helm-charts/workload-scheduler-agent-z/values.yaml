@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/wxa4z-dev-container-registry/wxa4z-workload-scheduler-agent
-  tag: dev_apr_21_2026@sha256:b07282c205718feafbd5a656611bb1b9f91be48485d9da09bc89e5d4d992f58f
+  tag: main_apr_24_2026@sha256:cb5f81f4428741516224e18eba889ae71ac22fbadd94154cf7d960e4d9496fec
   pullPolicy: Always
 
 service:

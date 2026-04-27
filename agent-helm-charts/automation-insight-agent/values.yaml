@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/wxa4z-dev-container-registry/wxa4z-system-automation-netview-agent
-  tag: dev_apr_21_2026@sha256:a80c145822e578f976af947cb86d60a2d3a27b155dee8fd7ecf00af004dac71c
+  tag: main_apr_24_2026@sha256:bb3ad586ff474c3cda79be6a4bb6262ffe948095134b929d923b329b57897ae5
   pullPolicy: Always
 
 service:

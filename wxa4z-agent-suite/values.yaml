@@ -495,7 +495,7 @@ omegamon-insights-agent:
   enabled: true
   image:
     repository: icr.io/wxa4z-dev-container-registry/wxa4z-aiops-agent
-    tag: dev_apr_21_2026@sha256:4d50901d0241301da9c5ddda0e108686e6f6cb6e8c2f000ab49826dfd52aacbd
+    tag: main_apr_24_2026@sha256:3f537925b6d2780fed9a37b02166d650590b62b98ae8d5267e1c42bb6d47f0ce
   bootstrapJob:
     enabled: true
     image:
@@ -524,7 +524,7 @@ automation-insights-agent:
   enabled: true
   image:
     repository: icr.io/wxa4z-dev-container-registry/wxa4z-system-automation-netview-agent
-    tag: dev_apr_21_2026@sha256:a80c145822e578f976af947cb86d60a2d3a27b155dee8fd7ecf00af004dac71c
+    tag: main_apr_24_2026@sha256:bb3ad586ff474c3cda79be6a4bb6262ffe948095134b929d923b329b57897ae5
   bootstrapJob:
     enabled: true
     image:
@@ -605,7 +605,7 @@ workload-scheduler-agent-z:
   enabled: true
   image:
     repository: icr.io/wxa4z-dev-container-registry/wxa4z-workload-scheduler-agent
-    tag: dev_apr_21_2026@sha256:b07282c205718feafbd5a656611bb1b9f91be48485d9da09bc89e5d4d992f58f
+    tag: main_apr_24_2026@sha256:cb5f81f4428741516224e18eba889ae71ac22fbadd94154cf7d960e4d9496fec
   bootstrapJob:
     enabled: true
     image:

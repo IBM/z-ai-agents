@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/ibm-ims-ai/ims-qa-agent
-  tag: 1.0.2
+  repository: icr.io/wxa4z-agentic-dev-cr/ims-qa-agent
+  tag: 1.0.2-fixpack
   pullPolicy: Always
 
 mcpImage:
-  repository: icr.io/ibm-ims-ai/ims-mcp-agent
-  tag: 1.0.2
+  repository: icr.io/wxa4z-agentic-dev-cr/ims-mcp-agent
+  tag: 1.0.2-fixpack
   pullPolicy: Always
 
 service:
@@ -74,6 +74,10 @@ env:
   AUTHZ_BASE_URL: "http://wxa4z-authorization-service.wxa4z-zad.svc.cluster.local:8080"
   APPL_ID: "IZUDFLT"
   IMS_ID: "wxa4z%3Aims%3Aagent"
+  MODEL_RUNTIME: ""
+  LLM_BASE_URL: ""
+  LLM_API_KEY: ""
+  
 secrets:
   name: wxa4z-ims-agent-secrets
   createSecret: true
@@ -107,15 +111,16 @@ mcpSecrets:
     LANGFUSE_SECRET_KEY: ""
     LANGFUSE_PUBLIC_KEY: ""
 
+
 imagePullSecrets:
   - name: ims-image-pull-secret
 
 resources:
   limits:
-    cpu: "4"
+    cpu: "2"
     memory: "4Gi"
   requests:
-    cpu: "4"
+    cpu: "2"
     memory: "4Gi"
 
 mcpResources:
