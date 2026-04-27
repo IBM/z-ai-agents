@@ -74,6 +74,472 @@ global:
 # chart prechecks; you must also set `acceptLicense: true` for enabled products.
 
 # ---------------------------------------------------------------------------- #
+<<<<<<< HEAD
+=======
+# Foundational: support-agent
+# ---------------------------------------------------------------------------- #
+support-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+    tag: v3.2.0@sha256:c522684c0764efa04178fd7b0b1354de838d63bc2f6c620bf0638a44a91d93c7
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    TAKE_DUMP_JOB_TEMPLATE: "" # Names/IDs of Job templates used by agent.
+    SEND_DUMP_JOB_TEMPLATE: ""
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      AAP_ENDPOINT: "" # External aap credentials specific to support‑agent.
+      AAP_USERNAME: ""
+      AAP_PASSWORD: ""
+      SEND_DUMP_TRANSFER_ID: ""
+      SEND_DUMP_TRANSFER_PASSWORD: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+# ---------------------------------------------------------------------------- #
+# Foundational: omegamon-insights-agent
+# ---------------------------------------------------------------------------- #
+omegamon-insights-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
+    tag: v3.2.0@sha256:6d4056d12bdfbec569a1697173388cf0a1770394660e747537a79e0194364290
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      AIOPS_BASE_URL: ""
+      AIOPS_TOKEN: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Foundational: automation-insights-agent
+# ---------------------------------------------------------------------------- #
+automation-insights-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-system-automation-netview-agent
+    tag: v3.2.0@sha256:6fd8a8a67f5c1625916ffaab7ac5ece281c874b8e0664f7ba951535c75437424
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      AIOPS_BASE_URL: ""
+      AIOPS_TOKEN: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Foundational: upgrade-agent
+# ---------------------------------------------------------------------------- #
+upgrade-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
+    tag: v3.2.0@sha256:852b525016a1130d9f112d6e287c1ab22376696ec560d5662b618e32719e070b
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WRAPPER_URL: "" # endpoint for opensearch
+    HOST_NAME: "" #endpoint of the cluster in which the image is deployed
+    PDS_NAME: "" #Partial dataset name to be used  for storing the rexx script . it should have the convention <USERNAME>.REXX
+    INGESTION_URL: "" # URL of the service endpoint where documents or data are uploaded for ingestion.
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  ptfJob:
+    SMPNTS: "" # z/OS SMP/E: SMP/E target zone datasets path.
+    SMPWDIR_PATH: "" # SMP/E working directory path.
+    SMPJHOME: "" #used in UNIX System Services (USS) or JCL scripts to point to the root directory of the SMP/E Java-based interface
+    SMPCPATH: "" # SMP/E CSI datasets path.
+    ORDER_SERVER_URL: "" # IBM Shopz/Order server URL.
+    KEYRING: "" # RACF keyring name where cert is stored.
+    CERT_NAME: "" # Certificate label in keyring.
+    DOWNLOAD_METHOD: "" # https | ftp | sftp per environment policy.
+    DOWNLOADKEYRING: "" # Keyring for outbound TLS (if required by z/OS).
+    SIGNATUREKEYRING: "" #  digital signature.
+  secrets:
+    data:
+      ZOSMF_ENDPOINT: "" # endpoint URL of the z/OS Management Facility (z/OSMF) provided by IBM for managing and interacting with IBM z/OS systems
+      ZOSMF_USERNAME: "" # username to connect with ZOSMF_ENDPOINT
+      ZOSMF_PASSWORD: "" # password to connect with ZOSMF_ENDPOINT
+      AGENT_AUTH_TOKEN: "" #Authentication token for the agent
+      WRAPPER_USERNAME: "" #username for the WRAPPER_URL
+      WRAPPER_PASSWORD: "" #password for the WRAPPER_URL
+      INGESTION_PASSWORD: #password for the INGESTION_URL
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Foundational: workload-scheduler-agent-z
+# ---------------------------------------------------------------------------- #
+
+workload-scheduler-agent-z:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
+    tag: v3.2.0@sha256:7b34d4989df501a4741f7f4b14777ef714c22afbd5a1ebc38441c816f9917cad
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      AIOPS_BASE_URL: ""
+      AIOPS_TOKEN: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets: []
+  # - name: wxa4z-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Foundational: zrag-agent
+# ---------------------------------------------------------------------------- #
+
+zrag-agent:
+  enabled: true
+  image:
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/zrag-mcp-server
+    tag: v3.2.0@sha256:9f1acd2fe09a6e856c9dab32c2dba3a5b9ed8ff1ab86f0879ecfe72f8aaa1a57
+  imagePullSecrets: []
+    # - name: wxa4z-image-pull-secret
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  configmap:
+    # Model
+    MODEL_ID: "ibm/granite-3-3-8b-instruct"
+    # RAG
+    ZRAG_RETRIEVER_URL: "https://wxa4z-opensearch-wrapper.wxa4z-zad.svc.cluster.local:8080"
+  secrets:
+    data:
+      # CPD USERNAME,  Needed for on-prem only.(set it to empty for cloud)
+      CPD_USERNAME: cpadmin
+      # Set this For IBM Cloud, use IBM Cloud IAM API KEY
+      WATSONX_API_KEY: ""
+      # External App Credential specific to aiops-agent
+      WATSONX_PASSWORD: ""
+
+# ---------------------------------------------------------------------------- #
+# Product: IBM IntelliMagic agent for Z
+# ---------------------------------------------------------------------------- #
+
+intellimagic-agent:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference Intellimagic agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-WZGZ-XWN8JA
+  image:
+    repository: icr.io/ibm-intellimagic-agent/intellimagic-agent
+    tag: 1.1.1.3@sha256:e69d67d3e21cdde1aa239a536f8dede7fbd8923819151ca637cd46d61b764760
+  registry:
+    name: intellimagic-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets:
+    - name: intellimagic-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: db2z-agent
+# ---------------------------------------------------------------------------- #
+
+db2z-agent:
+  enabled: false
+  acceptLicense: false # Must be true to install. Confirm Db2 Z agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-RKLK-NBNFJL
+  image:
+    repository: icr.io/ibm-db2z-ai/db2z-agent
+    tag: latest@sha256:e741a1022a082a200031d1fa24fce75ec3ca3962b6391372bc2b2dfcd1d05ac2
+  mcpImage:
+    repository: icr.io/ibm-db2z-ai/db2z-mcp-server
+    tag: latest@sha256:fd8fa81956aec89d8cfaad10518ed7ad86cccc7734025c74bd5d02a0f88eea05
+  registry:
+    name: db2-image-pull-secret # Dedicated pull secret for this agent.
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    SERVICE_ENDPOINT: ""
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+    MAX_COMPLETION_TOKENS: 4096
+  secrets:
+    data:
+      ENCRYPT_KEY: ""
+      AGENT_AUTH_TOKEN: ""
+  imagePullSecrets:
+    - name: db2-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: ibm-concert-agent-z
+# ---------------------------------------------------------------------------- #
+ibm-concert-agent-z:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference Concert agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-KACZ-65ZZRN
+  mcpImage:
+    repository: icr.io/ibm-operations-aai/ibm-concert-z-agent
+    tag: v1.2.0
+  registry:
+    name: ibm-concert-agent-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: entitlementKey
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem      # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    LLM_MODEL: "meta-llama/llama-3-3-70b-instruct"
+  mcpSecrets:
+    data:
+      UNITE_CLIENT_ID: ""
+      UNITE_CLIENT_SECRET: ""
+      UNITE_GRANT_TYPE: ""
+      UNITE_API_URL: ""
+      UNITE_TOKEN_URL: ""
+      AGENT_AUTH_TOKEN: ""
+      WRAPPER_URL: "http://wxa4z-opensearch-wrapper.wxa4z-zad.svc.cluster.local/v1/query" #(zRAG)
+      WRAPPER_USERNAME: "" # username for the OpenSearch wrapper URL (zRAG)
+      WRAPPER_PASSWORD: "" # password for the OpenSearch wrapper URL (zRAG)
+      CONCERT_MCP_SERVER_HOST: "0.0.0.0"
+      OMEGAMON_MCP_URL: ""
+      WORKLOAD_MCP_URL: ""
+      AUTOMATION_MCP_URL: ""
+      UNITE_LEGACY_API_URL: ""
+      UNITE_AGENTIC_API_URL: ""
+
+  imagePullSecrets:
+    - name: ibm-concert-agent-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: ibm-concert-agent-z-spyre
+# ---------------------------------------------------------------------------- #
+ibm-concert-agent-z-spyre:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference Concert agent for Z license: https://www.ibm.com/support/customer/csol/terms/?id=L-KACZ-65ZZRN
+  image:
+    repository: icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre
+    tag: v1.2.1@sha256:aae5b12402671835b614a67b8406197a3907fc885e455c46a9b37ea0f87634d5
+  registry:
+    name: ibm-concert-agent-image-pull-secret-spyre
+    server: icr.io
+    username: iamapikey
+    entitlementKey: entitlementKey
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem      # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    LLM_MODEL: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      UNITE_CLIENT_ID: ""
+      UNITE_CLIENT_SECRET: ""
+      UNITE_GRANT_TYPE: "client_credentials"
+      UNITE_API_URL: ""
+      UNITE_TOKEN_URL: ""
+      AGENT_AUTH_TOKEN: ""
+      LLM_MODEL: "ibm/granite-3-3-8b-instruct"
+      UNITE_LEGACY_API_URL: ""
+      UNITE_AGENTIC_API_URL: ""
+  imagePullSecrets:
+    - name: ibm-concert-agent-image-pull-secret-spyre
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+# ---------------------------------------------------------------------------- #
+# Product: taz-functional-testing-agent
+# ---------------------------------------------------------------------------- #
+
+taz-functional-testing-agent:
+  enabled: false
+  acceptLicense: false # Must be true to install. Reference TAZ license: https://www.ibm.com/support/customer/csol/terms/?id=L-MNLJ-24A2MK
+  mainApp:
+    image:
+      repository: cp.icr.io/cp/ibm-taz-functional-testing/taz-functional-testing-agent
+      tag: v2.7.0@sha256:1163c4858dc29c119b76979312379d206af429870ca8667afa8e656025f7a39f
+      pullPolicy: Always
+  mcpServer:
+    image:
+      repository: cp.icr.io/cp/ibm-taz-functional-testing/taz-functional-testing-mcp-server
+      tag: v2.7.0@sha256:b490f0b918d0f0666bba6d2489c8f312148aa418f9b244929c0f0fca9147d648
+      pullPolicy: Always
+  registry:
+    name: taz-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    API_BASE_URL: ""
+    # Understand, to fetch data from database
+    CFG_URI: ""
+    UNDERSTAND_API_ENDPOINT: ""
+    AD_HOST: ""
+    ZOOKEEPER_HOST_PORT: ""
+  secrets:
+    data:
+      # This is the auth token for communication with agent. This Key field(value can be anything api_key or bearer token) is referred by agent-controller for agent registration with wxo
+      AGENT_AUTH_TOKEN: ""
+      # This is to fetch data from understand container and database
+      UNDERSTAND_API_KEY: ""
+      ENVIRONMENT_ID: ""
+  imagePullSecrets:
+    - name: taz-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+# Product: ims-agent
+# ---------------------------------------------------------------------------- #
+
+ims-agent:
+  enabled: false
+  acceptLicense: false # Must be true to install. Confirm IMS agent license. https://www.ibm.com/support/customer/csol/terms/?id=L-XEPV-WC7KSS
+  registry:
+    name: ims-image-pull-secret
+    server: icr.io
+    username: iamapikey
+    entitlementKey: ""
+  image:
+    repository: icr.io/ibm-ims-ai/ims-qa-agent
+    tag: 1.0.2
+  mcpImage:
+    repository: icr.io/ibm-ims-ai/ims-mcp-agent
+    tag: 1.0.2
+  bootstrapJob:
+    enabled: true
+    image:
+      repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
+      tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    imagePullSecrets: []
+      # - name: wxa4z-image-pull-secret
+  pullPolicy: Always
+  env:
+    # DEPLOYMENT_TYPE: on-prem               # Defaults to on-prem; set to "cloud" for IBM Cloud SaaS deployments.
+    ZOSMF_CONSOLE_NAME: ""
+    IMS_SUBSYSTEM_ID: ""
+    IMS_CONNECT_JOBNAME: ""
+    APPL_ID: ""
+    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"
+  secrets:
+    data:
+      WRAPPER_USERNAME: ""
+      WRAPPER_PASSWORD: ""
+      WRAPPER_URL: ""
+      AGENT_AUTH_TOKEN: ""
+  mcpSecrets:
+    data:
+      SERVICE_ENDPOINT: ""
+      ZOSMF_ENDPOINT: "ZOSMF_ENDPOINT"
+      AGENT_AUTH_TOKEN: "AGENT_AUTH_TOKEN"
+  mcpCertSecret:
+    cert: |
+      -----BEGIN CERTIFICATE-----
+      Replace this value with the certificate
+      you create to access your service endpoint.
+      This secret can be manually updated in
+      your cluster after deployment. It is NOT
+      recommended that you store secrets in any
+      git repository. Restart your pod after
+      updating this secret to reflect changes.
+      -----END CERTIFICATE-----
+  imagePullSecrets:
+    - name: ims-image-pull-secret
+  pvc:
+    storageClass: "ocs-storagecluster-cephfs"
+
+# ---------------------------------------------------------------------------- #
+>>>>>>> pre-release-v1.2.1
 # Product: cics-agent
 # ---------------------------------------------------------------------------- #
 

@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/wxa4z-agentic-dev-cr/operations-agent-spyre
-  tag: develop-aio-rlv
+  repository: icr.io/ibm-operations-aai/ibm-concert-z-agent-spyre
+  tag: v1.2.1@sha256:aae5b12402671835b614a67b8406197a3907fc885e455c46a9b37ea0f87634d5
   pullPolicy: Always
 
 createSecret: false
