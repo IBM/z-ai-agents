@@ -28,7 +28,7 @@ dependencies:
   version: 1.2.0
 - name: ibm-concert-agent-z-spyre
   repository: file://../agent-helm-charts/ibm-concert-agent-z-spyre
-  version: 1.2.0
+  version: 1.2.1
 - name: taz-functional-testing-agent
   repository: file://../agent-helm-charts/taz-functional-testing-agent
   version: 0.1.0
