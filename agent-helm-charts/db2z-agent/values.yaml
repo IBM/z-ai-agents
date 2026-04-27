@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/wxa4z-agentic-dev-cr/db2z-agent
+  repository: icr.io/ibm-db2z-ai/db2z-agent
   tag: latest@sha256:e741a1022a082a200031d1fa24fce75ec3ca3962b6391372bc2b2dfcd1d05ac2
   pullPolicy: Always
 
@@ -14,8 +14,8 @@ service:
     targetPort: 8000
 
 mcpImage:
-  repository: icr.io/wxa4z-agentic-dev-cr/db2z-mcp-server
-  tag:  latest@sha256:fd8fa81956aec89d8cfaad10518ed7ad86cccc7734025c74bd5d02a0f88eea05
+  repository: icr.io/ibm-db2z-ai/db2z-mcp-server
+  tag: latest@sha256:fd8fa81956aec89d8cfaad10518ed7ad86cccc7734025c74bd5d02a0f88eea05
   pullPolicy: Always
 
 mcpService:
@@ -133,7 +133,7 @@ bootstrapJob:
       CPD_USERNAME: cpadmin
   image:
     repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-agent-bootstrapper
-    tag: v3.2.0@sha256:2957329a637d4ce4c21bbd1b88da77f050497883ce78cabc96afeb1d790425f5
+    tag: v3.1.0@sha256:f26bb5a4f90e05a52bd72e1cf38f0bcde694d1a4840a6a930d01de2b21a3224f
     pullPolicy: Always
     overwrite: "true"
   imagePullSecrets:

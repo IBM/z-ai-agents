@@ -1,13 +1,13 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/wxa4z-agentic-dev-cr/ims-qa-agent
-  tag: 1.0.2-fixpack
+  repository: icr.io/ibm-ims-ai/ims-qa-agent
+  tag: 1.0.2
   pullPolicy: Always
 
 mcpImage:
-  repository: icr.io/wxa4z-agentic-dev-cr/ims-mcp-agent
-  tag: 1.0.2-fixpack
+  repository: icr.io/ibm-ims-ai/ims-mcp-agent
+  tag: 1.0.2
   pullPolicy: Always
 
 service:
@@ -117,10 +117,10 @@ imagePullSecrets:
 
 resources:
   limits:
-    cpu: "2"
+    cpu: "4"
     memory: "4Gi"
   requests:
-    cpu: "2"
+    cpu: "4"
     memory: "4Gi"
 
 mcpResources:
