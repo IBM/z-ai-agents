@@ -86,6 +86,7 @@ spec:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
                   key: WATSONX_ML_URL
+                  optional: true
             - name: WATSONX_INSTANCE_ID
               value: {{ .Values.env.WATSONX_INSTANCE_ID }}
             - name: CPD_USERNAME
@@ -206,6 +207,7 @@ spec:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
                   key: WATSONX_ML_URL
+                  optional: true
             - name: WATSONX_INSTANCE_ID
               value: {{ .Values.env.WATSONX_INSTANCE_ID }}
             - name: CPD_USERNAME

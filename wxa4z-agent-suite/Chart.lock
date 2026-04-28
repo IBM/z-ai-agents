@@ -1,31 +1,16 @@
 dependencies:
 - name: zrag-agent
   repository: file://../agent-helm-charts/zrag-agent
-  version: 1.2.0
-- name: support-agent
-  repository: file://../agent-helm-charts/support-agent
-  version: 1.2.0
-- name: omegamon-insights-agent
-  repository: file://../agent-helm-charts/omegamon-insight-agent-z
-  version: 1.2.0
-- name: upgrade-agent
-  repository: file://../agent-helm-charts/upgrade-agent
-  version: 1.2.0
-- name: workload-scheduler-agent-z
-  repository: file://../agent-helm-charts/workload-scheduler-agent-z
-  version: 1.2.0
-- name: automation-insights-agent
-  repository: file://../agent-helm-charts/automation-insight-agent
-  version: 1.2.0
-- name: intellimagic-agent
-  repository: file://../agent-helm-charts/intellimagic-agent
-  version: 1.1.1
+  version: 1.0.0
+- name: cics-agent
+  repository: file://../agent-helm-charts/cics-agent
+  version: 1.2.2
 - name: db2z-agent
   repository: file://../agent-helm-charts/db2z-agent
-  version: 1.1.1
+  version: 0.1.0
 - name: ibm-concert-agent-z
   repository: file://../agent-helm-charts/ibm-concert-agent-z
-  version: 1.2.0
+  version: 1.1.2
 - name: ibm-concert-agent-z-spyre
   repository: file://../agent-helm-charts/ibm-concert-agent-z-spyre
   version: 1.2.1
@@ -35,11 +20,32 @@ dependencies:
 - name: ims-agent
   repository: file://../agent-helm-charts/ims-agent
   version: 1.0.2
-- name: cics-agent
-  repository: file://../agent-helm-charts/cics-agent
-  version: 1.2.1
+- name: intellimagic-agent
+  repository: file://../agent-helm-charts/intellimagic-agent
+  version: 1.1.1
+- name: support-agent
+  repository: file://../agent-helm-charts/support-agent
+  version: 1.0.0
+- name: omegamon-insights-agent
+  repository: file://../agent-helm-charts/omegamon-insight-agent-z
+  version: 1.0.0
+- name: taz-functional-testing-agent
+  repository: file://../agent-helm-charts/taz-functional-testing-agent
+  version: 0.1.0
+- name: upgrade-agent
+  repository: file://../agent-helm-charts/upgrade-agent
+  version: 1.0.0
+- name: workload-scheduler-agent-z
+  repository: file://../agent-helm-charts/workload-scheduler-agent-z
+  version: 1.0.0
+- name: automation-insights-agent
+  repository: file://../agent-helm-charts/automation-insight-agent
+  version: 1.0.0
 - name: compiler-fix-finder-agent
   repository: file://../agent-helm-charts/compiler-fix-finder-agent
   version: 1.1.2
-digest: sha256:ec0be44840f918fc1ac2ae4f19678d4cd15946eabc893f0d1f33fbb6b57fb7ec
-generated: "2026-04-01T12:10:48.710794+01:00"
+- name: zos-agent
+  repository: file://../agent-helm-charts/zos-agent
+  version: 1.0.0
+digest: sha256:9b3fee54ed118a688ade42cd5b77c3e57d9656c827b6eb3430db1417639b2728
+generated: "2026-04-22T13:54:47.476589+05:30"

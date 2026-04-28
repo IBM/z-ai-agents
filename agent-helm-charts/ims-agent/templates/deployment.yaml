@@ -84,6 +84,7 @@ spec:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
                   key: WATSONX_ML_URL
+                  optional: true
             - name: DEPLOYMENT_SPACE_ID
               valueFrom:
                 secretKeyRef:

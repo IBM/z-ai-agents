@@ -58,6 +58,7 @@ spec:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
                   key: WATSONX_ML_URL
+                  optional: true
             - name: DEPLOYMENT_SPACE_ID
               valueFrom:
                 secretKeyRef:
@@ -98,6 +99,23 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.secrets.name }}
                   key: SEND_DUMP_TRANSFER_PASSWORD
+            - name: MODEL_RUNTIME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: MODEL_RUNTIME
+            - name: LLM_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: LLM_BASE_URL
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: LLM_API_KEY
+            - name: MAX_COMPLETION_TOKENS
+              value: {{ .Values.env.MAX_COMPLETION_TOKENS | quote }}
             - name: TAKE_DUMP_JOB_TEMPLATE
               value: {{ required "A valid aap take dump template name is required!" .Values.env.TAKE_DUMP_JOB_TEMPLATE | quote }}
             - name: SEND_DUMP_JOB_TEMPLATE

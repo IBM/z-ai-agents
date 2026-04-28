@@ -142,6 +142,9 @@ secrets:
     LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
     AGENT_ROUTER_PATH: "agents/topology_agent/router"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 PDsecrets:
   name: wxa4z-cics-pd-agent-secrets
@@ -174,6 +177,9 @@ PDsecrets:
     AGENT_ROUTER_PATH: "agents/problem_determination_agent/router"
     SERVICE_ENDPOINT: ""
     INSECURE: "True"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 followupSecrets:
   name: wxa4z-cics-followup-agent-secrets
@@ -201,6 +207,9 @@ followupSecrets:
     LANGFUSE_SECRET_KEY: LANGFUSE_SECRET_KEY
     LANGFUSE_PUBLIC_KEY: LANGFUSE_PUBLIC_KEY
     AGENT_ROUTER_PATH: "agents/followup_agent/router"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 TCsecrets:
   name: wxa4z-cics-tc-agent-secrets
@@ -233,6 +242,9 @@ TCsecrets:
     AGENT_ROUTER_PATH: "agents/tool_calling_agent/router"
     SERVICE_ENDPOINT: ""
     INSECURE: "True"
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_KEY: ""
 
 imagePullSecrets:
   - name: cics-image-pull-secret
@@ -329,7 +341,6 @@ followupCertSecret:
     git repository. Restart your pod after 
     updating this secret to reflect changes.
     -----END CERTIFICATE-----
-
 
 tcCertSecret:
   name: tc-custom-cert-secret

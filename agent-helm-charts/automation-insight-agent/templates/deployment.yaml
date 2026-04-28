@@ -65,6 +65,7 @@ spec:
                 secretKeyRef:
                   name:  {{ $secretName | quote }}
                   key: WATSONX_ML_URL
+                  optional: true
             - name: DEPLOYMENT_SPACE_ID
               valueFrom:
                 secretKeyRef:
@@ -78,6 +79,21 @@ spec:
               value: {{ .Values.env.WATSONX_MODEL_ID }}
             - name: DEPLOYMENT_TYPE
               value: {{ required "A valid deployment type is required!" .Values.env.DEPLOYMENT_TYPE }}
+            - name: MODEL_RUNTIME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: MODEL_RUNTIME
+            - name: LLM_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: LLM_BASE_URL
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: LLM_API_KEY
             - name: LANGFUSE_HOST
               value: {{ .Values.env.LANGFUSE_HOST }}
             - name: LANGFUSE_TRACING_ENABLED
@@ -117,6 +133,8 @@ spec:
               value: "ignore::SyntaxWarning"
             - name: ZCHATOPS_MCP_URL
               value: {{ .Values.env.ZCHATOPS_MCP_URL | quote }}
+            - name: MAX_COMPLETION_TOKENS
+              value: {{ .Values.env.MAX_COMPLETION_TOKENS | quote }}
           resources:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}

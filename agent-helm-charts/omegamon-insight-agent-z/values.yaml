@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
-  tag: v3.2.0@sha256:6d4056d12bdfbec569a1697173388cf0a1770394660e747537a79e0194364290
+  repository: icr.io/wxa4z-dev-container-registry/wxa4z-aiops-agent
+  tag: main_apr_24_2026@sha256:3f537925b6d2780fed9a37b02166d650590b62b98ae8d5267e1c42bb6d47f0ce
   pullPolicy: Always
 
 service:
@@ -32,12 +32,16 @@ env:
   DEPLOYMENT_TYPE: on-prem
   # CPD_VERSION, needed for on-prem deployments.Example(5.1)
   CPD_VERSION: "5.2"
+  MODEL_RUNTIME: ""
+  LLM_BASE_URL: ""
+  LLM_API_KEY: ""
   LANGFUSE_HOST: ""
   LANGFUSE_TRACING_ENABLED: false
   LANGFUSE_ENABLED: false
   MAX_LLM_CONTEXT_MESSAGES_COUNT: 50
   MODEL_CATALOG_PATH: "model_catalog.yaml"
   ZCHATOPS_MCP_URL: "http://wxa4z-zchatops-mcp-server-service.wxa4z-aiops.svc.cluster.local:8081"
+  MAX_COMPLETION_TOKENS: 4096
 secrets:
   name: wxa4z-omegamon-insight-agent-secrets
   createSecret: true

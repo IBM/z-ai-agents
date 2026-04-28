@@ -62,6 +62,9 @@ secrets:
     WATSONX_PROJECT_ID: ""
     UNITE_LEGACY_API_URL: ""
     UNITE_AGENTIC_API_URL: ""
+    MODEL_RUNTIME: ""
+    LLM_BASE_URL: ""
+    LLM_API_TOKEN: ""
 
 imagePullSecrets:
   - name: ibm-concert-image-pull-secret
