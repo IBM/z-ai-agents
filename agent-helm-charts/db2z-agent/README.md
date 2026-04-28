@@ -101,13 +101,17 @@ In the values.yaml file, scroll down to the IBM Db2 for z/OS Agent section and u
 |------------------------------|-----------------------------------|
 ***Environment variables***
 **For ON-PREM Deployments**
-WATSONX_DEPLOYMENT_TYPE | Deployment environment type (`on_prem`)  
+MODEL_RUNTIME | Deployment environment type (`on_prem`)  
 WML_URL | CPD Instance URL 
 ONPREM_WML_INSTANCE_ID | On-prem wml instance id (always set to `openshift`)
 CPD_VERSION | CPD version for on-prem deployments (e.g., `5.1`)              
 **For Cloud Deployment**
-WATSONX_DEPLOYMENT_TYPE | Deployment environment type (`cloud`)  
+MODEL_RUNTIME | Deployment environment type (`cloud`)  
 WML_URL | WML Instance URL  [IBM WML API Reference](https://cloud.ibm.com/apidocs/machine-learning)               |
+**For AI Optimizer Inference Server**
+MODEL_RUNTIME | Deployment environment type (`openai_protocol`)
+LLM_BASE_URL | URL of the hosted model endpoint
+LLM_API_KEY | API key for authenticating with the service
 **Common For ON-PREM/Cloud Deployment**
 WATSONX_DEPLOYMENT_SPACE_ID | GUID for watsonx deployment space. If IFM-Lite is enabled in your environment, do not specify a value for this variable.
 LLM_MODEL | Name  of the large language model to use (`meta-llama/llama-3-1-70b-instruct`)
