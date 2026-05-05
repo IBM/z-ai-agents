@@ -542,16 +542,16 @@ cics-agent:
   acceptLicense: false # Must be true to install. Reference CICS agent license: https://www.ibm.com/support/customer/csol/terms/?id=L-SSLZ-QYC4LH
   image:
     repository: icr.io/ibm-cics-ts/cics-ai-agent
-    tag: topology-1.2.1@sha256:47bfa39842895a5e77273e5e2a5e31d22119ee97bcc941cdacc57ed096b6c743
+    tag: topology-1.2.2@sha256:755ac947544115b6fc1323b60e733d209f127d1f7cfe2d4fd8a374d96365d46c
   PDimage:
     repository: icr.io/ibm-cics-ts/cics-ai-agent
-    tag: problem-determination-1.2.1@sha256:1c75abc9bded41373c88ef951e3412fdeba9d86d81c6a107a2d3259625cbee94
+    tag: problem-determination-1.2.2@sha256:3b990d296dbbee0a26b25ff1ee12fb0b04e5b833948414abdd425138660d002a
   followupImage:
     repository: icr.io/ibm-cics-ts/cics-ai-agent
-    tag: followup-1.2.1@sha256:025d64bc81ee29fe4298441a47b73321b1f873513a8e13e2904ac465d8e47ed7
+    tag: followup-1.2.2@sha256:1a3bf7fd9bb056fcf18bd88454366c8b020409cd1e2927badc8e79c8ecc354fb
   TCimage:
     repository: icr.io/ibm-cics-ts/cics-ai-agent
-    tag: tool-calling-1.2.1@sha256:73e2cef1179d9f6d3659a0b2815ced854461a92ef789e7068b81f0ed75c90bd3
+    tag: tool-calling-1.2.2@sha256:9ae0a967dd3d6a05a8a7ab1a306459ae2b7f038d0775ffc6053afb49f28d23c6
   registry:
     name: cics-image-pull-secret
     server: icr.io
