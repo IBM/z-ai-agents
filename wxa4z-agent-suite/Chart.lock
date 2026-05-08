@@ -4,13 +4,13 @@ dependencies:
   version: 1.0.0
 - name: cics-agent
   repository: file://../agent-helm-charts/cics-agent
-  version: 1.2.2
+  version: 1.2.1
 - name: db2z-agent
   repository: file://../agent-helm-charts/db2z-agent
-  version: 0.1.0
+  version: 1.0.1
 - name: ibm-concert-agent-z
   repository: file://../agent-helm-charts/ibm-concert-agent-z
-  version: 1.1.2
+  version: 1.2.0
 - name: ibm-concert-agent-z-spyre
   repository: file://../agent-helm-charts/ibm-concert-agent-z-spyre
   version: 1.2.1
@@ -44,8 +44,5 @@ dependencies:
 - name: compiler-fix-finder-agent
   repository: file://../agent-helm-charts/compiler-fix-finder-agent
   version: 1.1.2
-- name: zos-agent
-  repository: file://../agent-helm-charts/zos-agent
-  version: 1.0.0
-digest: sha256:9b3fee54ed118a688ade42cd5b77c3e57d9656c827b6eb3430db1417639b2728
-generated: "2026-04-22T13:54:47.476589+05:30"
+digest: sha256:e383bb9c743dd603dc9528af095e8c362950edd93410e4325090af4db4b458f4
+generated: "2026-05-06T09:57:54.728043+05:30"
