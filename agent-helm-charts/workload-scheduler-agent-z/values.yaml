@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
-  tag: v3.2.0@sha256:7b34d4989df501a4741f7f4b14777ef714c22afbd5a1ebc38441c816f9917cad
+  repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
+  tag: v3.2.1@sha256:0a3b5b88f2546f5f7aee40b7ee3140b76a3ea517fd13276cc0c6748b666dffbf
   pullPolicy: Always
 
 service:
@@ -32,12 +32,17 @@ env:
   DEPLOYMENT_TYPE: on-prem
   # CPD_VERSION, needed for on-prem deployments.Example(5.1)
   CPD_VERSION: "5.2"
+  MODEL_RUNTIME: ""
+  LLM_BASE_URL: ""
+  LLM_API_KEY: ""
   LANGFUSE_HOST: ""
   LANGFUSE_TRACING_ENABLED: false
   LANGFUSE_ENABLED: LANGFUSE_ENABLED
   MAX_LLM_CONTEXT_MESSAGES_COUNT: 50
   MODEL_CATALOG_PATH: /opt/app-root/src/model_catalog.yaml
   ZCHATOPS_MCP_URL: "http://wxa4z-zchatops-mcp-server-service.wxa4z-aiops.svc.cluster.local:8081"
+  MAX_COMPLETION_TOKENS: 4096
+
 secrets:
   name: wxa4z-workload-scheduler-agent-secrets
   createSecret: true

@@ -64,6 +64,7 @@ spec:
                 secretKeyRef:
                   name: {{ $secretName | quote }}
                   key: WATSONX_ML_URL
+                  optional: true
             - name: DEPLOYMENT_SPACE_ID
               valueFrom:
                 secretKeyRef:
@@ -77,6 +78,21 @@ spec:
               value: {{ required "WATSONX_MODEL_ID is required" .Values.env.WATSONX_MODEL_ID }}
             - name: DEPLOYMENT_TYPE
               value: {{ required "DEPLOYMENT_TYPE is required" .Values.env.DEPLOYMENT_TYPE }}
+            - name: MODEL_RUNTIME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: MODEL_RUNTIME
+            - name: LLM_BASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: LLM_BASE_URL
+            - name: LLM_API_KEY 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secretName | quote }}
+                  key: LLM_API_KEY 
             - name: AGENT_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -134,6 +150,8 @@ spec:
               value: {{ .Values.env.SSL_CERT_FILE }}
             - name: MAX_FIXCATS_TO_DISPLAY
               value: "{{ .Values.env.MAX_FIXCATS_TO_DISPLAY }}"
+            - name: MAX_COMPLETION_TOKENS
+              value: "{{ .Values.env.MAX_COMPLETION_TOKENS }}"
             - name: MAX_LLM_CONTEXT_MESSAGES_COUNT
               value: "{{ .Values.env.MAX_LLM_CONTEXT_MESSAGES_COUNT }}"
             - name: FIXCATS_CACHE_EXPIRY_TIME_IN_SECS

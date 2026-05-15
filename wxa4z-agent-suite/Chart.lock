@@ -1,25 +1,7 @@
 dependencies:
 - name: zrag-agent
   repository: file://../agent-helm-charts/zrag-agent
-  version: 1.2.0
-- name: support-agent
-  repository: file://../agent-helm-charts/support-agent
-  version: 1.2.0
-- name: omegamon-insights-agent
-  repository: file://../agent-helm-charts/omegamon-insight-agent-z
-  version: 1.2.0
-- name: upgrade-agent
-  repository: file://../agent-helm-charts/upgrade-agent
-  version: 1.2.0
-- name: workload-scheduler-agent-z
-  repository: file://../agent-helm-charts/workload-scheduler-agent-z
-  version: 1.2.0
-- name: automation-insights-agent
-  repository: file://../agent-helm-charts/automation-insight-agent
-  version: 1.2.0
-- name: intellimagic-agent
-  repository: file://../agent-helm-charts/intellimagic-agent
-  version: 1.1.1
+  version: 1.2.1
 - name: db2z-agent
   repository: file://../agent-helm-charts/db2z-agent
   version: 1.1.1
@@ -28,18 +10,36 @@ dependencies:
   version: 1.2.0
 - name: ibm-concert-agent-z-spyre
   repository: file://../agent-helm-charts/ibm-concert-agent-z-spyre
-  version: 1.2.0
-- name: taz-functional-testing-agent
-  repository: file://../agent-helm-charts/taz-functional-testing-agent
-  version: 0.1.0
+  version: 1.2.1
 - name: ims-agent
   repository: file://../agent-helm-charts/ims-agent
   version: 1.0.2
+- name: intellimagic-agent
+  repository: file://../agent-helm-charts/intellimagic-agent
+  version: 1.1.1
+- name: support-agent
+  repository: file://../agent-helm-charts/support-agent
+  version: 1.2.1
+- name: omegamon-insights-agent
+  repository: file://../agent-helm-charts/omegamon-insight-agent-z
+  version: 1.2.1
+- name: workload-scheduler-agent-z
+  repository: file://../agent-helm-charts/workload-scheduler-agent-z
+  version: 1.2.1
+- name: upgrade-agent
+  repository: file://../agent-helm-charts/upgrade-agent
+  version: 1.2.1
+- name: automation-insights-agent
+  repository: file://../agent-helm-charts/automation-insight-agent
+  version: 1.2.1
+- name: taz-functional-testing-agent
+  repository: file://../agent-helm-charts/taz-functional-testing-agent
+  version: 0.1.0
 - name: cics-agent
   repository: file://../agent-helm-charts/cics-agent
   version: 1.2.2
 - name: compiler-fix-finder-agent
   repository: file://../agent-helm-charts/compiler-fix-finder-agent
-  version: 1.0.0
-digest: sha256:e14f4628b46c472ce6ac8b4ee9f444d2971e9485450c66bd4501ce9777400513
-generated: "2026-05-06T14:22:59.083849+01:00"
+  version: 1.1.2
+digest: sha256:7426d8c537d0f0af68e9a8b6882701ffabd6a602b20c6c3776619b261f59329e
+generated: "2026-05-15T16:23:39.065981+05:30"
