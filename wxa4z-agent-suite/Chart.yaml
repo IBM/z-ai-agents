@@ -25,15 +25,11 @@ appVersion: "1.0.0"
 
 dependencies:
   - name: zrag-agent
-    version: 1.0.0 # match the version in cics-agent/Chart.yaml
+    version: 1.2.1 # match the version in cics-agent/Chart.yaml
     repository: file://../agent-helm-charts/zrag-agent
     condition: zrag-agent.enabled
-  - name: cics-agent
-    version: 1.2.1 # match the version in cics-agent/Chart.yaml
-    repository: file://../agent-helm-charts/cics-agent
-    condition: cics-agent.enabled
   - name: db2z-agent
-    version: 1.0.1
+    version: 1.1.1
     repository: file://../agent-helm-charts/db2z-agent
     condition: db2z-agent.enabled
   - name: ibm-concert-agent-z
@@ -53,21 +49,29 @@ dependencies:
     repository: file://../agent-helm-charts/intellimagic-agent
     condition: intellimagic-agent.enabled
   - name: support-agent
-    version: 1.0.0
+    version: 1.2.1
     repository: file://../agent-helm-charts/support-agent
     condition: support-agent.enabled
   - name: omegamon-insights-agent
-    version: 1.0.0
+    version: 1.2.1
     repository: file://../agent-helm-charts/omegamon-insight-agent-z
     condition: omegamon-insights-agent.enabled
+  - name: workload-scheduler-agent-z
+    version: 1.2.1
+    repository: file://../agent-helm-charts/workload-scheduler-agent-z
+    condition: workload-scheduler-agent-z.enabled
+  - name: upgrade-agent
+    version: 1.2.1
+    repository: file://../agent-helm-charts/upgrade-agent
+    condition: upgrade-agent.enabled
+  - name: automation-insights-agent
+    version: 1.2.1
+    repository: file://../agent-helm-charts/automation-insight-agent
+    condition: automation-insights-agent.enabled
   - name: taz-functional-testing-agent
     version: 0.1.0
     repository: file://../agent-helm-charts/taz-functional-testing-agent
     condition: taz-functional-testing-agent.enabled
-  - name: ims-agent
-    version: 1.0.2
-    repository: file://../agent-helm-charts/ims-agent
-    condition: ims-agent.enabled
   - name: cics-agent
     version: 1.2.2
     repository: file://../agent-helm-charts/cics-agent
