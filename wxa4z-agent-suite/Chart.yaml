@@ -64,18 +64,14 @@ dependencies:
     version: 0.1.0
     repository: file://../agent-helm-charts/taz-functional-testing-agent
     condition: taz-functional-testing-agent.enabled
-  - name: upgrade-agent
-    version: 1.0.0
-    repository: file://../agent-helm-charts/upgrade-agent
-    condition: upgrade-agent.enabled
-  - name: workload-scheduler-agent-z
-    version: 1.0.0
-    repository: file://../agent-helm-charts/workload-scheduler-agent-z
-    condition: workload-scheduler-agent-z.enabled
-  - name: automation-insights-agent
-    version: 1.0.0
-    repository: file://../agent-helm-charts/automation-insight-agent
-    condition: automation-insights-agent.enabled
+  - name: ims-agent
+    version: 1.0.2
+    repository: file://../agent-helm-charts/ims-agent
+    condition: ims-agent.enabled
+  - name: cics-agent
+    version: 1.2.2
+    repository: file://../agent-helm-charts/cics-agent
+    condition: cics-agent.enabled
   - name: compiler-fix-finder-agent
     version: 1.1.2
     repository: file://../agent-helm-charts/compiler-fix-finder-agent

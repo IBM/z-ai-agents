@@ -50,7 +50,7 @@ A native agent configured to use the MCP tools:
 1. User enters a query in the zRAG Agent chat interface
 2. Orchestrate routes the query to the MCP tool (**zrag_retriever**)
 3. **zrag_retriever** tool executes the retrieval logic against the OpenSearch backend and responds with the result set
-4. Orchestrate uses this result and passes it to the LLM (Llama 3.3 70B) for answer generation
+4. Orchestrate uses this result and passes it to the LLM for answer generation
 5. Answer is streamed back to the chat window with inline citations and source references
 
 
@@ -116,16 +116,11 @@ WATSONX_VERIFY_SSL | Set to "false" for self-signed certificates in CPD environm
 MODEL_ID | LLM model used by the zRAG MCP server for answer generation. Default: "ibm/granite-3-3-8b-instruct". Options include Granite 3.3 models or other WatsonX models.
 MODEL_TEMPERATURE | Controls randomness of model outputs (0.0-1.0). Lower values produce more deterministic responses. Default: "0.4".
 MODEL_MAX_TOKENS | Maximum number of tokens the model can generate per response. Default: "400" (capped at 450).
-MODEL_TOP_P | Nucleus sampling parameter (optional). Controls diversity via cumulative probability cutoff.
 MODEL_TOP_K | Top-k sampling parameter (optional). Controls diversity by limiting to top k tokens.
 **Environment variables - Search Configuration**                                                        |
 ZRAG_DEFAULT_RERANK | Enable reranking of search results for improved relevance. Default: "true".
 ZRAG_DEFAULT_SEARCH_TYPE | Search algorithm to use. Options: "keyword", "semantic", "fusion", "reranked_fusion". Default: "reranked_fusion".
 ZRAG_DEFAULT_IBM_INDICES | Comma-separated list of IBM documentation indices to search. Default: "*_ibm_docs_slate,*_ibm_redbooks_slate".
-ZRAG_DEFAULT_MAX_RESULTS | Maximum number of documents to retrieve from the backend. Default: "10".
-ZRAG_DEFAULT_MIN_SCORE | Minimum relevance score for including documents (0.0-1.0). Default: "0.5".
-ZRAG_CONTEXT_WINDOW | Maximum context window size in tokens for building prompts. Default: "2048".
-ZRAG_MAX_CONTEXT_DOCS | Maximum number of documents to include in the LLM context. Default: "6".
 **Environment variables - Citation Configuration**                                                        |
 ENABLE_CODE_CITATIONS | Use code-based citation extraction (not LLM-based) for accuracy. Default: "true".
 CITATION_MIN_SIMILARITY | Minimum phrase similarity threshold for matching citations (0.0-1.0). Default: "0.7".
