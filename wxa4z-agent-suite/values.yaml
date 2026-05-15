@@ -79,7 +79,7 @@ global:
 support-agent:
   enabled: true
   image:
-    repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
     tag: v3.2.1@sha256:24345c310c501bc1b03dab788382c94c2954e978a71f67be6e207a854807872d
   bootstrapJob:
     enabled: true
@@ -111,7 +111,7 @@ support-agent:
 omegamon-insights-agent:
   enabled: true
   image:
-    repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
     tag: v3.2.1@sha256:f8552c45558331015302c81b6406205a9c8dc9d07883e62b672d4f3c79ea12f2
   bootstrapJob:
     enabled: true
@@ -139,7 +139,7 @@ omegamon-insights-agent:
 automation-insights-agent:
   enabled: true
   image:
-    repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-system-automation-netview-agent
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-system-automation-netview-agent
     tag: v3.2.1@sha256:fab10ab6ccb28b9cdd41921b27af6ba8efe0807f9cc76c974e0bf53a831453c7
   bootstrapJob:
     enabled: true
@@ -167,7 +167,7 @@ automation-insights-agent:
 upgrade-agent:
   enabled: true
   image:
-    repository: icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
     tag: v3.2.1@sha256:e822ca5816652aacbf8bc5fea6cbc67edd6e8f03622350d8387da7b50b48b839
   bootstrapJob:
     enabled: true
@@ -215,7 +215,7 @@ upgrade-agent:
 workload-scheduler-agent-z:
   enabled: true
   image:
-    repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
+    repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
     tag: v3.2.1@sha256:0a3b5b88f2546f5f7aee40b7ee3140b76a3ea517fd13276cc0c6748b666dffbf
   bootstrapJob:
     enabled: true
