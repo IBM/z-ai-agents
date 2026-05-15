@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/wxa4z-dev-container-registry/wxa4z-aiops-agent
-  tag: main_apr_24_2026@sha256:3f537925b6d2780fed9a37b02166d650590b62b98ae8d5267e1c42bb6d47f0ce
+  repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-aiops-agent
+  tag: v3.2.1@sha256:f8552c45558331015302c81b6406205a9c8dc9d07883e62b672d4f3c79ea12f2
   pullPolicy: Always
 
 service:

@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/wxa4z-dev-container-registry/wxa4z-system-automation-netview-agent
-  tag: main_apr_24_2026@sha256:bb3ad586ff474c3cda79be6a4bb6262ffe948095134b929d923b329b57897ae5
+  repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-system-automation-netview-agent
+  tag: v3.2.1@sha256:fab10ab6ccb28b9cdd41921b27af6ba8efe0807f9cc76c974e0bf53a831453c7
   pullPolicy: Always
 
 service:

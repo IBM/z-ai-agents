@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: na.artifactory.swg-devops.com/sys-nazare-cicd-team-wxo4z-docker-local/upgrade-agent
-  tag: v3.2.1@sha256:854647b67c05aae15bd4f19296151ebdc8551db5bd0ed6f0073afe6dc978cc94
+  repository: icr.io/cp/ibm-watsonx-assistant-for-z/upgrade-agent
+  tag: v3.2.1@sha256:e822ca5816652aacbf8bc5fea6cbc67edd6e8f03622350d8387da7b50b48b839
   pullPolicy: Always
 
 service:
