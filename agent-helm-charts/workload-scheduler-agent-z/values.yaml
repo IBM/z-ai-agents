@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
+  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-workload-scheduler-agent
   tag: v3.2.1@sha256:0a3b5b88f2546f5f7aee40b7ee3140b76a3ea517fd13276cc0c6748b666dffbf
   pullPolicy: Always
 

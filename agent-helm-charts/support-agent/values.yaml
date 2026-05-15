@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
+  repository: cp.icr.io/cp/ibm-watsonx-assistant-for-z/wxa4z-tls-agent
   tag: v3.2.1@sha256:24345c310c501bc1b03dab788382c94c2954e978a71f67be6e207a854807872d
   pullPolicy: Always
 
