@@ -107,7 +107,7 @@ You can now repeat this process for the other signature files in the `tmp` folde
 
 An entitlement key is required to download the IBM CICS Transaction Server agents for Z container images from the IBM Container Registry. This entitlement key is available at no charge to licensed users of IBM CICS Transaction Server for z/OS.
 
-To obtain the entitlement key, open a case with IBM Support indicating that you are requesting the entitlement key for IBM CICS Transaction Server agents for Z. 
+The entitlement key is contained within the Bill of Materials PDF, hosted in Shopz as part of your CICS TS materials.
 
 Once you have an entitlement key, paste it into the Helm chart under the `cics-agent` definitions like so:
 
