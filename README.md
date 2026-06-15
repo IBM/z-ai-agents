@@ -1,15 +1,5 @@
 # z-ai-agents - Deployment Guide
 
-Install and operate the [IBM watsonx Assistant for Z – Agent Suite](/wxa4z-agent-suite/) Helm chart on OpenShift. Deploy multiple z/OS agents with one command, using shared configuration and per‑agent overrides.
-
-> This [wxa4z-agent-suite](/wxa4z-agent-suite/) chart deploys a **suite of z/OS agents** with one command. Each agent remains an independent chart (own values, templates, and versioning) while the umbrella coordinates:
->
-> - **Single‑command install/upgrade** for all enabled agents
-> - **Shared, reusable config & secrets** (optional, via `global.*`)
-> - **Per‑environment toggles** (`values-*.yaml`) to enable/disable agents
-
----
-
 ## Table of Contents
 
 1. [Overview](#overview)
