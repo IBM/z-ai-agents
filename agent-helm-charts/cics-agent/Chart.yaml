@@ -1,6 +1,0 @@
-apiVersion: v2
-name: cics-agent
-description: A Helm chart for deploying the CICS agent.
-type: application
-version: 1.2.2
-appVersion: "1.2.2"

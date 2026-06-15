@@ -1,0 +1,40 @@
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: upgrade-agent
+  namespace: "" #namespace where the agent service will be deployed
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+
+spec:
+  releaseName: upgrade-agent # release name for the helm chart deployment
+  tenantId: "" # tenant id for which the agent service will be deployed
+  namespace: "" # namespace where the agent service will be deployed
+  wxa4z-core-services-namespace: "wxa4z-zad" # namespace where the wxa4z core services are deployed, default is "wxa4z-zad"
+
+  agentDetails:
+    - agentName: upgrade-agent 
+      agentId: wxa4z:upgrade-agent:agent # unique identifier for the agent, format should be <wxa4z>:<agent_name>:agent
+      description: "IBM Z Upgrade agent answers any query related to z os software installation, fetches the missing fixcat updates, receives PTFs, Installs PTFs and details of software instances and products on the system"
+      agentDisplayName: "IBM Z Upgrade Agent" # display name for the agent
+      bootstrapConfig:
+        name: "upgrade-agent-bootstrap-config" # name of the configmap that contains the bootstrap configuration for the agent
+        fileName: "upgrade_agent_bootstrap_config.yaml" # file name of the file inside the configmap that contains the bootstrap configuration for the agent
+
+  chart:
+    repository: oci://icr.io/wxa4z-dev-container-registry # OCI registry where the helm chart is stored
+    name: upgrade-agent # name of the helm chart
+    version: "1.2.1" # version of the helm chart
+    # pullSecrets: # pullSecrets is used to pull image from registry
+    #   - name: pull-secret
+  values:
+    replicaCount: 1
+    global: # gobal secerts "wxa4z-watsonx-credentials" which contains all the credentials.
+      secrets:
+        name: wxa4z-watsonx-credentials
+    secrets: # secrets specific to the agent which needs to container
+      name: upgrade-agent-secrets
+    env: # environment variables to be passed to the agent container which needs to dynamic and can be used to pass any configuration details to the agent, these will be available as env variables in the agent container
+      HOST_NAME: ""
+      WATSONX_MODEL_ID: "openai/gpt-oss-120b"
+      MODEL_RUNTIME: "openai_protocol"

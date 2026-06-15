@@ -1,6 +1,0 @@
-apiVersion: v2
-name: zrag-agent
-description: A Helm chart for deploying the zrag-agent
-type: application
-version: 1.2.1
-appVersion: "1.0.0"

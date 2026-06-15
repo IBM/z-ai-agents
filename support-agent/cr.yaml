@@ -1,0 +1,37 @@
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: support-agent
+  namespace: ""
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+spec:
+  releaseName: support-agent
+  tenantId: ""
+  namespace: ""
+  wxa4z-core-services-namespace: wxa4z-zad
+  agentDetails:
+      - agentName: support-agent
+        agentId: wxa4z:support-agent:agent
+        description: "IBM Z Support Agent helps the user to collect dumps from a z/os system and also send the z/os dumps to a support case."
+        agentDisplayName: "IBM Z Support Agent"
+        bootstrapConfig:
+          name: "support-agent-bootstrap-config"
+          fileName: "support_agent_bootstrap_config.yaml"
+  chart:
+    repository: oci://icr.io/wxa4z-dev-container-registry
+    name: support-agent
+    version: "1.2.1"
+    # pullSecrets:
+    #   - name: pull-secret
+
+  values:
+    replicaCount: 1
+    global:
+        secrets:
+            name: wxa4z-watsonx-credentials
+    secrets:
+      name: wxa4z-support-agent-agent-secrets
+    env:
+      WATSONX_MODEL_ID: "openai/gpt-oss-120b"
+      MODEL_RUNTIME: "openai_protocol"
