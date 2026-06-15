@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: icr.io/ibm-intellimagic-agent/intellimagic-agent
-  tag: 1.1.1.3@sha256:e69d67d3e21cdde1aa239a536f8dede7fbd8923819151ca637cd46d61b764760
+  tag: 1.1.1.3@sha256:8c0c47e1abc3d2994894a438dc4674b72077c15b7b6489ba041ec6d82a3dfeb1
   pullPolicy: Always
 
 service:
