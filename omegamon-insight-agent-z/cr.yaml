@@ -18,7 +18,7 @@ spec:
           name: "omegamon-insights-agent-bootstrap-config"
           fileName: "omegamon_insights_agent_bootstrap_config.yaml"  
   chart:
-    repository: oci://icr.io/wxa4z-dev-container-registry
+    repository: oci://cp.stg.icr.io/cp/ibm-watsonx-assistant-for-z
     name: omegamon-insights-agent
     version: "1.2.1"
     #pullSecrets:

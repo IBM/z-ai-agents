@@ -19,7 +19,7 @@ spec:
           name: "support-agent-bootstrap-config"
           fileName: "support_agent_bootstrap_config.yaml"
   chart:
-    repository: oci://icr.io/wxa4z-dev-container-registry
+    repository: oci://cp.stg.icr.io/cp/ibm-watsonx-assistant-for-z
     name: support-agent
     version: "1.2.1"
     # pullSecrets:

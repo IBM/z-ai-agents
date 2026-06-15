@@ -19,7 +19,7 @@ spec:
           name: "workload-scheduler-agent-z-bootstrap-config"
           fileName: "workload_scheduler_agent_bootstrap_config.yaml"
   chart:
-    repository: oci://icr.io/wxa4z-dev-container-registry
+    repository: oci://cp.stg.icr.io/cp/ibm-watsonx-assistant-for-z
     name: workload-scheduler-agent-z
     version: "1.2.1"
     # pullSecrets:
