@@ -23,7 +23,6 @@ Orchestrates the deployment of multiple IBM z/OS‑focused agents. It’s design
 - **Secure secret handling** (no hard‑coding; Kubernetes Secrets only)
 - **Idempotent upgrades** (Helm‑native lifecycle)
 
-> **Tip:** Enable/disable individual agents per environment by editing your `values.yaml` (or a `values-<env>.yaml`).
 
 ---
 
@@ -34,7 +33,7 @@ Orchestrates the deployment of multiple IBM z/OS‑focused agents. It’s design
 ├─ cr.yaml # Custom Resource Definition (CRD)
 ├─ License
 License file
-READEME overall READEME
+READEME overall README file
 ```
 ---
 
@@ -118,7 +117,7 @@ READEME overall READEME
 | `WATSONX_DEPLOYMENT_SPACE_ID` | ID of the watsonx.ai **Deployment Space** used for model deployments. | [Watsonx.ai Deployment Spaces](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=spaces-creating-deployment)|
 | `WATSONX_ML_URL`              | Base URL of the **Watson Machine Learning / CPD** instance.           | CPD  Instance url or WML Endpoint(Cloud Only)           |
 | `CPD_USERNAME`                | Username for **Cloud Pak for Data** authentication.                   | CPD Username           |
-| `CPD_INSTANCE_API_KEY`             | API key used to access CPD/Watsonx services.            |   [Create WATSONX_API_KEY](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys)      |
+| `CPD_INSTANCE_API_KEY`             | API key used to access CPD/Watsonx services.            |   [Create CPD_INSTANCE_API_KEY](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys)      |
 | `WATSONX_PROJECT_ID`          | watsonx.ai **Project** identifier used for assets and jobs.           | [Watsonx.ai Projects](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project)    |
 | `ORCHESTRATE_ENV_URL`          | Watsonx Orchestrate Service Instance URL           | Log In to watsonx orchestrate. Navigate to `settings`, copy the service instance url from `API Details` tab     |
 | `ORCHESTRATE_ENV_TYPE`          | Watsonx Orchestrate Instance Type           | ibm_iam(for cloud), mcsp(AWS saas), cpd (on-prem)     |
