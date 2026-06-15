@@ -39,11 +39,12 @@ Orchestrates the deployment of multiple IBM z/OS‑focused agents. It’s design
 
 ## Repo Layout
 ```
-wxa4z-agent-suite/ # <— umbrella chart
-├─ Chart.yaml # lists all agent dependencies
-├─ values.yaml # toggles & optional shared config/secrets
-├─ templates/ # (usually minimal; e.g., optional global secrets)
-└─ charts/ # populated by helm dependency update
+<agent-folder>/ # 
+├─ README.md # Readme to guide users on how to use the agent
+├─ cr.yaml # Custom Resource Definition (CRD)
+├─ License
+License file
+READEME overall READEME
 ```
 ---
 
