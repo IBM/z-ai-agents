@@ -35,7 +35,7 @@ spec:
     secrets: # secrets specific to the agent which needs to container
       name: ibm-concert-agent-z-mcp-secrets
     env: # environment variables to be passed to the agent container which needs to dynamic and can be used to pass any configuration details to the agent, these will be available as env variables in the agent container
-      WATSONX_MODEL_ID: ""
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
       MODEL_RUNTIME: "openai_protocol"
 
 

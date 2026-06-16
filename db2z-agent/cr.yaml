@@ -39,5 +39,5 @@ spec:
       name: db2z-agent-secrets
 
     env: 
-      WATSONX_MODEL_ID: "openai/gpt-oss-120b"
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
       MODEL_RUNTIME: "openai_protocol"
