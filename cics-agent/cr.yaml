@@ -39,5 +39,5 @@ spec:
       name: wxa4z-cics-agent-secrets # upgrade-agent-secrets (this secret is about each agent)
 
     env: # below are samples of configurable environment variables
-      WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct"
-      MODEL_RUNTIME: "cloud"
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
+      MODEL_RUNTIME: "openai_protocol"
