@@ -16,7 +16,7 @@ spec:
     - agentName: zosconfig
       agentId: wxa4z:zosconfig:agent # unique identifier for the agent, format should be <wxa4z>:<agent_name>:agent
       description: "The IBM Agents for z/OS configuration agent can take queries about the configuration of your z/OS systems, such as how to enable SMF tracing or what libraries are currently listed in LNKLST"
-      agentDisplayName: "IBM Agent for z/OS" # display name for the agent
+      agentDisplayName: "IBM Agents for z/OS" # display name for the agent
       bootstrapConfig:
         name: "zos-agent-bootstrap-config" # name of the configmap that contains the bootstrap configuration for the agent
         fileName: "zos_agent_bootstrap_config.yaml" # file name of the file inside the configmap that contains the bootstrap configuration for the agent
@@ -37,7 +37,11 @@ spec:
       name: wxa4z-zos-agent-secrets
     env: # environment variables to be passed to the agent container which needs to be dynamic and can be used to pass any configuration details to the agent, these will be available as env variables in the agent container
       WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
-      DEPLOYMENT_TYPE: "on‑prem"
+      DEPLOYMENT_TYPE: "on-prem"
       MODEL_RUNTIME: "openai_protocol"
-
-
+    #for wrapper to connect to opensearch
+      hostAliases:
+      - ip: "" #Ip address
+        hostnames:
+          - "" #opensearch url
+          - "" #wrapper url (only pass under if same ip or else pass the ip address also in hostAliases)

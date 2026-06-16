@@ -13,82 +13,181 @@ The IBM Z Compilers Fix Finder Agent helps compiler users find any potential fix
 ## Prerequisites
 Ensure the following:
 
-- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
+- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 
-## IBM Z Compilers Fix Finder Agent
+## Deployment Guide
 
-### Retrieve the entitlement key
+The IBM Z Compilers Fix Finder Agent is deployed using a Custom Resource (CR) definition. The CR provides a declarative way to manage the agent deployment through the agent operator.
 
-An entitlement key is required to download the IBM Z Compilers Fix Finder Agent container image from the IBM Container Registry. This entitlement key is available at no charge to licensed users of IBM Enterprise COBOL for z/OS.
+### Prerequisites
 
-* To obtain the entitlement key, download the entitlement memo from [Agentic AI Tools for IBM Z Compilers](https://early-access.ibm.com/software/support/trial/cst/programwebsite.wss?siteId=2329) website.
+Before deploying the agent, ensure:
 
-Once you have an entitlement key, paste it into the Helm chart under the compiler-fix-finder-agent definitions like so:
+1. The agent operator is installed and running in your cluster
+2. The target namespace exists
 
-```yaml
-compiler-fix-finder-agent:
-  enabled: true
-  registry:
-    name: z-compiler-fix-finder-image-pull-secret
-    server: icr.io
-    username: iamapikey
-    entitlementKey: "<IBM_Z_COMPILER_FIX_FINDER_ENTITLEMENT_KEY>"
-```
+### Step 1: Create Secrets
 
-### Create shared variables
+The agent requires Kubernetes Secrets containing sensitive configuration values. **Never commit secrets to version control.**
 
-Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](../../README.md#1-global-settings).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
+#### Secret Types
 
-### Configure the values.yaml file
+The agent uses two types of secrets:
 
-To enable the IBM Z Compilers Fix Finder Agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
+1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
+2. **Agent-Specific Secrets** (`wxa4z-compiler-fix-finder-agent-agent-secrets`): Unique to this agent
 
-In the values.yaml file, scroll down to the automation-insights-agent section and update the keys as outlined in the following table.
+#### Agent-Specific Secret Reference
 
-| Key       |            Description                  |
-|------------------------------|-----------------------------------|
-**Environment variables**                                                        |
-**Container deployment**
-DEPLOYMENT_TYPE | Deployment environment type (`on-prem` or `cloud` based on **container** deployment environment)
-**Model Access (on-prem model deployment)**
-MODEL_RUNTIME | Deployment environment type (`on-prem`)
-WML_URL | URL for the on-premises Watson Machine Learning (WML) service
-CPD_VERSION | CPD version for on-prem deployments (e.g., `5.1`)             
-CPD_USERNAME | Username for accessing the Cloud Pak for Data (CPD) environment
-ONPREM_WML_INSTANCE_ID | Identifier for the Watson Machine Learning instance (always set to `openshift`)
-DEPLOYMENT_SPACE_ID | Watsonx AI deployment space ID
-WATSONX_API_KEY | API key for authenticating with IBM Cloud services or CPD instance
-**Model Access (WatsonX cloud model deployment)**
-MODEL_RUNTIME | Deployment environment type (`cloud`)
-WML_URL | URL for the cloud [Watson Machine Learning API](https://cloud.ibm.com/apidocs/machine-learning)
-DEPLOYMENT_SPACE_ID | Watsonx AI deployment space ID
-WATSONX_API_KEY | API key for authenticating with IBM Cloud services or CPD instance
-**Model Access (Red Hat AI Inference Server / Other)**
-MODEL_RUNTIME | Deployment environment type (`openai_protocol`)
-LLM_BASE_URL | URL for the model
-LLM_API_KEY | API key for authenticating with the service
-**Model Settings**
-LLM_MODEL | Model ID for the on-premises Large Language Model (LLM) (e.g.,ibm/granite-3-8b-instruct)
-**Secrets**
-AGENT_AUTH_TOKEN | Authentication token for the agent
-> DO NOT CHANGE VALUES IN `secrets` SECTION of  `values.yaml`
-
-
-### Install or upgrade the wxa4z-agent-suite
-
-> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
-
-Use the following command to install or upgrade the wxa4z_agent_suite:
+Create a secret with the following structure. **All values must be base64-encoded.**
 
 ```yaml
-helm upgrade --install wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path_to>/values.yaml --wait
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wxa4z-compiler-fix-finder-agent-secrets
+  namespace: ""  # REQUIRED: Must match the agent namespace
+type: Opaque
+data:
+  # Agent Authentication (base64-encoded, REQUIRED)
+  AGENT_AUTH_TOKEN: ""  # REQUIRED: Agent auth token for registration with WxO. A default value "AGENT_AUTH_TOKEN" is set if not provided, but you should configure a proper token.
+  LANGFUSE_SECRET_KEY: ""
+  LANGFUSE_PUBLIC_KEY: ""
 ```
 
-## Deploy the agent
+> **Important:**
+> - **AGENT_AUTH_TOKEN is required** for agent registration with watsonx Orchestrate.
+
+
+#### Creating the Secret
+
+1. Save the secret configuration to a file (e.g., `compiler-fix-finder-agent-agent-secret.yaml`)
+2. Update the namespace and base64-encode all secret values
+3. Apply the secret:
+
+```bash
+oc apply -f compiler-fix-finder-agent-agent-secret.yaml
+```
+
+4. Verify the secret was created:
+
+```bash
+oc get secret wxa4z-compiler-fix-finder-agent-agent-secrets -n <namespace>
+```
+
+### Step 2: Deploy Agent using Custom Resource (CR)
+
+The IBM Z Compilers Fix Finder Agent can be deployed using a Custom Resource (CR) definition. The CR provides a declarative way to manage the agent deployment through the agent operator.
+
+#### Configuration Parameters
+
+The following table outlines the key configuration parameters:
+
+| Parameter | Description | Required |
+|-----------|-------------|----------|
+| **metadata.namespace** | Target namespace for agent deployment | Yes |
+| **spec.tenantId** | Tenant identifier for multi-tenancy support | Yes |
+| **spec.chart.version** | Helm chart version to deploy | Yes |
+| **spec.values.env.WATSONX_MODEL_ID** | LLM Model ID (e.g., "meta-llama/llama-3-3-70b-instruct") | Yes |
+| **spec.values.env.MODEL_RUNTIME** | MODEL RUNTIME (e.g., "openai_protocol") | Yes |
+| **spec.values.secrets.name** | Name of agent-specific secrets | Yes |
+| **spec.values.global.secrets.name** | Name of global shared secrets | Yes |
+
+#### CR Definition
+
+Below is the complete Custom Resource definition. Update the placeholder values according to your environment:
+
+```yaml
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: compiler-fix-finder-agent
+  namespace: ""  # REQUIRED: Target namespace (e.g., wxa4z-agents)
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+spec:
+  releaseName: compiler-fix-finder-agent
+  namespace: ""  # REQUIRED: Must match metadata.namespace
+  tenantId: ""  # REQUIRED: Tenant identifier for multi-tenancy support
+  wxa4z-core-services-namespace: wxa4z-zad  # Namespace where wxa4z core services are deployed
+  
+  agentDetails:
+    - agentName: compiler-fix-finder-agent
+      agentId: wxa4z:compiler-fix-finder-agent:agent
+      description: 'Enables system programmers to retrieve and analyze Automation and Netview domain information'
+      bootstrapConfig:
+        name: "compiler-fix-finder-agent-bootstrap-config"
+        fileName: "compiler_fix_finder_agent_bootstrap_config.yaml"
+  
+  chart:
+    repository: oci://icr.io/zoscp-sandbox/charts
+    name: compiler-fix-finder-agent
+    version: "1.1.3"  # Update to the desired chart version
+    # Uncomment if using a private registry:
+    # pullSecrets:
+    #   - name: wxa4z-image-pull-secret
+
+  values:
+    replicaCount: 1
+    
+    global:
+      secrets:
+        name: wxa4z-watsonx-credentials  # Global secrets shared across agents
+    
+    secrets:
+      name: wxa4z-compiler-fix-finder-agent-secrets  # Agent-specific secrets
+    
+    env:
+      # LLM Configuration
+      WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct"
+      MODEL_RUNTIME: "openai_protocol"
+      # Add if other ENV need for deployment
+```
+
+#### Installing the Agent
+
+1. Save the CR configuration to a file (e.g., `compiler-fix-finder-agent-cr.yaml`)
+2. Update all placeholder values marked as `REQUIRED`
+3. Apply the CR to your cluster:
+
+```bash
+oc apply -f compiler-fix-finder-agent-cr.yaml
+```
+
+4. Verify the deployment:
+
+```bash
+# Check CR status
+oc get agentservice compiler-fix-finder-agent -n <namespace>
+
+# Check agent pods
+oc get pods -n <namespace> -l app=compiler-fix-finder-agent
+
+# View agent logs
+oc logs -n <namespace> -l app=compiler-fix-finder-agent --tail=100
+```
+
+### Step 3: Subscribe to the agent
+
+After successfully deploying the agent, you need to subscribe to it to make it available in watsonx Orchestrate.
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with a **Subscribe** button next to each.
+
+5. Click the **Subscribe** button next to the **IBM Z Compilers Fix Finder Agent**.
+   - This action adds the agent to watsonx Orchestrate (WXO) and makes it available for deployment.
+
+
+### Step 4: Deploy the agent
 
 1. Log in to watsonx Orchestrate.
 2. From the main menu, navigate to **Build** > **Agent Builder**.
@@ -96,6 +195,88 @@ helm upgrade --install wxa4z-agent-suite \
 4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
 5. Click **Deploy** to activate the agent and make it available in the live environment.
 
+
+### Step 5: Upgrade the Agent
+
+To upgrade the agent to a new version:
+
+> **Note:** If the agent was previously subscribed to watsonx Orchestrate, you must first unsubscribe it before upgrading. After the upgrade is complete, re-subscribe the agent. See the [Uninstall the Agent](#step-6-uninstall-the-agent) section for unsubscribe steps and the [Subscribe to the agent](#step-3-subscribe-to-the-agent) section for subscribe steps.
+
+1. Update the `spec.chart.version` field in your CR file:
+
+```yaml
+spec:
+  chart:
+    version: "1.1.4"  # Update to the new version
+```
+
+2. Apply the updated CR:
+
+```bash
+oc apply -f compiler-fix-finder-agent-agent-cr.yaml
+```
+
+3. Monitor the upgrade progress:
+
+```bash
+# Watch the agent pods rolling update
+oc get pods -n <namespace> -l app=compiler-fix-finder-agent-agent -w
+
+# Check the CR status
+oc describe agentservice compiler-fix-finder-agent-agent -n <namespace>
+```
+
+The agent operator will automatically handle the upgrade process, including rolling updates of the agent pods.
+
+### Step 6: Uninstall the Agent
+
+To uninstall the agent:
+
+**If the agent was previously subscribed to watsonx Orchestrate**, first unsubscribe it:
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with an **Unsubscribe** button next to each.
+
+5. Click the **Unsubscribe** button next to the **IBM Z Compilers Fix Finder Agent**.
+   - This action removes the agent from watsonx Orchestrate (WXO).
+
+**Then, delete the agent resources:**
+
+1. Delete the Custom Resource:
+
+```bash
+oc delete agentservice compiler-fix-finder-agent-agent -n <namespace>
+```
+
+2. Verify the agent resources are removed:
+
+```bash
+# Check that the agent pods are terminated
+oc get pods -n <namespace> -l app=compiler-fix-finder-agent-agent
+
+# Verify the CR is deleted
+oc get agentservice -n <namespace>
+```
+
+3. (Optional) Clean up secrets if no longer needed:
+
+```bash
+# Delete agent-specific secrets
+oc delete secret wxa4z-compiler-fix-finder-agent-agent-secrets -n <namespace>
+
+# Note: Do not delete global secrets if other agents are using them
+```
+
+> **Note:** The agent operator will automatically clean up all resources created by the agent, including deployments, services, and configmaps. However, secrets must be manually deleted if they are no longer needed.
 
 ## Test the agent
 
@@ -112,13 +293,34 @@ After deployment, the agent becomes active and is available for selection in the
 4. Verify that the responses returned by the AI Assistant are accurate.
 
 
-## Troubleshooting installation errors
+## Troubleshooting
 
-If you run into any errors during installation, refer to [Troubleshooting](../../README.md#troubleshooting) for troubleshooting steps.
+### Installation Errors
 
+If you encounter errors during installation:
 
-## Uninstalling the agent
+1. **Verify Prerequisites:**
+   ```bash
+   # Check agent operator is running
+   oc get pods -n <operator-namespace> -l app=agent-operator
 
-For uninstallation instructions, refer to [Uninstall specific agent](../../README.md#uninstall-specific-agent).
+   # Verify secrets exist
+   oc get secrets -n <namespace>
+   ```
+
+2. **Check CR Status:**
+   ```bash
+   oc describe agentservice compiler-fix-finder-agent-agent -n <namespace>
+   ```
+
+3. **Review Agent Operator Logs:**
+   ```bash
+   oc logs -n <operator-namespace> -l app=agent-operator --tail=100
+   ```
+
+4. **Validate Secret Configuration:**
+   - Ensure all required secrets are properly base64-encoded
+   - Verify secret names match those referenced in the CR
+
 
 ------------------------------------------------------------

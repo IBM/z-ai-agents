@@ -20,9 +20,9 @@ Ensure the following:
 - z/os is properly configured and accessible
 - You have the necessary credentials and permissions to access z/os APIs
 
-## Install the z/os Agent
+## Install the z/OS Agent
 
-> **Note:** Follow CR-based deployment using the `AgentService` custom resource, please refer to the [Deployment Guide](../../DEPLOYMENT_GUIDE.md) for detailed instructions.
+> **Note:** For CR-based deployment using the `AgentService` custom resource, please refer to the [Deployment Guide](../../DEPLOYMENT_GUIDE.md) for detailed instructions and [Custom Resource (CR) Configuration](#custom-resource-cr-configuration) section below.
 
 ### Step 1: Configure Global Shared Variables
 
@@ -72,18 +72,17 @@ zos-agent:
 
 ```yaml
   env:
-    DEPLOYMENT_TYPE: "on-prem"  # Set to "cloud" for IBM Cloud or "on-prem" for CPD
+    DEPLOYMENT_TYPE: ""  # Set to "cloud" for IBM Cloud or "on-prem" for CPD
     WATSONX_DEPLOYMENT_SPACE_ID: "<your-deployment-space-id>"  # Deployment space ID
-    WATSONX_MODEL_ID: "ibm/granite-3-3-8b-instruct"  # LLM model to use
+    WATSONX_MODEL_ID: ""  # LLM model to use
     WATSONX_ML_URL: "<your-watsonx-ml-url>"  # Watson Machine Learning URL
     ONPREM_WML_INSTANCE_ID: "openshift"  # WML instance ID for on-premise
     LANGFUSE_EVALUATION_LLM_MODEL: "ibm/granite-3-3-8b-instruct"  # LLM model for evaluation
     MCP_SERVER_URL: "<mcp-server-url>"  # MCP server URL
-    CPD_VERSION: "5.2"  # Cloud Pak for Data version
+    CPD_VERSION: ""  # Cloud Pak for Data version
     MAX_COMPLETION_TOKENS: 4096  # Maximum completion tokens
     APPLID: "<application-id>"  # Application ID for passticket
     TENANT_ID: "<tenant-id>"  # Tenant ID
-    RAG_REMOTE_URL: "<rag-remote-url>"  # Remote RAG URL
 ```
 
 #### 3.3 Configure Agent-Specific Secrets
@@ -255,7 +254,193 @@ oc apply -f secret.yaml
     createSecret: true
     server: icr.io
     username: iamapikey
-    entitlementKey: "<your-entitlement-key>"  # Your watsonx Assistant for Z entitlement key
+    entitlementKey: "<your-entitlement-key>"  
+
+### Custom Resource (CR) Configuration
+
+The z/OS Agent can be deployed using a Custom Resource (CR) definition. The CR provides a declarative way to manage the agent deployment through the agent operator.
+
+#### Prerequisites for CR Deployment
+
+Before deploying the agent using the CR, ensure:
+
+1. The agent operator is installed and running in your cluster
+2. You have created the required secrets (see [Secret Configuration](#secret-configuration))
+3. The target namespace exists
+4. z/OS is properly configured and accessible via z/OS REST APIs
+
+#### CR Structure Overview
+
+The Custom Resource consists of the following main sections:
+
+- **metadata**: Identifies the agent and its namespace
+- **spec.agentDetails**: Defines agent-specific configuration and bootstrap settings
+- **spec.chart**: Specifies the Helm chart location and version
+- **spec.values**: Contains deployment values including environment variables and secret references
+
+#### CR Reference
+
+Below is the complete Custom Resource definition for the z/OS Agent. Update the placeholder values according to environment:
+
+```yaml
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: zos-agent
+  namespace: ""  # REQUIRED: Target namespace (e.g., wxa4z-agents)
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+
+spec:
+  releaseName: zos-agent
+  namespace: ""  # REQUIRED: Must match metadata.namespace
+  tenantId: ""  # REQUIRED: Tenant identifier for multi-tenancy support
+  wxa4z-core-services-namespace: wxa4z-zad  # Namespace where wxa4z core services are deployed
+  
+  agentDetails:
+    - agentName: zosconfig
+      agentId: wxa4z:zosconfig:agent
+      description: 'The IBM Agents for z/OS configuration agent can assist with queries about the configuration of your z/OS systems'
+      agentDisplayName: "IBM Agents for z/OS"
+      bootstrapConfig:
+        name: "zos-agent-bootstrap-config"
+        fileName: "zos_agent_bootstrap_config.yaml"
+  
+  chart:
+    repository: oci://icr.io/wxa4z-dev-container-registry
+    name: zos-agent
+    version: "1.0.0"  # Update to the desired chart version
+    # Uncomment if using a private registry:
+    # pullSecrets:
+    #   - name: wxa4z-image-pull-secret
+
+  values:
+    replicaCount: 1
+    
+    global:
+      secrets:
+        name: wxa4z-watsonx-credentials  # Global secrets shared across agents
+    
+    secrets:
+      name: wxa4z-zos-agent-secrets  # Agent-specific secrets
+    
+    # Host aliases for DNS resolution (if needed for OpenSearch)
+    hostAliases:
+      - ip: "" #ip address of the OpenSearch wrapper pod
+        hostnames:
+          - "" #wrapper url
+    
+    env:
+      # LLM Configuration
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
+      DEPLOYMENT_TYPE: "on-prem"
+      MODEL_RUNTIME: "openai_protocol"
+      ONPREM_WML_INSTANCE_ID: "openshift"
+      # Add if other ENV need for deployment
+  
+```
+
+#### Applying the CR
+
+1. Save the CR configuration to a file (e.g., `cr.yaml`)
+2. Update all placeholder values marked as `REQUIRED`
+3. Apply the CR to your cluster:
+
+### Secret Configuration
+
+The agent requires Kubernetes Secrets containing sensitive configuration values. **Never commit secrets to version control.**
+
+#### Secret Types
+
+The agent uses two types of secrets:
+
+1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
+2. **Agent-Specific Secrets** (`wxa4z-zos-agent-secrets`): Unique to this agent
+3. **Image Pull Secret** (`zos-agent-image-pull-secret`): Shared across all agents
+
+
+#### Agent-Specific Secret Reference
+
+Create a secret with the following structure. 
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wxa4z-zos-agent-secrets
+  namespace: ""  # REQUIRED: Must match the agent namespace
+type: Opaque
+data:
+  # Agent Configuration (base64-encoded)
+  AGENT_AUTH_TOKEN: ""
+  AGENT_ID: ""  # Base64 for "wxa4z:zosconfig:agent"
+  AUTH_SERVICE_BASE_URL: ""
+  TENANT_ID: ""  # Tenant ID from CPD
+```
+
+#### Creating the Secret
+
+Apply the secret:
+### Create the secret for wxa4z-zos-agent-secrets, wxa4z-watsonx-credential, zos-agent-image-pull-secret and apply through yaml
+
+##Example 
+```bash
+kubectl apply -f secret.yaml
+```
+please refer to the [Deployment Guide](../../DEPLOYMENT_GUIDE.md) ### Create and Push Helm Chart Package and for applying cr.yaml
+
+
+4. Verify the deployment:
+
+## Subscribe to the agent
+
+After successfully deploying the agent, you need to subscribe to it to make it available in watsonx Orchestrate.
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with a **Subscribe** button next to each.
+
+5. Click the **Subscribe** button next to the **IBM Agents for z/OS**.
+   - This action adds the agent to watsonx Orchestrate (WXO) and makes it available for deployment.
+
+
+
+## Troubleshooting installation errors
+
+If you run into any errors during installation, see [Troubleshooting](../../README.md#troubleshooting) for troubleshooting steps.
+
+## Uninstalling the agent
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with a **Unsubscribe** button next to each.
+
+5. Click the **Unsubscribe** button next to the **IBM Agents for z/OS**.
+   - This action removes the agent from watsonx Orchestrate (WXO).
+
+
+
+
+
+
+
+
 ```
 ## Environment Variables Reference
 

@@ -394,4 +394,3 @@ If the certificate is valid, you should see the following message:
 Response verify OK
 ```
 
-
