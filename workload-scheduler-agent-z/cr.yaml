@@ -1,0 +1,38 @@
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: workload-scheduler-agent-z
+  namespace: ""
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+spec:
+  releaseName: workload-scheduler-agent-z
+  tenantId: ""
+  namespace: ""
+  wxa4z-core-services-namespace: wxa4z-zad
+  agentDetails:
+      - agentName: workload-scheduler-agent-z
+        agentId: wxa4z:workload-scheduler-agent-z:agent
+        description: "This agent helps users search for relevant AIOps information regarding Workload Scheduler like engine, jobs, critical jobs, job streams, and workstation."
+        agentDisplayName: "IBM Z Workload Scheduler Insights Agent"
+        bootstrapConfig:
+          name: "workload-scheduler-agent-z-bootstrap-config"
+          fileName: "workload_scheduler_agent_bootstrap_config.yaml"
+  chart:
+    repository: oci://cp.stg.icr.io/cp/ibm-watsonx-assistant-for-z
+    name: workload-scheduler-agent-z
+    version: "1.3.0"
+    # pullSecrets:
+    #   - name: pull-secret
+
+  values:
+    replicaCount: 1
+    global:
+        secrets:
+            name: wxa4z-watsonx-credentials
+    secrets:
+      name: wxa4z-workload-scheduler-agent-secrets
+    env:
+      WATSONX_MODEL_ID: "openai/gpt-oss-120b"
+      MODEL_RUNTIME: "openai_protocol"
+      

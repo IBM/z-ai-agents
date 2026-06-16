@@ -1,49 +1,39 @@
-# IBM Z AI Agents - Deployment Guide
-
-Install and operate the [IBM watsonx Assistant for Z – Agent Suite](/wxa4z-agent-suite/) Helm chart on OpenShift. Deploy multiple z/OS agents with one command, using shared configuration and per‑agent overrides.
-
-> This [wxa4z-agent-suite](/wxa4z-agent-suite/) chart deploys a **suite of z/OS agents** with one command. Each agent remains an independent chart (own values, templates, and versioning) while the umbrella coordinates:
->
-> - **Single‑command install/upgrade** for all enabled agents
-> - **Shared, reusable config & secrets** (optional, via `global.*`)
-> - **Per‑environment toggles** (`values-*.yaml`) to enable/disable agents
-
----
+# z-ai-agents - Deployment Guide
 
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [Repo Layout](#architecture--repo-layout)
+2. [Repo Layout](#repo-layout)
 3. [Compatibility & Requirements](#compatibility--requirements)
 4. [Preflight Checklist](#preflight-checklist)
 5. [Quickstart](#quick-start)
    - [Global settings](#1-global-settings)
    - [Per Agent Configuration](#2-per-agent-configuration)
-   - [Install / Upgrade / Uninstall](#3-install--upgrade--uninstall)
-6. [Post‑Install Verification](#post-install-verification)
+   - [Deploy Agents using AgentService Custom Resource](#3-deploy-agents-using-agentservice-custom-resource)
+6. [Post Deployment Verification](#post-deployment-verification)
 7. [Troubleshooting](#troubleshooting)
 8. [FAQ](#faq)
 ---
 
 ## Overview
-The **[wxa4z-agent-suite](/wxa4z-agent-suite/)** Helm chart orchestrates the deployment of multiple IBM z/OS‑focused agents. It’s designed for enterprises running on OpenShift who want:
+Orchestrates the deployment of multiple IBM z/OS‑focused agents. It’s designed for enterprises running on OpenShift who want:
 
 - A **consistent install** story across environments (dev/test/prod)
 - **Federated configuration** (shared global values + agent‑specific overrides)
 - **Secure secret handling** (no hard‑coding; Kubernetes Secrets only)
 - **Idempotent upgrades** (Helm‑native lifecycle)
 
-> **Tip:** Enable/disable individual agents per environment by editing your `values.yaml` (or a `values-<env>.yaml`).
 
 ---
 
 ## Repo Layout
 ```
-wxa4z-agent-suite/ # <— umbrella chart
-├─ Chart.yaml # lists all agent dependencies
-├─ values.yaml # toggles & optional shared config/secrets
-├─ templates/ # (usually minimal; e.g., optional global secrets)
-└─ charts/ # populated by helm dependency update
+<agent-folder>/ # 
+├─ README.md # Readme to guide users on how to use the agent
+├─ cr.yaml # Custom Resource Definition (CRD)
+├─ License
+License file
+READEME overall README file
 ```
 ---
 
@@ -53,28 +43,24 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 | Name                       | Chart name               | Category      |   Reference   |
 | -------------------------- | ------------------------ | ------------- | ------------- |
-| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [Configuration Guide](./agent-helm-charts/omegamon-insight-agent-z/README.md)                  |
-| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [Configuration Guide](./agent-helm-charts/upgrade-agent/README.md)                  |
-| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[Configuration Guide](/agent-helm-charts/automation-insight-agent/README.md)|
-| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[Configuration Guide](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
-| IBM Z Support Agent              | `support-agent`          | Foundational | [Configuration Guide](./agent-helm-charts/support-agent/README.md)                   |
-| zRAG Agent          | `zrag-agent`          | Foundational | [Configuration Guide](./agent-helm-charts/zrag-agent/README.md)                   |
-
-
----
+| IBM Z Support Agent              | `support-agent`          | Foundational | [README](./agent-helm-charts/support-agent/README.md)                   |
+| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [README](./agent-helm-charts/omegamon-insight-agent-z/README.md)                  |
+| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./agent-helm-charts/upgrade-agent/README.md)                  |
+| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](/agent-helm-charts/automation-insight-agent/README.md)|
+| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
 
 ### Prebuilt IBM Z product agents
 
 | Name                           | Chart name                     | Category         |  Reference.      |
 | ------------------------------ | ------------------------------ | -----------------| -----------------|
-| IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/cics-agent/README.md)|
-| IBM Z Compilers Fix Finder Agent | `compiler-fix-finder-agent` | Product  |[Configuration Guide](/agent-helm-charts/compiler-fix-finder-agent/README.md)|
-| IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[Configuration Guide](/agent-helm-charts/db2z-agent/README.md)|
-| IBM IMS Agents                 | `ims-agent`                    | Product  |[Configuration Guide](/agent-helm-charts/ims-agent/README.md)|
-| IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[Configuration Guide](/agent-helm-charts/intellimagic-agent/README.md)|
-| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[Configuration Guide](/agent-helm-charts/taz-functional-testing-agent/README.md)|
-| IBM Concert for Z Agent | `ibm-concert-agent-z` | Product  |[Configuration Guide](/agent-helm-charts/ibm-concert-agent-z/README.md)|
-| IBM Concert for Z Agent Spyre | `ibm-concert-agent-z-spyre` | Product  |[Configuration Guide](/agent-helm-charts/ibm-concert-agent-z-spyre/README.md)|
+| IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[README](/agent-helm-charts/cics-agent/README.md)|
+| IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[README](/agent-helm-charts/db2z-agent/README.md)|
+| IBM IMS Agents                 | `ims-agent`                    | Product  |[README](/agent-helm-charts/ims-agent/README.md)|
+| IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[README](/agent-helm-charts/intellimagic-agent/README.md)|
+| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[README](/agent-helm-charts/taz-functional-testing-agent/README.md)|
+| IBM Concert for Z Agent| `ibm-concert-agent-z` | Product  |[README](/agent-helm-charts/ibm-concert-agent-z/README.md)|
+| IBM Concert for Z Agent Spyre | `ibm-concert-agent-z-spyre` | Product  |[README](/agent-helm-charts/ibm-concert-agent-z-spyre/README.md)|
+| IBM Z Compilers Fix Finder Agent | `compiler-fix-finder-agent` | Product  |[README](/agent-helm-charts/compiler-fix-finder-agent/README.md)|
 
 ---
 
@@ -82,7 +68,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 > **This site hosts only the Agent Deployment Guide, not the agents themselves. A valid entitlement must be obtained before agents can be properly deployed.**
 
-> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**. By installing the **IBM watsonx Assistant for Z Foundational Agents** in accordance with the instructions provided herein, you acknowledge and agree to comply with the terms of the **[IBM watsonx Assistant for Z License](https://www.ibm.com/support/customer/csol/terms/?id=L-CXGZ-TW5PCC)**.
+> For **IBM watsonx Assistant for Z Foundational Agents**, entitlement is automatically granted with the purchase of **IBM watsonx Assistant for Z**. By installing the **IBM watsonx Assistant for Z Foundational Agents** in accordance with the instructions provided herein, you acknowledge and agree to comply with the terms of the **[IBM watsonx Assistant for Z License](https://www.ibm.com/support/customer/csol/terms/?id=L-EZAK-KGTP3H)**.
 
 > For **Prebuilt IBM Z product agents**, a separate entitlement must be obtained for each corresponding product.
 
@@ -102,7 +88,7 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 ## Preflight Checklist
 
-- **Prerequisite product installed**: IBM watsonx Assistant for Z (foundation). Install steps: IBM Docs → [Install watsonx Assistant for Z”](https://www.ibm.com/docs/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z).
+- **Prerequisite product installed**: IBM watsonx Assistant for Z (foundation). Install steps: IBM Docs → [Install watsonx Assistant for Z”](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z).
 
 - **Entitlement(s) available for all agents being installed**:
 
@@ -122,23 +108,6 @@ wxa4z-agent-suite/ # <— umbrella chart
 
 ## Quick Start
 
-### Clone the repository:
-
-```bash
-# HTTPS (public)
-git clone https://github.com/IBM/z-ai-agents.git
-cd z-ai-agents
-# or: SSH
-# git clone git@github.com:IBM/z-ai-agents.git
-# cd z-ai-agents
-```
-
-Fetch chart dependencies for the umbrella chart:
-```bash
-cd wxa4z-agent-suite
-helm dependency update
-cd -
-```
 ### 1. Global settings
 
 ***Create Shared Variables(Create once, reuse everywhere)***
@@ -148,17 +117,24 @@ cd -
 | `WATSONX_DEPLOYMENT_SPACE_ID` | ID of the watsonx.ai **Deployment Space** used for model deployments. | [Watsonx.ai Deployment Spaces](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=spaces-creating-deployment)|
 | `WATSONX_ML_URL`              | Base URL of the **Watson Machine Learning / CPD** instance.           | CPD  Instance url or WML Endpoint(Cloud Only)           |
 | `CPD_USERNAME`                | Username for **Cloud Pak for Data** authentication.                   | CPD Username           |
-| `WATSONX_API_KEY`             | API key used to access CPD/Watsonx services.            |   [Create WATSONX_API_KEY](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys)      |
+| `CPD_INSTANCE_API_KEY`             | API key used to access CPD/Watsonx services.            |   [Create CPD_INSTANCE_API_KEY](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys)      |
 | `WATSONX_PROJECT_ID`          | watsonx.ai **Project** identifier used for assets and jobs.           | [Watsonx.ai Projects](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project)    |
 | `ORCHESTRATE_ENV_URL`          | Watsonx Orchestrate Service Instance URL           | Log In to watsonx orchestrate. Navigate to `settings`, copy the service instance url from `API Details` tab     |
 | `ORCHESTRATE_ENV_TYPE`          | Watsonx Orchestrate Instance Type           | ibm_iam(for cloud), mcsp(AWS saas), cpd (on-prem)     |
-| `EXTERNAL_WATSONX_API_KEY`          | External Watsonx API Key(Optional)         | External CPD API Key, required  only when External IFM is configured for WxO with model gateway |
+| `EXTERNAL_WATSONX_API_KEY`          | Watsonx API Key(Optional)         | CPD API Key, required  only when External/Internal IFM is configured for WxO with model gateway |
+| `MODEL_RUNTIME`          | Model runtime environment type (Required)         | Use "on-prem" for watsonx.ai on CPD, "cloud" for watsonx.ai on SaaS, or "openai_protocol" for OpenAI-compatible inference runtimes |
+| `LLM_BASE_URL`          | Inferencing stack URL (Optional)         | Required only when `MODEL_RUNTIME` is set to "openai_protocol" |
+| `LLM_API_KEY`          | Inferencing stack API key (Optional)         | Required only when `MODEL_RUNTIME` is set to "openai_protocol" |
+| `LANGFUSE_SECRET_KEY`  | Langfuse secret key for observability (Optional) | Used for LLM observability and tracing |
+| `WRAPPER_USERNAME`     | Username for wrapper service authentication (Optional) | Required for agents using wrapper services |
+| `WRAPPER_URL`          | Wrapper service endpoint URL (Optional) | Required for agents using wrapper services |
+| `WRAPPER_PASSWORD`     | Password for wrapper service authentication (Optional) | Required for agents using wrapper services |
+| `TENANT_ID`            | Tenant identifier for multi-tenancy support | Unique identifier for the tenant |
+| `INGESTION_URL`        | Document ingestion service URL (Optional) | Required for agents with document ingestion capabilities |
+| `INGESTION_PASSWORD`   | Password for document ingestion service (Optional) | Required for agents with document ingestion capabilities |
+| `LANGFUSE_HOST`        | Langfuse host URL for observability (Optional) | Host URL for Langfuse observability platform |
 
 ---
-
-**Fill required values in `global.secrets.data`:**
-
-   Update [values.yaml](/wxa4z-agent-suite/values.yaml) to include all mandatory keys (`WATSONX_DEPLOYMENT_SPACE_ID`, `WATSONX_ML_URL`, `CPD_USERNAME`, `WATSONX_API_KEY`, `WATSONX_PROJECT_ID`, `ORCHESTRATE_ENV_URL`, `ORCHESTRATE_ENV_TYPE`) under `global.secrets.data`.
 
 **Configure registry for mirrored images:**
 
@@ -167,76 +143,53 @@ cd -
 
 
    ```yaml
-   global:
-     # Shared (non-image) secret available to all subcharts. Intended for bootstrapjobs.
-     secrets:
-       name: wxa4z-watsonx-credentials   # K8s Secret name to be created/used.
-       data:
-         ORCHESTRATE_ENV_TYPE: cpd                    # Set this to "cpd", "ibm_iam"(for ibm cloud). Non‑sensitive.
-         WATSONX_API_KEY: ""                         # Set this to CPD API key (on‑prem Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys) or IBM Cloud IAM API key (cloud).
-         ORCHESTRATE_ENV_URL: ""                      # Set this to wxo service instance url.
-         CPD_USERNAME: ""                             # Set this to CPD Username for on-prem deployments.
-         WATSONX_DEPLOYMENT_SPACE_ID: ""              # Set this to Watsonx deployment space id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=spaces-creating-deployment) .
-         WATSONX_ML_URL: ""                           # Set this to CPD Instance FQDN for on-prem deployments.
-         EXTERNAL_WATSONX_API_KEY: ""                 # Set this to External CPD API Key  only when External IFM is configured for WxO with model gateway.
-         WATSONX_PROJECT_ID: ""                       # Set this to Watsonx project id (Refer https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project).
-     # Default image pull secret and registry auth used by many subcharts.
-     # Set registry.createSecret to true only when default image pull fails for watsonx assistant for z agents or when using local registry for air-gapped clusters.
-     registry:
-       name: wxa4z-image-pull-secret    # Default pull secret name (namespace‑scoped).
-       createSecret: false               # If true, chart templates will create this secret.
-       server: cp.icr.io                   # ICR endpoint (can be region‑specific like us.icr.io).
-       username: cp              # Required literal when using entitlement/IAM keys with ICR.
-       entitlementKey: ""   # entitlement key/IAM APIkey used solely for image pulls.
+   ```yaml
+   apiVersion: v1
+   kind: Secret
+   metadata:
+     name: wxa4z-watsonx-credentials
+     namespace: <your-namespace>  # Replace with your target namespace
+   type: Opaque
+   stringData:
+     ORCHESTRATE_ENV_TYPE: "cpd"  # Set to "cpd" for on-prem, "ibm_iam" for IBM Cloud
+     WATSONX_API_KEY: ""  # CPD API key (on-prem) or IBM Cloud IAM API key
+     ORCHESTRATE_ENV_URL: ""  # Watsonx Orchestrate service instance URL
+     CPD_USERNAME: ""  # CPD Username (required for on-prem deployments)
+     CPD_INSTANCE_API_KEY: ""  # CPD Instance API Key (required for on-prem deployments)
+     WATSONX_DEPLOYMENT_SPACE_ID: ""  # Watsonx deployment space ID
+     WATSONX_ML_URL: ""  # CPD Instance FQDN (for on-prem) or WML endpoint (for cloud)
+     EXTERNAL_WATSONX_API_KEY: ""  # CPD API Key to connect to instance where llm is hosted
+     WATSONX_PROJECT_ID: ""  # Watsonx project ID
+     MODEL_RUNTIME: ""  # Required: "on-prem", "cloud", or "openai_protocol"
+     LLM_BASE_URL: ""  # Inferencing stack URL (when MODEL_RUNTIME is "openai_protocol")
+     LLM_API_KEY: ""  # Inferencing stack API key (when MODEL_RUNTIME is "openai_protocol")
+     LANGFUSE_SECRET_KEY: ""  # Langfuse secret key (optional)
+     LANGFUSE_HOST: ""  # Langfuse host URL (optional)
+     WRAPPER_USERNAME: ""  # Wrapper service username (optional)
+     WRAPPER_URL: ""  # Wrapper service URL (optional)
+     WRAPPER_PASSWORD: ""  # Wrapper service password (optional)
+     TENANT_ID: ""  # Tenant identifier (optional)
+     INGESTION_URL: ""  # Document ingestion service URL (optional)
+     INGESTION_PASSWORD: ""  # Document ingestion password (optional)
    ```
 
+   **Note:** All values in `stringData` are automatically base64-encoded by Kubernetes. Replace placeholder values with your actual configuration.
 
-   > The chart may template a namespace‑scoped Secret when `createSecret: true`.
+   Apply the secret:
+   ```bash
+   oc apply -f wxa4z-watsonx-credentials-secret.yaml
+   ```
 
+   Verify the secret was created:
+   ```bash
+   oc get secret wxa4z-watsonx-credentials -n <your-namespace>
+   ```
 ---
 
-### 2. Per Agent Configuration:
 
-Each agent in the suite can be customized individually in [values.yaml](/wxa4z-agent-suite/values.yaml). Settings differ slightly for **Foundational Agents** and **IBM z/OS Product Agents**.
+## 2. Connecting to LLM via AI Gateway 
 
-#### Configuration for IBM watsonx Assistant for Z Foundational Agents
-
-- Enabled by default in most environments.
-- Only require `enabled: true`.
-- Fill additional values (if any) by consulting the [README](#ibm-watsonx-assistant-for-z-foundational-agents) for required fields, backend connectivity, and environment variables.
-
-**Example:**
-
-```yaml
-support-agent:
-  enabled: true
-# ... additional agent-specific config ...
-```
-
-#### Configuration for Prebuilt IBM Z product agents
-
-- Entitlement Key: must be provided under registry.entitlementKey.
-- Set `enabled: true` and `acceptLicense: true` to proceed with installation. Accepting a chart’s `acceptLicense: true` indicates consent to those terms. See each agent’s license links for details.
-- Additional Values: consult the [README](#prebuilt-ibm-z-product-agents) for backend connectivity and required environment variables.
-
-**Example**
-
-```yaml
-ims-agent:
-  enabled: true
-  acceptLicense: true
-  registry:
-    name: ims-image-pull-secret
-    createSecret: true
-    server: icr.io
-    username: iamapikey
-    entitlementKey: "<IMS_PRODUCT_ENTITLEMENT_KEY>"
-  # ... additional agent-specific config ...
-```
-
-#### Connecting to LLM via AI Gateway (Optional)
-
-> **Note** Use this configuration only if your agents must connect to **LLMs hosted externally** through an AI Gateway.
+> **Note** Use this configuration only if your agents must connect to an **instance with LLMs hosted** through an AI Gateway.
 
 ---
 
@@ -246,176 +199,255 @@ ims-agent:
 
 ---
 
-##### 2. Configure External API Key in [`values.yaml`](/wxa4z-agent-suite/values.yaml)
-- Update your `global.secrets.data` section with the **external CPD API key** or **IBM Cloud API key**.
-- Set the `WATSONX_ML_URL` to point to the **external CPD instance**.
+##### 2. Configure External_WATSONX_API_KEY or LLM_API_KEY in the wxa4z-watsonx-credentials secret
+- Update your EXTERNAL_WATSONX_API_KEY with the **CPD API key** or **IBM Cloud API key** if MODEL_RUNTIME is set to **cloud** or **on-prem** and LLM_API_KEY with the **CPD API key** or **IBM Cloud API key** if MODEL_RUNTIME is set to  **openai_protocol**
+
+- Set the `WATSONX_ML_URL` to point to the **CPD instance with llm running**.
 
 ```yaml
-global:
-  secrets:
-    name: wxa4z-watsonx-credentials
-    data:
-      WATSONX_ML_URL: "https://<external-cpd-instance>"
-      EXTERNAL_WATSONX_API_KEY: "<external-api-key>"
-```
-##### 3. Update Agent Configuration
 
-- Navigate to the specific agent subchart:
-  -  agent-helm-charts/<agent-name>/config/*_agent.yaml
-- Replace the model reference from `watsonx/meta-llama/llama-3-3-70b-instruct` to `virtual-model/watsonx/meta-llama/llama-3-3-70b-instruct`
+   apiVersion: v1
+   kind: Secret
+   metadata:
+     name: wxa4z-watsonx-credentials
+     namespace: <your-namespace>  # Replace with your target namespace
+   type: Opaque
+   stringData:
+      WATSONX_ML_URL: "https://<cpd-instance-with-llm>"
+      EXTERNAL_WATSONX_API_KEY: "<cpd-instance-with-llm-api-key>"
+      MODEL_RUNTIME: ""  # Required: "on-prem", "cloud", or "openai_protocol"
+      LLM_BASE_URL: ""  # Inferencing stack URL (when MODEL_RUNTIME is "openai_protocol")
+      LLM_API_KEY: ""  # Inferencing stack API key (when MODEL_RUNTIME is "openai_protocol")
+      ...
 
-##### 4. Refresh Helm dependency
-
-- Navigate to [wxa4z-agent-suite](/wxa4z-agent-suite/) and refresh dependencies
-
-```bash
-cd wxa4z-agent-suite
-helm dependency update
-```
 
 
 ---
-
-### 3. Install / Upgrade / Uninstall
-
-#### Install
-
-```bash
-helm upgrade --install wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path>/values.yaml \
-  --wait
 ```
 
-#### Upgrade
+### 3. Deploy Agents using AgentService Custom Resource
+
+For detailed deployment instructions using the `AgentService` custom resource, refer to the [Deployment Guide](DEPLOYMENT_GUIDE.md).
+
+#### Quick Start
+
+1. **Create Agent-Specific Secret** (required for each agent)
+
+   Before deploying an agent, create the agent-specific secret in the tenant namespace. Check the agent's `values.yaml` file to determine required secret fields.
+
+   Example for agent-secret:
+   ```bash
+   oc apply -f <agent-name>-secret.yaml
+   ```
+
+
+2. **Apply AgentService Custom Resource**
+
+   ```bash
+   oc apply -f <agent-name>-cr.yaml
+   ```
+
+3. **Verify Deployment**
+
+   ```bash
+   # Check CR status
+   oc get agentservice <agent-name> -n <tenant-namespace>
+   
+   # Check agent pods
+   oc get pods -n <tenant-namespace> -l app=<agent-name>
+   
+   # View agent logs
+   oc logs -n <tenant-namespace> -l app=<agent-name> --tail=100
+   ```
+
+#### Subscribe and Deploy Agent on Watsonx Orchestrate
+
+After successfully deploying the agent, you need to subscribe to it and deploy it in watsonx Orchestrate to make it available for use.
+
+**Subscribe to the Agent:**
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with a **Subscribe** button next to each.
+
+5. Click the **Subscribe** button next to your agent.
+   - This action adds the agent to watsonx Orchestrate (WXO) and makes it available for deployment.
+
+**Deploy the Agent on WXO:**
+
+1. Log in to watsonx Orchestrate.
+
+2. From the main menu, navigate to **Build** > **Agent Builder**.
+
+3. Select your agent tile.
+
+4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
+
+5. Click **Deploy** to activate the agent and make it available in the live environment.
+
+**Test the Agent:**
+
+1. From the main menu, click **Chat**.
+
+2. Choose your agent from the list.
+
+3. Enter your queries using the AI Assistant.
+
+4. Verify that the responses returned by the AI Assistant are accurate.
+
+#### Upgrade Agent
+
+To upgrade an agent to a new version:
+
+1. Update the `spec.chart.version` field in your AgentService CR
+2. Apply the updated CR:
+   ```bash
+   oc apply -f <agent-name>-cr.yaml
+   ```
+3. Monitor the upgrade:
+   ```bash
+   oc get pods -n <tenant-namespace> -l app=<agent-name> -w
+   ```
+
+#### Uninstall Agent
+
+To uninstall an agent:
+
+> **Important:** If the agent was previously subscribed to watsonx Orchestrate, you must first unsubscribe it before uninstalling.
+
+**Unsubscribe the Agent (if previously subscribed):**
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with an **Unsubscribe** button next to each.
+
+5. Click the **Unsubscribe** button next to your agent.
+   - This action removes the agent from watsonx Orchestrate (WXO).
+
+**Then, delete the agent resources:**
 
 ```bash
-# Review release notes per agent. Then:
-helm upgrade wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path>/values.yaml \
-  --wait
+oc delete agentservice <agent-name> -n <tenant-namespace>
 ```
 
-> Avoid `--reuse-values` when switching registries, secrets, or toggling many agents; prefer an explicit values file for clarity and auditability.
-
-#### Uninstall
-
-**wxa4z-agent-suite chart uninstall**
+Verify resources are removed:
 ```bash
-helm uninstall wxa4z-agent-suite -n <namespace>
+oc get pods -n <tenant-namespace> -l app=<agent-name>
+oc get agentservice -n <tenant-namespace>
 ```
-This removes all agent components and automatically removes their entries from the Watsonx Orchestrate UI.
-
-**Uninstall Without Hooks**
-
-If uninstall hooks fail due to wrong CPD config/token/route issues, use:
-
-```bash
-helm uninstall wxa4z-agent-suite -n <namespace> --no-hooks
-```
-
-> Note: Use when uninstall hangs or cleanup hooks fail. Agents may still remain in UI — delete manually from Agent Builder → ⋮ → Delete.
-
-
-### 4. Removing an Existing Agent
-
-Removing an agent requires two steps: deleting it from the Watsonx Assistant for Z UI and cleaning up its associated components on OpenShift.
-
-#### Step 1 — Remove the Agent from the UI
-
-1. Log in to your CPD instance and open **Watsonx Assistant for Z**.
-2. Navigate to **Build → Agent Builder**.
-3. Select the agent you want to remove.
-4. Click the **options (⋮)** menu in the upper-right corner and choose **Delete**.
-
-This removes the agent only from the UI.
 
 ---
 
-#### Step 2 — Clean Up Agent Components on OpenShift
-
-To remove the underlying Kubernetes resources, update the `wxa4z-agent-suite` Helm release:
-
-1. Get the `values.yaml` used during installation.
-2. Set the agent’s `enabled` field to **false**.
-
-   **Example:**
-   ```yaml
-   ims-agent:
-     enabled: false
-3. Run helm upgrade
+## Post Deployment Verification
 
 ```bash
-helm upgrade --install wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path>/values.yaml \
-  --wait
-```
+# Check AgentService CR status
+oc get agentservice -n <tenant-namespace>
 
-#### Note
-> Running a Helm upgrade with enabled=false removes only that agent’s Kubernetes resources.
-The agent will continue to appear in the Watsonx Assistant for Z UI until removed manually via Step 1 above.
----
+# Check agent pods
+oc get pods -n <tenant-namespace>
 
-## Post Install Verification
+# Check agent routes (OpenShift)
+oc get route -n <tenant-namespace>
 
-```bash
-# Check release and pods
-helm status wxa4z-agent-suite -n <namespace>
-oc get pods -n <namespace>
-
-# Check agent‑specific routes/services (OpenShift)
-oc get route -n <namespace>
+# View agent logs
+oc logs -n <tenant-namespace> -l app=<agent-name> --tail=50
 ```
 
 Common health signals:
 
-- All enabled agents are in `Running`/`Ready` state.
-- Routes/Ingresses are admitted and resolve over TLS.
-- Agents successfully reach required backends (CPD/WML, Orchestrate, z/OS endpoints) per their README checks.
+- AgentService CR shows `Installed` status
+- All agent pods are in `Running`/`Ready` state
+- Routes/Ingresses are admitted and resolve over TLS
+- Agents successfully reach required backends (CPD/WML, Orchestrate, z/OS endpoints)
 
 ---
 
 ## Troubleshooting
 
-- **Image pull back‑off**:
-  - Verify the global pull secret
-  - Verify the Entitlement keys for Prebuilt IBM Z product agents and that in per‑agent `registry.*` values point to the correct server/secret.
-  - In case of airgapped cluster, Verify pull secret in the target namespace and that `global.registry.*` or per‑agent `registry.*` values point to the correct server/secret.
-- **License not accepted**: Ensure `acceptLicense: true` for each enabled agent.
-- **Connectivity to CPD/Orchestrate**: Recheck URLs, tokens, and firewall rules. Validate with `curl` from a debug pod.
-- **Air‑gapped fetch errors**: Ensure images are mirrored with the exact tags/digests referenced by the charts.
+### Common Issues
 
+- **Image pull back-off**:
+  - Verify the pull secret exists in the tenant namespace
+  - Ensure the pull secret is referenced in the AgentService CR (`spec.chart.pullSecrets`)
+  - For air-gapped clusters, verify images are mirrored to your private registry
 
-### Getting more logs
+- **Agent pod fails to start**:
+  - Check that the global secret `wxa4z-watsonx-credentials` exists in the core services namespace
+  - Verify agent-specific secret exists in the tenant namespace
+  - Check secret names match those referenced in the AgentService CR
+
+- **Connectivity issues**:
+  - Verify CPD/Orchestrate URLs and tokens in secrets
+  - Check firewall rules and network policies
+  - Test connectivity with `curl` from a debug pod
+
+- **Helm chart not found**:
+  - Ensure the Helm chart is packaged and pushed to the registry
+  - Verify the chart repository URL in the AgentService CR
+  - Check authentication to the container registry
+
+### Getting Logs
 
 ```bash
 # Describe failing pods
-oc describe pod/<name> -n <namespace>
+oc describe pod/<pod-name> -n <tenant-namespace>
 
-# Helm rendering dry‑run
-helm upgrade --install wxa4z-agent-suite ./wxa4z-agent-suite -n <namespace> -f values.yaml --dry-run --debug
+# View agent operator logs
+oc logs -n <operator-namespace> -l app=agent-operator --tail=100
+
+# View agent logs
+oc logs -n <tenant-namespace> -l app=<agent-name> --tail=100
 
 # OpenShift events
-oc get events -n <namespace> --sort-by=.lastTimestamp | tail -n 50
+oc get events -n <tenant-namespace> --sort-by=.lastTimestamp | tail -n 50
+```
+
+### Debug Mode
+
+To enable debug logging for an agent, add the following to the AgentService CR:
+
+```yaml
+spec:
+  values:
+    env:
+      LOG_LEVEL: "DEBUG"
 ```
 
 ---
 
 ## FAQ
 
-**Q: Can I enable only a subset of agents?**\
-Yes. Set `enabled: true|false` per agent in your values file.
+**Q: How do I deploy multiple agents?**\
+Create separate AgentService CRs for each agent. Each agent can have its own configuration and secrets.
 
-**Q: How do I manage multiple environments?**\
-Create separate files like `values.dev.yaml`, `values.qa.yaml`, `values.prod.yaml`. Use `-f` to select.
+**Q: Can I use a private registry?**\
+Yes. Push your Helm charts to your private OCI-compliant registry and update the `spec.chart.repository` field in the AgentService CR.
 
-**Q: Can I use my private registry?**\
-Yes. Mirror images and set `global.registry.server` and `<agent>.registry.server` to your registry  . Update `registry.name/username/password` accordingly.
+**Q: How do I update agent configuration?**\
+Update the AgentService CR with new configuration values and apply it. The agent operator will handle the rolling update.
 
 **Q: Which architectures are supported?**\
-Most agents target `amd64` and `s390x`. See each agent’s README for specifics.
+Most agents target `amd64` and `s390x`. Check each agent's README for specific architecture support.
+
+**Q: How do I manage secrets across environments?**\
+Create environment-specific secrets (dev, qa, prod) in their respective namespaces. Reference the appropriate secret name in each environment's AgentService CR.
+
+**Q: Can I deploy agents in different namespaces?**\
+Yes. Each AgentService CR specifies its target namespace. Ensure the global secret exists in the core services namespace and agent-specific secrets exist in each tenant namespace.
