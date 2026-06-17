@@ -43,24 +43,24 @@ READEME overall README file
 
 | Name                       | Chart name               | Category      |   Reference   |
 | -------------------------- | ------------------------ | ------------- | ------------- |
-| IBM Z Support Agent              | `support-agent`          | Foundational | [README](./agent-helm-charts/support-agent/README.md)                   |
-| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [README](./agent-helm-charts/omegamon-insight-agent-z/README.md)                  |
-| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./agent-helm-charts/upgrade-agent/README.md)                  |
-| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](/agent-helm-charts/automation-insight-agent/README.md)|
-| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](/agent-helm-charts/workload-scheduler-agent-z/README.md)|
+| IBM Z Support Agent              | `support-agent`          | Foundational | [README](./support-agent/README.md)                   |
+| IBM Z OMEGAMON Insights Agent | `omegamon-insights-agent` | Foundational | [README](./omegamon-insight-agent-z/README.md)                  |
+| IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./upgrade-agent/README.md)                  |
+| IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](./automation-insight-agent/README.md)|
+| IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](./workload-scheduler-agent-z/README.md)|
 
 ### Prebuilt IBM Z product agents
 
 | Name                           | Chart name                     | Category         |  Reference.      |
 | ------------------------------ | ------------------------------ | -----------------| -----------------|
-| IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[README](/agent-helm-charts/cics-agent/README.md)|
-| IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[README](/agent-helm-charts/db2z-agent/README.md)|
-| IBM IMS Agents                 | `ims-agent`                    | Product  |[README](/agent-helm-charts/ims-agent/README.md)|
-| IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[README](/agent-helm-charts/intellimagic-agent/README.md)|
-| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[README](/agent-helm-charts/taz-functional-testing-agent/README.md)|
-| IBM Concert for Z Agent| `ibm-concert-agent-z` | Product  |[README](/agent-helm-charts/ibm-concert-agent-z/README.md)|
-| IBM Concert for Z Agent Spyre | `ibm-concert-agent-z-spyre` | Product  |[README](/agent-helm-charts/ibm-concert-agent-z-spyre/README.md)|
-| IBM Z Compilers Fix Finder Agent | `compiler-fix-finder-agent` | Product  |[README](/agent-helm-charts/compiler-fix-finder-agent/README.md)|
+| IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[README](./cics-agent/README.md)|
+| IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[README](./db2z-agent/README.md)|
+| IBM IMS Agents                 | `ims-agent`                    | Product  |[README](./ims-agent/README.md)|
+| IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[README](./intellimagic-agent/README.md)|
+| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[README](./taz-functional-testing-agent/README.md)|
+| IBM Concert for Z Agent| `ibm-concert-agent-z` | Product  |[README](./ibm-concert-agent-z/README.md)|
+| IBM Concert for Z Agent Spyre | `ibm-concert-agent-z-spyre` | Product  |[README](./ibm-concert-agent-z-spyre/README.md)|
+| IBM Z Compilers Fix Finder Agent | `compiler-fix-finder-agent` | Product  |[README](./compiler-fix-finder-agent/README.md)|
 
 ---
 
