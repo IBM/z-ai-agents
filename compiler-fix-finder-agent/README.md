@@ -35,11 +35,11 @@ The agent requires Kubernetes Secrets containing sensitive configuration values.
 The agent uses two types of secrets:
 
 1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
-2. **Agent-Specific Secrets** (`wxa4z-compiler-fix-finder-agent-agent-secrets`): Unique to this agent
+2. **Agent-Specific Secrets**  Unique to this agent
 
-#### Agent-Specific Secret Reference
+#### 1.2.1 Agent-Specific Secret Reference
 
-Create a secret with the following structure. **All values must be base64-encoded.**
+1. Create a secret with the following structure. **All values must be base64-encoded.**
 
 ```yaml
 apiVersion: v1
@@ -58,22 +58,50 @@ data:
 > **Important:**
 > - **AGENT_AUTH_TOKEN is required** for agent registration with watsonx Orchestrate.
 
+2. Save the secret configuration to a file (e.g., `compiler-fix-finder-agent-secret.yaml`)
+3. Update the namespace and base64-encode all secret values
+4. Apply the secret:
 
-#### Creating the Secret
+```bash
+oc apply -f compiler-fix-finder-agent-secret.yaml
+```
 
-1. Save the secret configuration to a file (e.g., `compiler-fix-finder-agent-agent-secret.yaml`)
-2. Update the namespace and base64-encode all secret values
+5. Verify the secret was created:
+
+```bash
+oc get secret wxa4z-compiler-fix-finder-agent-secrets -n <namespace>
+```
+
+#### 1.2.2 Agent-Specific Secret to pull image from registry
+
+1. Retrieve the entitlement key
+
+An entitlement key is required to download the IBM Z Compilers Fix Finder Agent container image from the IBM Container Registry. This entitlement key is available at no charge to licensed users of IBM Enterprise COBOL for z/OS.
+
+* To obtain the entitlement key, download the entitlement memo from [Agentic AI Tools for IBM Z Compilers](https://early-access.ibm.com/software/support/trial/cst/programwebsite.wss?siteId=2329) website.
+
+2. Once you have an entitlement key, create a image-pull secret file in following way:
+
+```bash
+oc create secret docker-registry z-compiler-fix-finder-image-pull-secret \
+  --docker-server=icr.io \
+  --docker-username=iamapikey \
+  --docker-password=<IBM_Z_COMPILER_FIX_FINDER_ENTITLEMENT_KEY> \
+  --namespace=<namespace> \
+  --dry-run=client -o yaml > z-compiler-fix-finder-image-pull-secret.yaml
+```
 3. Apply the secret:
 
 ```bash
-oc apply -f compiler-fix-finder-agent-agent-secret.yaml
+oc apply -f z-compiler-fix-finder-image-pull-secret.yaml
 ```
 
 4. Verify the secret was created:
 
 ```bash
-oc get secret wxa4z-compiler-fix-finder-agent-agent-secrets -n <namespace>
+oc get secret z-compiler-fix-finder-image-pull-secret -n <namespace>
 ```
+
 
 ### Step 2: Deploy Agent using Custom Resource (CR)
 
@@ -120,26 +148,23 @@ spec:
         fileName: "compiler_fix_finder_agent_bootstrap_config.yaml"
   
   chart:
-    repository: oci://icr.io/zoscp-sandbox/charts
+    repository: oci://icr.io/zoscp/charts
     name: compiler-fix-finder-agent
     version: "1.1.3"  # Update to the desired chart version
-    # Uncomment if using a private registry:
-    # pullSecrets:
-    #   - name: wxa4z-image-pull-secret
+    pullSecrets: # pullSecrets is used to pull image from registry
+      - name: z-compiler-fix-finder-image-pull-secret
 
   values:
     replicaCount: 1
-    
     global:
       secrets:
         name: wxa4z-watsonx-credentials  # Global secrets shared across agents
-    
     secrets:
       name: wxa4z-compiler-fix-finder-agent-secrets  # Agent-specific secrets
     
     env:
       # LLM Configuration
-      WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct"
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
       MODEL_RUNTIME: "openai_protocol"
       # Add if other ENV need for deployment
 ```
@@ -213,17 +238,17 @@ spec:
 2. Apply the updated CR:
 
 ```bash
-oc apply -f compiler-fix-finder-agent-agent-cr.yaml
+oc apply -f compiler-fix-finder-agent-cr.yaml
 ```
 
 3. Monitor the upgrade progress:
 
 ```bash
 # Watch the agent pods rolling update
-oc get pods -n <namespace> -l app=compiler-fix-finder-agent-agent -w
+oc get pods -n <namespace> -l app=compiler-fix-finder-agent -w
 
 # Check the CR status
-oc describe agentservice compiler-fix-finder-agent-agent -n <namespace>
+oc describe agentservice compiler-fix-finder-agent -n <namespace>
 ```
 
 The agent operator will automatically handle the upgrade process, including rolling updates of the agent pods.
@@ -254,14 +279,14 @@ To uninstall the agent:
 1. Delete the Custom Resource:
 
 ```bash
-oc delete agentservice compiler-fix-finder-agent-agent -n <namespace>
+oc delete agentservice compiler-fix-finder-agent -n <namespace>
 ```
 
 2. Verify the agent resources are removed:
 
 ```bash
 # Check that the agent pods are terminated
-oc get pods -n <namespace> -l app=compiler-fix-finder-agent-agent
+oc get pods -n <namespace> -l app=compiler-fix-finder-agent
 
 # Verify the CR is deleted
 oc get agentservice -n <namespace>
@@ -271,7 +296,7 @@ oc get agentservice -n <namespace>
 
 ```bash
 # Delete agent-specific secrets
-oc delete secret wxa4z-compiler-fix-finder-agent-agent-secrets -n <namespace>
+oc delete secret wxa4z-compiler-fix-finder-agent-secrets -n <namespace>
 
 # Note: Do not delete global secrets if other agents are using them
 ```
@@ -310,7 +335,7 @@ If you encounter errors during installation:
 
 2. **Check CR Status:**
    ```bash
-   oc describe agentservice compiler-fix-finder-agent-agent -n <namespace>
+   oc describe agentservice compiler-fix-finder-agent -n <namespace>
    ```
 
 3. **Review Agent Operator Logs:**
