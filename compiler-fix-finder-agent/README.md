@@ -148,7 +148,7 @@ spec:
         fileName: "compiler_fix_finder_agent_bootstrap_config.yaml"
   
   chart:
-    repository: oci://icr.io/zoscp/charts
+    repository: oci://icr.io/zoscp/ibm-z-compilers-fix-finder
     name: compiler-fix-finder-agent
     version: "1.1.3"  # Update to the desired chart version
     pullSecrets: # pullSecrets is used to pull image from registry
