@@ -22,7 +22,7 @@ spec:
         fileName: ims_agent_bootstrap_config.yaml
 
   chart:
-    repository: oci://icr.io/wxa4z-agentic-dev-cr   # (oci://icr.io/wxa4z-dev-container-registry)
+    repository: oci://icr.io/ibm-ims-ai   # (oci://icr.io/wxa4z-dev-container-registry)
     name: ims-agent # (upgrade-agent)
     version: 1.1.0
     # pullSecrets: # if not mentioned in CR, by default will search in the secret - pull-secret
