@@ -573,7 +573,7 @@ The request body must be a JSON object with the following structure:
 | `agent_id` | string | Yes | The unique identifier for the IMS agent |
 | `context` | string | Yes | A context identifier for this configuration should be the **same value** as context in connection|
 | `config.host` | string | Yes | The base URL of your z/OS system |
-| `config.console_name` | string | Yes | The z/OS console name (for example, `oadm182a`) |
+| `config.console_name` | string | Yes | The z/OS console name (for example, `oadm000a`) |
 | `config.subsystem_id` | string | Yes | IMS subsystem instance ID (for example, `IMS1`) |
 | `config.connect_jobname` | string | Yes | The job name of IMS Connect (for example, `HWS1`) |
 | `config.cert` | string | Yes | PEM-formatted certificate for secure communication |
@@ -596,9 +596,9 @@ curl -X POST \
   -H 'Content-Type: application/json' \
   -d '{
     "agent_id": "wxa4z:ims:agent",
-    "context": "ec01182a",
+    "context": "ec0000a",
     "config": {
-      "host": "https://ec01182a.vmec.svl.ibm.com",
+      "host": "https://ec0000a.vmec.svl.ibm.com",
       "console_name": "val",
       "subsystem_id": "id",
       "connect_jobname": "jobname",
