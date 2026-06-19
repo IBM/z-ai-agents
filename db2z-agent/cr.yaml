@@ -22,7 +22,7 @@ spec:
         fileName: "db2_agent_bootstrap_config.yaml"
 
   chart:
-    repository: "oci://icr.io/wxa4z-dev-container-registry"
+    repository: "oci://icr.io/ibm-db2z-ai"
     name: db2z-agent
     version: "1.1.1"
     pullSecrets: # if not mentioned in CR, by default will search in the secret - pull-secret
