@@ -236,6 +236,7 @@ The following table outlines the key configuration parameters:
 | **spec.values.global.secrets.name** | Name of global shared secrets | Yes |
 | **spec.values.env.AUTHZ_BASE_URL** | Authentication service route in OCP wxa4z-zad namespace | Yes |
 | **spec.values.env.DEPLOYMENT_TYPE** | DEPLOYMENT TYPE (for example, "on-prem/openai_protocol")  | Yes |
+| **spec.values.registry.entitlementKey** | Entitlement Key for pulling the agent image and helm package  | Yes |
 
 
 #### CR definition
