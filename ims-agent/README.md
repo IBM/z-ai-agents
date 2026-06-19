@@ -555,9 +555,9 @@ The request body must be a JSON object with the following structure:
 ```json
 {
   "agent_id": "wxa4z:ims:agent",
-  "context": "ec01182a",
+  "context": "ec0000a",
   "config": {
-    "host": "https://ec01182a.example.ibm.com",
+    "host": "https://ec0000a.example.ibm.com",
     "console_name": "console name",
     "subsystem_id": "id value",
     "connect_jobname": "job name",
