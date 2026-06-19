@@ -1,0 +1,36 @@
+{{- $isCloud := eq .Values.env.MODEL_RUNTIME "cloud" }}
+{{- $isOpenAI := contains "openai_protocol" .Values.env.MODEL_RUNTIME }}
+{{- $isOnPrem := contains "on-prem" .Values.env.MODEL_RUNTIME }}
+
+{{- $llmValue := "" }}
+
+{{- if or $isCloud $isOnPrem }}
+  {{- $llmValue = printf "virtual-model/watsonx/%s" .Values.env.LLM_MODEL }}
+{{- else if $isOpenAI }}
+  {{- $llmValue = printf "virtual-model/openai/%s" .Values.env.LLM_MODEL }}
+{{- else }}
+  {{- $llmValue = .Values.env.LLM_MODEL }}
+{{- end }}
+
+{{- $AgentContent := .Files.Get "config/ibm_concert_agent.yaml" }}
+
+{{/* Extract the current llm value directly from the file */}}
+{{- $oldLlmValue := "" }}
+{{- range $line := splitList "\n" $AgentContent }}
+  {{- if eq (substr 0 4 (trim $line)) "llm:" }}
+    {{- $oldLlmValue = trimPrefix "llm: " (trim $line) }}
+  {{- end }}
+{{- end }}
+
+{{/* Replace old llm value with new one */}}
+{{- $AgentContent = $AgentContent | replace $oldLlmValue $llmValue }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-bootstrap-config
+data:
+  ibm_concert_agent_bootstrap_config.yaml: |-
+{{ .Files.Get "config/ibm_concert_agent_bootstrap_config.yaml" | indent 4 }}
+  ibm_concert_agent.yaml: |-
+{{- $AgentContent | nindent 4 }}
