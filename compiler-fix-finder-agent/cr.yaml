@@ -23,7 +23,7 @@ spec:
 
   chart:
     name: compiler-fix-finder-agent # name of the helm chart
-    repository: oci://icr.io/zoscp-sandbox/charts # OCI registry namespace where the helm chart is stored
+    repository: oci://icr.io/zoscp/ibm-z-compilers-fix-finder # OCI registry namespace where the helm chart is stored
     version: "1.1.3" # version of the helm chart
     pullSecrets: # pullSecrets is used to pull image from registry
       - name: z-compiler-fix-finder-image-pull-secret
@@ -41,6 +41,3 @@ spec:
       LANGFUSE_HOST: "LANGFUSE_HOST"
       LANGFUSE_TRACING_ENABLED: false
       LANGFUSE_ENABLED: false
-      MAJOR_APAR_FIRST: true
-      PUBLIC_APAR_FOCUS: false
-      DEBUG_MODE: true
