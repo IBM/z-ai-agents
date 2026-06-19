@@ -116,18 +116,25 @@ An entitlement key is required to download the IBM CICS Transaction Server agent
 
 To obtain the entitlement key, open a case with IBM Support indicating that you are requesting the entitlement key for IBM CICS Transaction Server agents for Z. 
 
-Once you have an entitlement key, paste it into the Helm chart under the `cics-agent` definitions like so:
+Once you have an entitlement key, create a image-pull secret file in following way:
 
-```yaml
-cics-agent:
-  enabled: false
-  acceptLicense: True  #IBM Terms - https://www.ibm.com/support/customer/csol/terms/?id=L-SSLZ-QYC4LH
-  registry:
-    name: cics-image-pull-secret
-    createSecret: true
-    server: icr.io
-    username: iamapikey
-    entitlementKey: "<CICS_ENTITLEMENT_KEY>"
+```
+oc create secret docker-registry cics-image-pull-secret \
+  --docker-server=icr.io \
+  --docker-username=iamapikey \
+  --docker-password=<CICS_ENTITLEMENT_KEY> \
+  --namespace=<namespace> \
+  --dry-run=client -o yaml > cics-image-pull-secret.yaml
+```
+
+Apply the secret:
+```
+oc apply -f cics-image-pull-secret.yaml
+```
+
+Verify the secret was created:
+```
+oc get secret cics-image-pull-secret -n <namespace>
 ```
 
 ## CICS Agent Configuration
