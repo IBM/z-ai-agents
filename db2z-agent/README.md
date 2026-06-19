@@ -93,9 +93,9 @@ However, if any of these shared variables are also defined in your agent-specifi
 
 ### Configure the values.yaml file
 
-To enable the IBM Db2 for z/OS Agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
+To enable the IBM Db2 for z/OS Agent, you need to configure agent-specific values in the values.yaml file.
 
-In the values.yaml file, scroll down to the IBM Db2 for z/OS Agent section and update the keys as outlined in the following table.
+Update the keys as outlined in the following table.
 
 | Key       |            Description                  |
 |------------------------------|-----------------------------------|
@@ -150,7 +150,7 @@ The Custom Resource consists of the following main sections:
 - **spec.chart**: Specifies the Helm chart location and version
 - **spec.values**: Contains deployment values including environment variables and secret references
 
-#### CR Reference
+#### CR Definition
 
 Below is the complete Custom Resource definition for the Db2 for z/OS Agent. Update the placeholder values according to your environment:
 
@@ -177,9 +177,9 @@ spec:
         fileName: "db2z_agent_bootstrap_config.yaml"
   
   chart:
-    repository: oci://icr.io/wxa4z-dev-container-registry
+    repository: oci://icr.io/ibm-db2z-ai
     name: db2z-agent
-    version: "0.1.0"  # Update to the desired chart version
+    version: "1.1.1"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret
@@ -196,7 +196,7 @@ spec:
     
     env:
       # LLM Configuration
-      LLM_MODEL: "meta-llama/llama-3-1-70b-instruct"
+      LLM_MODEL: "ibm/granite-4.1-8b"
       # Database Configuration
       DB_NAME: "db2zagent"
       # MCP Configuration
@@ -205,7 +205,7 @@ spec:
       # Add other ENV variables as needed for deployment
 ```
 
-#### Applying the CR
+#### Installing the Agent
 
 1. Save the CR configuration to a file (e.g., `db2z-agent-cr.yaml`)
 2. Update all placeholder values marked as `REQUIRED`
@@ -285,28 +285,33 @@ Fernet.generate_key()
 
 
 ### Storage
-To use persistent storage, set `pvc.enabled` to true and adjust the `pvc.size`, `pvc.storageClass`, and `pvc.accessModes` settings as needed. 
+To use persistent storage, set `pvc.enabled` to true and adjust the `pvc.size`, `pvc.storageClass`, and `pvc.accessModes` settings as needed.
 
 ### Resources
-Configure `resources.limits` and `resources.requests` to configure the CPU and memory resources for your deployment. 
+Configure `resources.limits` and `resources.requests` to configure the CPU and memory resources for your deployment.
 
 
-### Install or upgrade the wxa4z-agent-suite
+### Step 3: Subscribe to the agent
 
-> **Note**:- If you're installing multiple agents, you can configure the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
+After successfully deploying the agent, you need to subscribe to it to make it available in watsonx Orchestrate.
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with a **Subscribe** button next to each.
+
+5. Click the **Subscribe** button next to the **IBM Db2 for z/OS Agent**.
+   - This action adds the agent to watsonx Orchestrate (WXO) and makes it available for deployment.
 
 
-Use the following command to install or upgrade the wxa4z_agent_suite:
-
-```yaml
-helm upgrade --install wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path_to>/values.yaml --wait
-```
-
-
-## Deploy your agent
+### Step 4: Deploy the agent
 
 1. Log in to watsonx Orchestrate.
 2. From the main menu, navigate to **Build** > **Agent Builder**.
@@ -315,7 +320,95 @@ helm upgrade --install wxa4z-agent-suite \
 5. Click **Deploy** to activate the agent and make it available in the live environment.
 
 
-## Test your agent
+### Step 5: Upgrade the Agent
+
+To upgrade the agent to a new version:
+
+> **Note:** If the agent was previously subscribed to watsonx Orchestrate, you must first unsubscribe it before upgrading. After the upgrade is complete, re-subscribe the agent. See the [Uninstall the Agent](#step-6-uninstall-the-agent) section for unsubscribe steps and the [Subscribe to the agent](#step-3-subscribe-to-the-agent) section for subscribe steps.
+
+1. Update the `spec.chart.version` field in your CR file:
+
+```yaml
+spec:
+  chart:
+    version: "1.1.2"  # Update to the new version
+```
+
+2. Apply the updated CR:
+
+```bash
+oc apply -f db2z-agent-cr.yaml
+```
+
+3. Monitor the upgrade progress:
+
+```bash
+# Watch the MCP client pods rolling update
+oc get pods -n <namespace> -l app=db2z-agent-mcp-client -w
+
+# Watch the MCP server pods rolling update
+oc get pods -n <namespace> -l app=db2z-agent-mcp-server -w
+
+# Check the CR status
+oc describe agentservice db2z-agent -n <namespace>
+```
+
+The agent operator will automatically handle the upgrade process, including rolling updates of both MCP client and server pods.
+
+### Step 6: Uninstall the Agent
+
+To uninstall the agent:
+
+**If the agent was previously subscribed to watsonx Orchestrate**, first unsubscribe it:
+
+1. Open the Cloud Pak for Data (CPD) home page.
+   - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click on the **Launch WXA4Z console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
+   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click on your **Tenant name**.
+
+4. Navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with an **Unsubscribe** button next to each.
+
+5. Click the **Unsubscribe** button next to the **IBM Db2 for z/OS Agent**.
+   - This action removes the agent from watsonx Orchestrate (WXO).
+
+**Then, delete the agent resources:**
+
+1. Delete the Custom Resource:
+
+```bash
+oc delete agentservice db2z-agent -n <namespace>
+```
+
+2. Verify the agent resources are removed:
+
+```bash
+# Check that the MCP client pods are terminated
+oc get pods -n <namespace> -l app=db2z-agent-mcp-client
+
+# Check that the MCP server pods are terminated
+oc get pods -n <namespace> -l app=db2z-agent-mcp-server
+
+# Verify the CR is deleted
+oc get agentservice -n <namespace>
+```
+
+3. (Optional) Clean up secrets if no longer needed:
+
+```bash
+# Delete agent-specific secrets
+oc delete secret wxa4z-db2z-agent-secrets -n <namespace>
+
+# Note: Do not delete global secrets if other agents are using them
+```
+
+> **Note:** The agent operator will automatically clean up all resources created by the agent, including deployments, services, and configmaps. However, secrets must be manually deleted if they are no longer needed.
+
+## Test the agent
 
 After deployment, the agent becomes active and is available for selection in the live environment.
 
@@ -334,6 +427,19 @@ After deployment, the agent becomes active and is available for selection in the
 
 4. Verify that the responses returned by the AI Assistant are accurate.
 
+## Troubleshooting installation errors
 
-------------------------------------------------------------
+If you run into any errors during installation, see [Troubleshooting](../../README.md#troubleshooting) for troubleshooting steps.
+
+## Troubleshooting agent runtime errors
+
+Follow these steps to troubleshoot agent runtime errors:
+
+1. _Db2 Connection Error_: Verify that ODBC connectivity is properly configured and license files are mounted correctly
+2. _MCP Server Connection Error_: Check that MCP_SERVER_URL is correct and the MCP server is running
+3. _Authentication Issues_: Ensure AGENT_AUTH_TOKEN and DB2_AGENT_TOKEN are correctly configured
+4. _Database Access Issues_: Verify that the Db2 user has appropriate permissions for the requested operations
+5. _MCP Communication Issues_: Check that both MCP client and server pods are running and can communicate
+
+-------------------------
 
