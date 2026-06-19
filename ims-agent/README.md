@@ -295,12 +295,12 @@ spec:
 
 #### Installing the Agent
 
-1. Save the CR configuration to a file (for example, `ims-agent-cr.yaml`).
+1. Save the CR configuration to a file (for example, `cr.yaml`).
 2. Update all placeholder values marked as `REQUIRED`.
 3. Apply the CR to your cluster:
 
 ```bash
-oc apply -f ims-agent-cr.yaml
+oc apply -f cr.yaml
 ```
 
 4. Verify the deployment:
@@ -360,7 +360,7 @@ spec:
 2. Apply the updated CR:
 
 ```bash
-oc apply -f ims-agent-cr.yaml
+oc apply -f cr.yaml
 ```
 
 3. Monitor the upgrade progress:
