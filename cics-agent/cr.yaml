@@ -1,0 +1,43 @@
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: cics-agent
+  namespace: ""
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+
+spec:
+  releaseName: cics-agent
+  tenantId: ""
+  namespace: ""
+  wxa4z-core-services-namespace: wxa4z-zad # namespace in which the opensearch-client, authorization etc are deployed
+
+  agentDetails:
+    - agentName: cics-agent
+      agentId: wxa4z:cics-agent:agent
+      displayName: IBM CICS Transaction Server agents for Z
+      description: The CICS (Customer Information Control System) Transaction Server agent can take queries about CICS concepts, such as topologies and also provide problem determination assistance for transaction error codes.
+      bootstrapConfig:
+        name: "cics-agent-bootstrap-config"
+        fileName: cics_agent_bootstrap_config.yaml
+
+  chart:
+    repository: oci://icr.io/wxa4z-dev-container-registry # (oci://icr.io/wxa4z-dev-container-registry)
+    name: cics-agent # (upgrade-agent)
+    version: 1.3.0
+    # pullSecrets: # if not mentioned in CR, by default will search in the secret - pull-secret
+    #   - name: pull-secret # the name of the secret containing the credentials for the image repo of the agent so that the tar.gz can be pulled
+
+  values:
+    replicaCount: 1
+
+    global:
+      secrets:
+        name: wxa4z-watsonx-credentials # this should be provided in the CR so that the global variables can be referenced
+
+    secrets:
+      name: wxa4z-cics-agent-secrets # upgrade-agent-secrets (this secret is about each agent)
+
+    env: # below are samples of configurable environment variables
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
+      MODEL_RUNTIME: "openai_protocol"
