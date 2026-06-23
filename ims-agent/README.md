@@ -178,6 +178,7 @@ The agent uses two types of secrets:
 
 1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
 2. **Agent-Specific Secrets** (`wxa4z-ims-agent-secrets`): Unique to this agent
+3. **Agent Pull Secret** (`ims-image-pull-secret`): Unique to this agent
 
 
 #### Agent-specific secret reference
@@ -216,6 +217,17 @@ oc apply -f ims-agent-secret.yaml
 
 ```bash
 oc get secret wxa4z-ims-agent-secrets -n <namespace>
+```
+
+#### Creating the ICR Pull Secret
+
+Run the following command to create an image pull secret for IBM Cloud Container Registry (ICR):
+
+```bash
+oc create secret -n <your-namespace> docker-registry ims-image-pull-secret \
+  --docker-server=icr.io \  #replace this with container registry
+  --docker-username=iamapikey \ # replace this with container registry username
+  --docker-password=<your-api-key> # replace this with container registry entitlement key
 ```
 
 
