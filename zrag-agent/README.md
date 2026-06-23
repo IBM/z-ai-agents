@@ -1,195 +1,332 @@
-# zRAG Agent
+# zRAG LangGraph Agent
 
-## Overview
-The zRAG Agent provides technical support for mainframe and enterprise systems through the Watson Assistant for Z chat interface. It leverages the zRAG (z/OS Retrieval-Augmented Generation) knowledge base to deliver accurate, citation-backed responses by integrating with IBM's documentation repositories and custom enterprise documentation. This is a `NATIVE` Orchestrate agent that uses the `zrag_retriever` MCP tool for retrieving information relevant to the query and then routes the results to the LLM to generate answers.
-
-## Agent capabilities
-
-| Agent capability         |            Description                  |
-|------------------------------|-----------------------------------|
-| Document retrieval        | Queries the zRAG backend to fetch relevant technical documentation from IBM docs, Redbooks, and custom enterprise content    |
-| Health monitoring | Performs health checks on the zRAG MCP server, returning server status and configuration information
-| Streaming responses | Delivers real-time token-by-token generation for improved user experience
-| Multi-source knowledge base | Searches across IBM product documentation, Redbooks, customer-specific docs, and agent documentation with configurable weights
-
+A LangGraph-based RAG agent for IBM Z mainframe documentation. Provides hybrid
+routing (simple vs complex questions), iterative retrieval with LLM-driven
+sufficiency checks, multi-hop question decomposition, and parametric knowledge
+fallback — all orchestrated as a compiled LangGraph StateGraph. 
 
 ## Architecture
 
-The zRAG Agent consists of two primary components:
+```
+User Query
+    │
+    ▼
+┌─────────────────────────────────────────────┐
+│        Query Classifier (LLM)               │
+│   complexity + Z-scope in one call (~2-3s)  │
+│   (heuristic fallback if LLM fails)         │
+└──────┬──────────┬──────────┬────────────────┘
+       │          │          │
+   simple      complex   out-of-scope
+       │          │          │
+       ▼          ▼          │
+┌────────────┐ ┌───────────────────────┐     
+│ Retrieval  │ │ Multi-Hop Retrieval   │     
+│ (iterative,│ │ (decompose → iterate  │     
+│  LLM suff. │ │  → accumulate context │     
+│  check, ≤3)│ │  → sufficiency, ≤5)   │     
+└──────┬─────┘ └──────────┬────────────┘     
+       │                  │                  
+       └────────┬─────────┘                  
+                │    
+                ▼    
+       ┌──────────────────┐
+       │  Generation Node │
+       │ (3 modes: strict │
+       │  RAG / parametric│
+       │  Z / out-of-scope│
+       └────────┬─────────┘
+                ▼
+       ┌──────────────────┐
+       │Results Processing│
+       │ (citations or    │
+       │  skip for OOS)   │
+       └────────┬─────────┘
+                ▼
+          Final Answer
+```
 
-### 1. zRAG MCP Server
-An MCP (Model Context Protocol) toolkit imported on Orchestrate that provides 4 specialized tools:
-- **health_check**: Performs a health check on the zRAG MCP server. Returns server status, configuration information, and environment diagnostics
-- **zrag_retriever**: Queries the zRAG retriever backend service to fetch relevant documents. All configuration parameters (search type, reranking, indices) are loaded from environment variables
-- **zrag_chat**: Complete RAG pipeline with streaming generation and code-based citations. Returns verbose responses (~12k tokens) with comprehensive metadata including answer, sources, citations, performance metrics, and quality reports
-- **zrag_chat_compact**: Optimized RAG tool for agents with minimal response size (~2k tokens, 80% smaller than zrag_chat). Returns only essential fields: answer with citations and cited documents
+### External Services
 
-### 2. zRAG Native Agent
-A native agent configured to use the MCP tools:
-- Uses only 2 MCP tools from the toolkit: **health_check** and **zrag_retriever**
-- Streaming is enabled by default
-- Built on React-style agent architecture for iterative reasoning
-- Configured with **meta-llama/llama-3-3-70b-instruct** on x86 and **virtual-model/watsonx/ibm/granite-3-3-8b-instruct** on s390x architectures respectively.
-- Supports multilingual retrieval. The supported languages are:
-   1. English
-   2. French
-   3. Japanese
-   4. German
-   5. Portuguese
-   6. Spanish
-   7. Italian
-   8. Finnish
-   9. Arabic
-   10. Chinese
-   11. Czech
-   12. Dutch
-   13. Korean
-   14. Thai
+| Service | Protocol | Auth | Purpose |
+|---------|----------|------|---------|
+| OpenSearch Wrapper | HTTPS POST `/v1/query` | Basic Auth | Document retrieval + reranking |
+| WatsonX LLM | HTTPS POST `/ml/v1/text/chat[_stream]` | Bearer Token | Decomposition, sufficiency checks, answer generation |
+| Langfuse (optional) | HTTPS | API Key pair | LLM observability |
 
-### Sequence Flow
-1. User enters a query in the zRAG Agent chat interface
-2. Orchestrate routes the query to the MCP tool (**zrag_retriever**)
-3. **zrag_retriever** tool executes the retrieval logic against the OpenSearch backend and responds with the result set
-4. Orchestrate uses this result and passes it to the LLM (Llama 3.3 70B) for answer generation
-5. Answer is streamed back to the chat window with inline citations and source references
+## Quick Start
 
+### Prerequisites
 
-## Prerequisites
-Ensure the following:
-
-- [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
-- OpenSearch backend with zRAG wrapper service is deployed and accessible
-- WatsonX AI endpoint is configured (either IBM Cloud SaaS or CPD on-premises)
+- Python 3.11+
+- Access to a zRAG retriever backend (OpenSearch Wrapper)
+- IBM WatsonX AI credentials (SaaS API key or CPD username/password)
 - Knowledge base is ingested into OpenSearch with appropriate indices
 
-## Install the zRAG Agent
+### Local Setup
 
+```bash
+# Clone and enter the repo
+cd zrag_external_agent
 
-### Retrieve the entitlement key
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate
 
-During the installation process of watsonx Assistant for Z, you would have acquired the entitlement key. However, if you need to retrieve it again, follow these steps:
+# Install dependencies
+pip install -r requirements.txt
 
-1. Click the link to sign in to [My IBM](https://myibm.ibm.com/dashboard/).
-2. Scroll down and locate the Container Software & Entitlement Keys tile, then click View Library.
-3. Find your hidden key and click the Copy button next to it.
-4. Set the global entitlement key using the watsonx Assistant for Z entitlement key:
+# Configure environment
+cp .env.example .env   # if .env.example exists, otherwise edit .env directly
+# Edit .env with your credentials (see Configuration below)
 
-```yaml
-global:
-  registry:
-    name: wxa4z-image-pull-secret
-    createSecret: true
-    server: icr.io
-    username: iamapikey
-    entitlementKey: "<WATSONX_ASSISTANT_FOR_Z_ENTITLEMENT_KEY>"
+# Validate configuration
+python main.py --validate-config
+
 ```
 
-### Create Shared Variables
+### Docker
 
-Certain variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.ibm.com/wxa4z/agent-deployment-charts/tree/readme-update?tab=readme-ov-file#step-2-create-shared-variablescreate-once-reuse-everywhere) (link to the global GitHub page).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file, the values specified in the values.yaml file will override the shared ones.
+```bash
+# Build and run
+docker compose up --build
 
-### Configure the values.yaml file
-
-To enable the zRAG Agent, you need to configure agent-specific values in the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file.
-
-In the values.yaml file, scroll down to the zRAG Agent section and update the keys as outlined in the following table.
-
-| Key       |            Description                  |
-|------------------------------|-----------------------------------|
-**Environment variables - zRAG Backend Connection**                                                       |
-ZRAG_RETRIEVER_URL | URL endpoint for the OpenSearch wrapper service. For example, "https://wxa4z-opensearch-wrapper.wxa4z-zad.svc.cluster.local:8080".
-ZRAG_USERNAME | Username for authenticating with the zRAG retriever backend (Basic Auth).
-ZRAG_PASSWORD | Password for authenticating with the zRAG retriever backend (Basic Auth).
-**Environment variables - WatsonX AI Configuration (SaaS Mode - IBM Cloud)**                                                        |
-WATSONX_ML_URL | WatsonX AI endpoint URL for SaaS deployment. For example, "https://us-south.ml.cloud.ibm.com".
-WATSONX_API_KEY | IBM Cloud IAM API key for authenticating with WatsonX AI (SaaS mode).
-WATSONX_DEPLOYMENT_SPACE_ID | Deployment space ID for WatsonX AI (SaaS mode).
-**Environment variables - WatsonX AI Configuration (CPD Mode - On-Premises)**                                                        |
-WATSONX_URL | WatsonX AI endpoint URL for CPD on-premises deployment. For example, "https://cpd-instance.company.com" (set via WATSONX_ML_URL in values.yaml).
-CPD_USERNAME | Username for authenticating with CPD on-premises deployment. For example, "cpadmin".
-WATSONX_PASSWORD | Password for authenticating with CPD on-premises deployment.
-WATSONX_PROJECT_ID | Project ID for WatsonX AI (CPD mode).
-WATSONX_VERSION | CPD version. For example, "5.2".
-WATSONX_VERIFY_SSL | Set to "false" for self-signed certificates in CPD environments.
-**Environment variables - Model Configuration**                                                        |
-MODEL_ID | LLM model used by the zRAG MCP server for answer generation. Default: "ibm/granite-3-3-8b-instruct". Options include Granite 3.3 models or other WatsonX models.
-MODEL_TEMPERATURE | Controls randomness of model outputs (0.0-1.0). Lower values produce more deterministic responses. Default: "0.4".
-MODEL_MAX_TOKENS | Maximum number of tokens the model can generate per response. Default: "400" (capped at 450).
-MODEL_TOP_P | Nucleus sampling parameter (optional). Controls diversity via cumulative probability cutoff.
-MODEL_TOP_K | Top-k sampling parameter (optional). Controls diversity by limiting to top k tokens.
-**Environment variables - Search Configuration**                                                        |
-ZRAG_DEFAULT_RERANK | Enable reranking of search results for improved relevance. Default: "true".
-ZRAG_DEFAULT_SEARCH_TYPE | Search algorithm to use. Options: "keyword", "semantic", "fusion", "reranked_fusion". Default: "reranked_fusion".
-ZRAG_DEFAULT_IBM_INDICES | Comma-separated list of IBM documentation indices to search. Default: "*_ibm_docs_slate,*_ibm_redbooks_slate".
-ZRAG_DEFAULT_MAX_RESULTS | Maximum number of documents to retrieve from the backend. Default: "10".
-ZRAG_DEFAULT_MIN_SCORE | Minimum relevance score for including documents (0.0-1.0). Default: "0.5".
-ZRAG_CONTEXT_WINDOW | Maximum context window size in tokens for building prompts. Default: "2048".
-ZRAG_MAX_CONTEXT_DOCS | Maximum number of documents to include in the LLM context. Default: "6".
-**Environment variables - Citation Configuration**                                                        |
-ENABLE_CODE_CITATIONS | Use code-based citation extraction (not LLM-based) for accuracy. Default: "true".
-CITATION_MIN_SIMILARITY | Minimum phrase similarity threshold for matching citations (0.0-1.0). Default: "0.7".
-CITATION_MIN_CONFIDENCE | Minimum confidence score for including citations (0.0-1.0). Default: "0.4".
-**Environment variables - MCP Server Runtime**                                                        |
-WXO_MCP_TRANSPORT | Transport mode for MCP server. Options: "stdio", "sse", "http". Default: "sse".
-WXO_MCP_HOST | Bind address for the MCP server. Default: "0.0.0.0".
-WXO_MCP_PORT | Port number for the MCP server. Default: "8000".
-LOG_LEVEL | Logging verbosity level. Options: "DEBUG", "INFO", "WARNING", "ERROR". Default: "INFO".
-**Secrets**
-ZRAG_USERNAME | Username for accessing the zRAG retriever backend (also used as environment variable).
-ZRAG_PASSWORD | Password for accessing the zRAG retriever backend (also used as environment variable).
-WATSONX_API_KEY | IBM Cloud IAM API key for WatsonX AI (SaaS mode) or CPD API key (on-prem mode).
-CPD_USERNAME | Username for CPD on-premises deployment (also used as environment variable).
-WATSONX_PASSWORD | Password for CPD on-premises deployment (also used as environment variable).
-
-### Install or upgrade the wxa4z-agent-suite
-
-> **Note**: If you're installing multiple agents, you can configure the [values.yaml](https://github.ibm.com/wxa4z/agent-deployment-charts/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents you wish to install. Once the file is updated, run the command below to install them all at once.
-
-
-Use the following command to install or upgrade the wxa4z_agent_suite:
-
-```yaml
-helm upgrade --install wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path_to>/values.yaml --wait
+# Or build manually
+docker build -t zrag-agent .
+docker run --env-file .env -p 8000:8000 zrag-agent
 ```
 
-## Deploy the agent
+## Usage
 
-1. Log in to watsonx Orchestrate.
-2. From the main menu, navigate to **Build** > **Agent Builder**.
-3. Select the **zRAG Agent** tile.
-4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
-5. Click **Deploy** to activate the agent and make it available in the live environment.
+### Install ZRAG Agent
+- ZRAG ext agent should be deployed as part of operator installation
+- Once the latest operator is deployed, log in to Watsonx Orchestrate
+- Create a service instance (tenant) on the Orcehstrate, and you should see a namespace with a tenant id getting provisioned in the Openshift Console
+- Navigate to the pods section of that tenant namespace in Openshift Console
+- You should see tenant specific ZRAG Agent pod coming up
 
+### Sequence Flow
 
-## Test the agent
+- User enters a query in the zRAG Agent chat interface
+- Orchestrate routes the query to the wxa4z_zRAG_Agent_ext
+- The external agent then calls the wrapper to retrieve relevant documents
+- A sufficiency check happens to check if the retrieved content is sufficient, else the documents from the parametric knowledge of model are supplemented 
+- The retrieved documents are then passed to the LLM for answer generation
+- Answer is streamed back to the chat window with inline citations and source references
 
-After deployment, the agent becomes active and is available for selection in the live environment.
+## Configuration
 
-1. From the main menu, click **Chat**.
-2. Choose **zRAG Agent** from the list.
-3. Enter your queries using the AI Assistant.
-   For example:
+All configuration is via environment variables (loaded from `.env`).
 
-      - What is CICS Transaction Server?
+### Required
 
-      - How do I configure JCL for batch processing?
+```bash
+# Retrieval backend
+ZRAG_RETRIEVER_URL=https://your-opensearch-wrapper-url
+ZRAG_USERNAME=admin
+ZRAG_PASSWORD=your_password
 
-      - Explain VSAM file organization methods
+# WatsonX AI - Option 1: SaaS
+WATSONX_URL=https://us-south.ml.cloud.ibm.com/
+WATSONX_APIKEY=your_api_key
+WATSONX_PROJECT_ID=your_project_id          # or WATSONX_SPACE_ID
 
-      - What are the security features in RACF?
+# WatsonX AI - Option 2: CPD
+WATSONX_URL=https://your-cpd-cluster.com
+WATSONX_USERNAME=your_username
+WATSONX_PASSWORD=your_password
+WATSONX_PROJECT_ID=your_project_id
+WATSONX_VERIFY_SSL=false                    # for self-signed certs
+```
 
-    Responses are displayed with comprehensive technical explanations, inline citations [1], [2], and a sources section with clickable documentation links.
+### Model
 
-4. Verify that the responses returned by the AI Assistant are accurate and include proper citations with relevance scores.
+```bash
+MODEL_ID=<WATSONX_MODEL_ID>         # WatsonX model ID
+MODEL_TEMPERATURE=0.3                       # 0=deterministic, 1=creative
+MODEL_MAX_TOKENS=4096                      # Token budget (strict RAG)
+MODEL_MAX_TOKENS_PARAMETRIC=4096           # Token budget (hybrid/parametric)
+```
 
-## Troubleshooting installation errors
-If you run into any errors during installation, see [Troubleshooting link](https://github.ibm.com/wxa4z/agent-deployment-charts/tree/main/agent-helm-charts/zrag-agent) for troubleshooting steps.
+### Pipeline Behavior
 
-## Uninstalling the agent
-For uninstallation instructions, see [Agent Uninstallation](https://github.ibm.com/wxa4z/agent-deployment-charts/tree/main/agent-helm-charts/zrag-agent)
+```bash
+# Multi-hop routing
+ENABLE_MULTIHOP=true                        # Enable hybrid routing
+MULTIHOP_MAX_ITERATIONS=5                   # Max sub-question retrievals
 
--------------------------
+# Simple-path iterative refinement
+SIMPLE_MAX_REFINEMENTS=3                    # Max query reformulations
+
+# Parametric knowledge fallback
+ENABLE_PARAMETRIC_FALLBACK=true             # Use model's own knowledge when retrieval insufficient
+```
+
+### Search & Citations
+
+```bash
+CITATION_MIN_CONFIDENCE=0.4
+DOC_CONTENT_MAX_LENGTH=600
+MAX_DOCS_TO_PROCESS=5
+```
+
+### Multi-Tenancy (Optional)
+
+```bash
+ENABLE_MULTI_TENANCY=false
+PROVIDER_ID=
+DEFAULT_TENANT_ID=default
+DEPLOYMENT_MODE=dedicated                   # dedicated | shared
+```
+
+### Observability (Optional)
+
+```bash
+LANGFUSE_SECRET_KEY=your_secret_key
+LANGFUSE_PUBLIC_KEY=your_public_key
+LANGFUSE_BASE_URL=https://cloud.langfuse.com
+```
+
+### Web Search
+```bash
+ENABLE_WEB_SEARCH=false
+SERPER_API_KEY=<YOUR-SERPER-API-KEY>
+```
+
+### Filters (Optional)
+Note: WXO is not supporting credentials and filters via the UI for external agent and hence, if need be, we need to configure it manually by adding the following Keys with desired values in the config map of zrag agent for the corresponding namespace 
+```bash
+ZRAG_DEFAULT_RERANK=true
+ZRAG_DEFAULT_SEARCH_TYPE=reranked_fusion
+ZRAG_DEFAULT_IBM_INDICES=*_ibm_docs_slate,*_ibm_redbooks_slate
+ZRAG_DEFAULT_CUSTOMER_INDICES=
+
+ZRAG_METADATA_PRODUCT_WEIGHT=1
+ZRAG_METADATA_CUSTOMER_WEIGHT=0
+ZRAG_METADATA_AGENT_WEIGHT=0
+```
+
+## Key Features
+
+### LLM Query Classification + Speculative Retrieval
+
+Every query is classified in a single upfront LLM call (~2-3 s) that determines
+both **complexity** (`simple` / `complex`) and **Z-scope** (`true` / `false`).
+If the LLM call fails, the agent falls back to keyword heuristics (<1 ms).
+
+The first retrieval call is fired **speculatively in parallel** with the LLM
+classification. Since ~80% of queries go through the simple path and always
+start with a retrieval of the original query, this hides the classification
+latency from the critical path. For complex/out-of-scope queries the
+speculative retrieval is discarded (no correctness impact).
+
+Out-of-scope queries skip retrieval entirely and go straight to generation,
+turning a 60+ second pipeline into a ~5 second response.
+
+This determines the generation strategy:
+
+| Z-Scope | Retrieval | Generation Mode | Behaviour |
+|---------|-----------|-----------------|-----------|
+| Yes | Sufficient | Strict RAG | Answer using ONLY retrieved context |
+| Yes | Insufficient | Parametric Z Expert | Context + model's IBM Z expertise (marked) |
+| No | Any | Out-of-scope | Graceful 1-liner + brief general-knowledge answer |
+
+### Hybrid Routing
+
+Questions are classified as **simple** or **complex** by the LLM classifier.
+Simple questions use single-hop retrieval with iterative refinement; complex
+questions are decomposed into sub-questions via LLM and retrieved **in parallel**
+(`asyncio.gather`) with context accumulation. Out-of-scope queries bypass
+retrieval entirely.
+
+### Iterative Retrieval with LLM Sufficiency Checks
+
+Both paths use LLM-driven sufficiency checks: after each retrieval iteration, the
+model evaluates whether the accumulated context is enough to answer the original
+question. If not, it proposes a reformulated search query targeting the gap.
+
+All sufficiency decisions are made by the LLM — there are no heuristic confidence
+thresholds. This avoids false positives where reranker scores are high but the
+documents don't actually answer the question.
+
+### Parametric Knowledge Fallback
+
+When retrieval is insufficient after all iterations and `ENABLE_PARAMETRIC_FALLBACK`
+is enabled, the generation node switches to a hybrid prompt that allows the model
+to supplement retrieval context with its own expert knowledge. Parametric
+contributions are explicitly marked in the answer.
+
+### Stage Profiler
+
+Every pipeline stage is timed with wall-clock precision. The profiler summary is
+included in both log output and the API response:
+
+Simple query (speculative retrieval overlaps with classification):
+```
+  Stage                            Duration   % Total
+  ------------------------------ ----------  --------
+  query_classification             2500 ms      9.2%  ← retrieval runs in parallel
+  retrieval_iter_1               16900 ms     62.2%  ← uses speculative result
+  sufficiency_check_1             2500 ms      9.2%
+  generation_llm_call             4500 ms     16.6%
+  citation_matching                  2.0 ms      0.0%
+  ------------------------------ ----------  --------
+  TOTAL                          27200 ms
+```
+
+Complex query (parallel sub-question retrieval):
+```
+  Stage                            Duration   % Total
+  ------------------------------ ----------  --------
+  query_classification             2500 ms      9.6%
+  multihop_decomposition           2500 ms      9.6%
+  multihop_parallel_retrieval    17000 ms     65.4%  ← 3 sub-Qs in parallel
+  multihop_final_sufficiency       2500 ms      9.6%
+  generation_llm_call              4500 ms     17.3%
+  citation_matching                  2.0 ms      0.0%
+  ------------------------------ ----------  --------
+  TOTAL                          26000 ms
+```
+
+### Citation Management
+
+Citations are extracted via phrase matching (4-8 word noun phrases from documents
+matched against the answer text), scored using a blended formula (40% phrase length
++ 40% document relevance score + 20% uniqueness), and inserted as inline markers
+with a references section.
+Note: Citations may not come for queries not related to Z or for the queries, where parametric knowledge of the inferencing model is entirely used rather than retrieved docs to give results
+
+## Troubleshooting
+
+### Configuration Issues
+
+```bash
+python main.py --validate-config
+```
+
+### Common Errors
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| `No WatsonX credentials provided` | Missing API key or CPD creds | Set `WATSONX_APIKEY` or `WATSONX_USERNAME`+`WATSONX_PASSWORD` |
+| `Parameters [...] is/are not recognized` | Using text-gen params for chat API | Already fixed — ensure latest `models/watsonx.py` |
+| `Failed to initialize model` | Invalid credentials or model ID | Verify `WATSONX_URL`, credentials, and `MODEL_ID` |
+| Connection timeout to retriever | Retriever backend unreachable | Check `ZRAG_RETRIEVER_URL` and network access |
+| `SSL: CERTIFICATE_VERIFY_FAILED` | CPD with self-signed certs | Set `WATSONX_VERIFY_SSL=false` |
+
+### Logging
+
+```bash
+# Default: INFO level
+python main.py
+
+# Debug level (verbose LLM payloads, HTTP requests)
+LOG_LEVEL=DEBUG python main.py
+```
+
+## Security Notes
+
+- Never commit `.env` files with real credentials
+- Use environment variables or Kubernetes Secrets in production
+- The agent forwards tenant credentials (does not authenticate tenants itself)
+- SSL verification is configurable per backend (`WATSONX_VERIFY_SSL`)
