@@ -22,11 +22,11 @@ spec:
         fileName: ims_agent_bootstrap_config.yaml
 
   chart:
-    repository: oci://icr.io/wxa4z-agentic-dev-cr   # (oci://icr.io/wxa4z-dev-container-registry)
+    repository: oci://icr.io/ibm-ims-ai  # (oci://icr.io/wxa4z-dev-container-registry)
     name: ims-agent # (upgrade-agent)
-    version: 1.1.0
-    # pullSecrets: # if not mentioned in CR, by default will search in the secret - pull-secret
-    #   - name: ims-chart-secret # the name of the secret containing the credentials for the image repo of the agent so that the tar.gz can be pulled
+    version: v1.1.0
+    pullSecrets: # if not mentioned in CR, by default will search in the secret - pull-secret
+      - name: ims-image-pull-secret # Create this secret in the namespace (wxa4z-<tenant-id>) with entilement key containing the credentials for the image repo of the agent and charts so that the tar.gz can be pulled
 
   values:
     replicaCount: 1
@@ -45,5 +45,3 @@ spec:
       MODEL_RUNTIME: "openai_protocol"
 
     
-    registry:
-      entitlementKey: ""

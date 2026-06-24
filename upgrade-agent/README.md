@@ -163,9 +163,9 @@ spec:
         fileName: "upgrade_agent_bootstrap_config.yaml"
   
   chart:
-    repository: oci://icr.io/wxa4z-dev-container-registry
+    repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: upgrade-agent
-    version: "1.2.1"  # Update to the desired chart version
+    version: "1.3.0"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret

@@ -57,7 +57,6 @@ READEME overall README file
 | IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[README](./db2z-agent/README.md)|
 | IBM IMS Agents                 | `ims-agent`                    | Product  |[README](./ims-agent/README.md)|
 | IBM IntelliMagic agent for Z             | `intellimagic-agent`           | Product  |[README](./intellimagic-agent/README.md)|
-| Functional Testing Agent (TAZ) | `taz-functional-testing-agent` | Product  |[README](./taz-functional-testing-agent/README.md)|
 | IBM Concert for Z Agent| `ibm-concert-agent-z` | Product  |[README](./ibm-concert-agent-z/README.md)|
 | IBM Concert for Z Agent Spyre | `ibm-concert-agent-z-spyre` | Product  |[README](./ibm-concert-agent-z-spyre/README.md)|
 | IBM Z Compilers Fix Finder Agent | `compiler-fix-finder-agent` | Product  |[README](./compiler-fix-finder-agent/README.md)|
