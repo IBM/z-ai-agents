@@ -22,7 +22,7 @@ spec:
         fileName: "upgrade_agent_bootstrap_config.yaml" # file name of the file inside the configmap that contains the bootstrap configuration for the agent
 
   chart:
-    repository: oci://cp.stg.icr.io/cp/ibm-watsonx-assistant-for-z # OCI registry where the helm chart is stored
+    repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z # OCI registry where the helm chart is stored
     name: upgrade-agent # name of the helm chart
     version: "1.3.0" # version of the helm chart
     # pullSecrets: # pullSecrets is used to pull image from registry
