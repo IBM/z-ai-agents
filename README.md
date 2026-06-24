@@ -48,6 +48,7 @@ READEME overall README file
 | IBM Z Upgrade Agent    | `upgrade-agent`          | Foundational |  [README](./upgrade-agent/README.md)                  |
 | IBM Z Automation Insights Agent | `automation-insights-agent` | Foundational |[README](./automation-insight-agent/README.md)|
 | IBM Z Workload Scheduler Insights Agent | `workload-scheduler-agent-z` | Foundational |[README](./workload-scheduler-agent-z/README.md)|
+| IBM zRAG Agent | `zRAG Agent` | Foundational |[README](./zrag-agent/README.md)|
 
 ### Prebuilt IBM Z product agents
 
