@@ -173,7 +173,9 @@ READEME overall README file
      INGESTION_PASSWORD: ""  # Document ingestion password (optional)
    ```
 
-   **Note:** All values in `stringData` are automatically base64-encoded by Kubernetes. Replace placeholder values with your actual configuration.
+   **Note:** 
+   1. All values in `stringData` are automatically base64-encoded by Kubernetes. Replace placeholder values with your actual configuration.
+   2. After the tenant is created, append "/v1/query" to the WRAPPER_URL endpoint in the "wxa4z-watsonx-credentials" secret within the tenant namespace.
 
    Apply the secret:
    ```bash
