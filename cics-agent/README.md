@@ -179,7 +179,19 @@ SERVICE_ENDPOINT | Service endpoint URL for agent registration.
 
 If you are connecting to services that use self-signed certificates (such as Z RAG or MCP server), the agent will not communicate with those services without first providing it with the certificates to validate all requests.
 
-You will need your endpoints certificates content, which you need to put into `values.yaml` - into the `cicsCertSecret` section, replacing the content already there. **Make sure never to commit or add this certificate to version control.**
+You will need your endpoints certificates content. To update the certificate secret, use the following commands:
+
+Encode the certificate to base64 and remove newlines
+```bash
+CERT_BASE64=$(cat /path/to/cert.crt | base64 | tr -d '\n')
+```
+
+Update the certificate in the secret
+```bash
+oc patch secret cics-custom-cert-secret -n <namespace> \
+  --type='merge' \
+  -p='{"data":{"cert.crt":"'"${CERT_BASE64}"'"}}'
+```
 
 If you require more than one certificate, you can use a Terminal to concatenate multiple certificates into a single block of text data. To do so, run `cat cert1.crt cert2.crt > combined.crt`, replacing the first two `.crt` files with your own certificates. You will also need to ensure new lines are between the certificates `-----BEGIN CERTIFICATE-----` blocks. You are looking for something that looks like:
 ```
@@ -191,8 +203,7 @@ ENCODED DATA IN HERE
 -----END CERTIFICATE-----
 ```
 
-This can then be added to the correct value in `values.yaml` inside the `cics-agent` folder.
-
+You can then run the above commands by pointing to the combined certificate file (`combined.crt`).
 
 ### Install or upgrade the wxa4z-agent-suite
 
