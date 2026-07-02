@@ -1,0 +1,43 @@
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: db2z-agent # eg: upgrade-agent-test
+  namespace: ""
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+
+spec:
+  releaseName: db2z-agent
+  tenantId: ""
+  namespace: ""
+  wxa4z-core-services-namespace: wxa4z-zad # namespace in which the opensearch-client, authorization etc are deployed
+
+  agentDetails:
+    - agentName: db2z-agent
+      agentId: "wxa4z:db2z-agent:agent"
+      displayName: "IBM Db2 for z/OS Agent"
+      description: "The IBM Db2 for z/OS Agent provides a conversational experience for interacting with Db2 for z/OS subsystems, making it significantly easier to retrieve and interpret information across multiple Db2 for z/OS environments. By reducing the complexity traditionally associated with navigating system configurations, comparing subsystem data, and handling large volumes of technical information, the agent empowers both technical and non-technical users to gain meaningful insights—without requiring deep expertise in Db2 for z/OS command syntax."
+      bootstrapConfig:
+        name: "db2z-agent-bootstrap-config"
+        fileName: "db2_agent_bootstrap_config.yaml"
+
+  chart:
+    repository: "oci://icr.io/ibm-db2z-ai"
+    name: db2z-agent
+    version: "1.1.1"
+    pullSecrets: # if not mentioned in CR, by default will search in the secret - pull-secret
+      - name: db2-image-pull-secret # the name of the secret containing the credentials for the image repo of the agent so that the tar.gz can be pulled
+
+  values:
+    replicaCount: 1
+
+    global:
+      secrets:
+        name: wxa4z-watsonx-credentials # this should be provided in the CR so that the global variables can be referenced
+
+    secrets:
+      name: db2z-agent-secrets
+
+    env: 
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
+      MODEL_RUNTIME: "openai_protocol"

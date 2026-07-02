@@ -1,0 +1,43 @@
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: intellimagic-agent
+  namespace: ""
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+
+spec:
+  releaseName: intellimagic-agent-1-0-0
+  tenantId: ""
+  namespace: ""
+  wxa4z-core-services-namespace: wxa4z-zad # namespace in which the opensearch-client, authorization etc are deployed
+
+  agentDetails:
+    - agentName: intellimagic-agent
+      agentId: wxa4z:intellimagic-agent:agent
+      displayName: IBM IntelliMagic agent for Z
+      description: A system that recommends IntelliMagic Vision charts and reports. These charts and reports show information on IBM Z system, both from a performance and a configuration perspective. The information shown can include health insights, exceptions, performance metrics and configuration tables. The scope includes Db2, CICS, Storage Systems, Ficon Directors, IMS etc. The recommendations are based on a user-provided topic or problem description.
+      bootstrapConfig:
+        name: intellimagic-agent-bootstrap-config
+        fileName: intellimagic_agent_bootstrap_config.yaml
+
+  chart:
+    repository: oci://icr.io/ibm-intellimagic-agent
+    name: intellimagic-agent
+    version: 1.1.2
+    pullSecrets:
+      - name: intellimagic-cr-pull-secret # The name of the secret containing the credentials for pulling the charts
+
+  values:
+    replicaCount: 1
+
+    global:
+      secrets:
+        name: wxa4z-watsonx-credentials # The name of the secret that has credentials to access LLM
+
+    secrets:
+      name: intellimagic-agent-secrets # IntelliMagic agent specific secret (ex: Auth token)
+    env:
+      LLM_MODEL: "ibm/granite-4.1-8b"
+      MODEL_RUNTIME: "openai_protocol"
+

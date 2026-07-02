@@ -1,0 +1,37 @@
+apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
+kind: AgentService
+metadata:
+  name: omegamon-insights-agent
+  namespace: ""
+  labels:
+    wxa4z.watsonx.ibm.com/managed-by: agent-operator
+spec:
+  releaseName: omegamon-insights-agent
+  namespace: ""
+  tenantId: ""
+  wxa4z-core-services-namespace: wxa4z-zad
+  agentDetails:
+      - agentName: omegamon-insights-agent
+        agentId: wxa4z:omegamon-agent-z:agent
+        description: 'This is for omegamon-insights-agent services'
+        bootstrapConfig:
+          name: "omegamon-insights-agent-bootstrap-config"
+          fileName: "omegamon_insights_agent_bootstrap_config.yaml"  
+  chart:
+    repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
+    name: omegamon-insights-agent
+    version: "1.3.0"
+    #pullSecrets:
+     # - name: pull-secret
+
+  values:
+    replicaCount: 1
+    global:
+        secrets:
+            name: wxa4z-watsonx-credentials
+    secrets:
+      name: wxa4z-omegamon-insight-agent-secrets
+    env:
+      WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
+      MODEL_RUNTIME: "openai_protocol"
+      
