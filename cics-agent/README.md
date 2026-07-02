@@ -14,34 +14,51 @@ For information about CICS TS for z/OS, see https://www.ibm.com/docs/en/cics-ts/
 
 ## Agents capabilities
 
-| Agents capability       |            Description                  |
-|------------------------------|-----------------------------------|
-**CICS topology agent**
-Topology Support        | Answers questions about CICS TS by using various data sources, including information from subject matter experts (SMEs) and IBM product documentation. By providing understanding, recommendations, and best practices, it helps users to gain clarity and to make informed configuration and management decisions effectively.
-SME interview data |Insights from IBM CICS subject matter experts to enhance accuracy and clarify complex behavior. It embeds best practices into responses to ensure that recommendations are grounded in real-world experience.
-Z RAG Capabilities| Answers topology-related queries by using ingested IBM documentation from Z RAG, to provide clear, accurate, and structured insights into the CICS system setup and configuration.
-Ranks Documentation | To improve relevance, prioritizes and ranks documents based on how well they match the user's query.
-**CICS problem determination agent**
-Problem determination Support |  Helps to diagnose issues in the user's CICS system by using various data sources, including live system data and IBM product documentation. It explains error codes (for example, DFHAC messages), identifies likely causes, and recommends next steps that are tailored to the user’s environment.
-Z RAG Capabilities| Uses ingested IBM documentation from Z RAG to support problem determination.
-Interacts with live CICS systems  | 	Executes read-only commands to retrieve real-time system data that supports analysis.
-Tool Integration | Provides visibility into live CICS system behavior through MCP, including information about transaction and programs. This helps to maintain situational awareness and to support informed decision-making during investigations.
-Extracts DFHAC message | Parses and interprets DFHAC error messages to support troubleshooting.
-Adaptive response strategy | Dynamically responds using live system data when this data is available, or falls back to static documentation when it is not, depending on server availability.
-**CICS tool calling agent**
-Live System Queries | Executes targeted queries against live CICS systems to retrieve real-time resource information, including programs, transactions, files, dynamic storage areas, and system parameters.
-MCP Tool Integration | Leverages MCP (Model Context Protocol) tools to interact with CICS regions and CICSplexes, providing visibility into current system state and configuration.
-Resource Parsing | Intelligently parses user queries to identify specific CICS resources and their IDs, then selects appropriate tools to retrieve the requested information.
-Context-Aware Responses | Generates summaries of live data with explanations of field values and their implications, helping users understand the current state of their CICS environment.
-Multi-Resource Support | Handles queries about multiple resources simultaneously, processing each resource and consolidating results into a comprehensive response.
-**CICS followup agent**
-Follow-up Question Handling | Processes follow-up questions by analyzing conversation history to resolve ambiguous references and maintain context across multi-turn conversations.
-Relevance Checking | Validates that queries are CICS-related before processing, ensuring the agent stays focused on its domain expertise.
-Documentation Retrieval | Uses RAG (Retrieval-Augmented Generation) to search and rank relevant CICS documentation based on user queries and conversation context.
-Context Resolution | Resolves pronouns and implicit references (e.g., "it", "that value") by examining conversation history to identify specific CICS terms and concepts.
-Intent-Aware Search | Classifies query intent (informational, clarification, troubleshooting, comparison) to optimize documentation search strategies.
-**CICS routing agent**
-Question routing | Identifies the theme of the user's query and directs it to the most appropriate agent, ensuring the question is handled by the agent best suited to resolve it.
+### CICS topology agent
+
+| Agent capability | Description |
+|------------------|-------------|
+| Topology Support | Answers questions about CICS TS by using various data sources, including information from subject matter experts (SMEs) and IBM product documentation. By providing understanding, recommendations, and best practices, it helps users to gain clarity and to make informed configuration and management decisions effectively. |
+| SME interview data | Insights from IBM CICS subject matter experts to enhance accuracy and clarify complex behavior. It embeds best practices into responses to ensure that recommendations are grounded in real-world experience. |
+| Z RAG Capabilities | Answers topology-related queries by using ingested IBM documentation from Z RAG, to provide clear, accurate, and structured insights into the CICS system setup and configuration. |
+| Ranks Documentation | To improve relevance, prioritizes and ranks documents based on how well they match the user's query. |
+
+### CICS problem determination agent
+
+| Agent capability | Description |
+|------------------|-------------|
+| Problem determination Support | Helps to diagnose issues in the user's CICS system by using various data sources, including live system data and IBM product documentation. It explains error codes (for example, DFHAC messages), identifies likely causes, and recommends next steps that are tailored to the user's environment. |
+| Z RAG Capabilities | Uses ingested IBM documentation from Z RAG to support problem determination. |
+| Interacts with live CICS systems | Executes read-only commands to retrieve real-time system data that supports analysis. |
+| Tool Integration | Provides visibility into live CICS system behavior through MCP, including information about transaction and programs. This helps to maintain situational awareness and to support informed decision-making during investigations. |
+| Extracts DFHAC message | Parses and interprets DFHAC error messages to support troubleshooting. |
+| Adaptive response strategy | Dynamically responds using live system data when this data is available, or falls back to static documentation when it is not, depending on server availability. |
+
+### CICS tool calling agent
+
+| Agent capability | Description |
+|------------------|-------------|
+| Live System Queries | Executes targeted queries against live CICS systems to retrieve real-time resource information, including programs, transactions, files, dynamic storage areas, and system parameters. |
+| MCP Tool Integration | Leverages MCP (Model Context Protocol) tools to interact with CICS regions and CICSplexes, providing visibility into current system state and configuration. |
+| Resource Parsing | Intelligently parses user queries to identify specific CICS resources and their IDs, then selects appropriate tools to retrieve the requested information. |
+| Context-Aware Responses | Generates summaries of live data with explanations of field values and their implications, helping users understand the current state of their CICS environment. |
+| Multi-Resource Support | Handles queries about multiple resources simultaneously, processing each resource and consolidating results into a comprehensive response. |
+
+### CICS followup agent
+
+| Agent capability | Description |
+|------------------|-------------|
+| Follow-up Question Handling | Processes follow-up questions by analyzing conversation history to resolve ambiguous references and maintain context across multi-turn conversations. |
+| Relevance Checking | Validates that queries are CICS-related before processing, ensuring the agent stays focused on its domain expertise. |
+| Documentation Retrieval | Uses RAG (Retrieval-Augmented Generation) to search and rank relevant CICS documentation based on user queries and conversation context. |
+| Context Resolution | Resolves pronouns and implicit references (e.g., "it", "that value") by examining conversation history to identify specific CICS terms and concepts. |
+| Intent-Aware Search | Classifies query intent (informational, clarification, troubleshooting, comparison) to optimize documentation search strategies. |
+
+### CICS routing agent
+
+| Agent capability | Description |
+|------------------|-------------|
+| Question routing | Identifies the theme of the user's query and directs it to the most appropriate agent, ensuring the question is handled by the agent best suited to resolve it. |
 
 
 ## Prerequisites
