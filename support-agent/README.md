@@ -19,6 +19,126 @@ Ensure the following:
 - [watsonx Assistant for Z](https://www.ibm.com/docs/watsonx/waz/3.0.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z) is installed
 - Ansible Automation Platform instance and its credentials
 
+## Set up Ansible Automation Platform (AAP)
+
+> **Note**: Before setting up AAP it is advised that you have the playbooks in Git or another support source control type.
+
+### Inventory Configuration
+1. Create a new inventory
+2. Give it a name, organization, and a description if desired
+3. In the variables section enter the following:
+```
+environment_vars:
+  _BPXK_AUTOCVT: 'ON'
+  ZOAU_HOME: '{{ ZOAU }}'
+  PYTHONPATH: ''
+  PYTHONSTDINENCODING: cp1047
+  LIBPATH: '{{ ZOAU }}/lib:{{ PYZ }}/lib:/lib:/usr/lib:.'
+  PATH: '{{ ZOAU }}/bin:{{ PYZ }}/bin:/bin:/var/bin'
+  _CEE_RUNOPTS: FILETAG(AUTOCVT,AUTOTAG) POSIX(ON)
+  _TAG_REDIR_ERR: txt
+  _TAG_REDIR_IN: txt
+  _TAG_REDIR_OUT: txt
+  LANG: C
+```
+4. Save the newly created inventory
+
+### Host Confiuration
+A host is where you configure system specific information.
+1. Create a new host
+2. Give it a name, assign it to the newly created inventory, and add a description if desired
+3. In the variables section enter the following:
+```
+ansible_host: IP Address of the LPAR (xx.xx.xx.xx)
+ansible_user: user that will perform the actions on the LPAR
+ansible_python_interpreter: /path/to/your/pyz/bin/python
+PYZ: /path/to/your/pyz
+PYZ_VERSION: '3.xx'
+ZOAU: /path/to/your/zoau/folder
+ZOAU_PYTHON_LIBRARY_PATH: ''
+```
+
+### Creating Credentials
+Credentials allow AAP to reach the LPAR and GitHub. We will need to make two.
+
+#### Credential for GitHub
+1. Create a new credential
+2. Give it a name and description
+3. For Credential type choose **Source Control**
+4. Paste the contents of the SSH Private key into the proper field, along with any other relevant information
+    - Ensure the public key is entered in GitHub
+5. Save the newly created credential
+
+#### Credential for LPAR
+1. Create a new credential
+2. Give it a name and description
+3. For Credential type choose **Machine**
+4. Paste the contents of an SSH Private key that has its public pair added to the LPAR into the proper field, along with any other relevant information
+5. Save the newly created credential
+
+### Creating a project
+1. Create a new project
+2. Give it a name and description
+3. Choose an execution environment
+4. For Source Control, choose **Git** if your playbooks are stored there
+5. Enter the URL of your repository and branch if necessary
+6. Choose the newly created credential
+7. Save the newly created project
+
+### Creating job templates
+Job templates are used to run the playbooks
+1. Create a new job template
+2. Give it a name and description
+3. Choose the inventory that was created earlier
+4. Choose the project that was created earlier
+5. Select one of the playbooks from the list in the **Playbook** dropdown
+6. Save the newly create job template
+7. Repeat steps 1-6 for the other playbook
+
+### Testing the job templates
+The newly created job templates can use survey questions to get input information
+1. Click on a job template
+2. Go to the **Survey** tab
+3. Enter create new survey questions with the following based on which playbook job template you are editing:
+    - For the template to collect a dump:
+    ```
+    Question: Please enter the title of the dump
+    Answer variable name: dump_title
+    Answer Type: Text
+
+    Question: Please enter the jobname(s) to be include in the dump
+    Answer variable name: jobname
+    Answer Type: Text
+
+    Question: Please enter the SDATA parameters
+    Answer variable name: sdata
+    Answer Type: Text
+    Default answer: (ALLNUC,CSA,GRSQ,LPA,LSQA,PSA,RGN,SQA,SUM,SWA,TRT)
+
+    Question: Please enter the name of the dataset to copy the dump into
+    Answer variable name: copy_ds_name
+    Answer Type: Text
+    ```
+    - For the template to upload documentation:
+    ```
+    Question: Please enter your transfer ID
+    Answer variable name: transfer_id
+    Answer Type: Text
+
+    Question: Please enter your transfer password
+    Answer variable name: transfer_pw
+    Answer Type: Password
+
+    Question: Please enter the dataset to send
+    Answer variable name: ds_to_send
+    Answer Type: Text
+
+    Question: Please enter the case number to submit the dataset to
+    Answer variable name: case_num
+    Answer Type: Text
+    ```
+4. After entering the questions enable the survey on the Survey tab
+5. You can now run the templates and you will be prompted with the quesstions
 
 
 ## Deployment Guide
