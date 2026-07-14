@@ -169,9 +169,9 @@ LICENSE # License file
    ```
 
    **Note:** 
-   1. wxa4z-watsonx-credentials secret will auto created in the tenant namespace this secert only needs to create on comman service namespace.
+   1. wxa4z-watsonx-credentials secret will be auto-created in the tenant namespace.This secret only needs to be created in the common service namespace.
    2. All values in `stringData` are automatically base64-encoded by Kubernetes. Replace placeholder values with your actual configuration.
-   5. After the tenant is created, append "/v1/query" to the WRAPPER_URL endpoint in the "wxa4z-watsonx-credentials" secret within the tenant namespace.
+   3. After the tenant is created, append "/v1/query" to the WRAPPER_URL endpoint in the "wxa4z-watsonx-credentials" secret within the tenant namespace.
 
    Apply the secret:
    ```bash
