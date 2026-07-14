@@ -115,7 +115,7 @@ LICENSE # License file
 | `WATSONX_ML_URL`              | Base URL of the **Watson Machine Learning / CPD** instance.           | CPD  Instance url or WML Endpoint(Cloud Only)           |
 | `CPD_USERNAME`                | Username for **Cloud Pak for Data** authentication.                   | CPD Username           |
 | `CPD_INSTANCE_API_KEY`             | API key used to access CPD/Watsonx services.            |   [Create CPD_INSTANCE_API_KEY](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys)      |
-| `WATSONX_PROJECT_ID`          | watsonx.ai **Project** identifier used for assets and jobs. (Optional)          | [Watsonx.ai Projects](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project) if Watsonx deployment Project ID available then add, otherwise keep empty   |
+| `WATSONX_PROJECT_ID`          | watsonx.ai **Project** identifier used for assets and jobs. (Optional)          | [Watsonx.ai Projects](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project) if Watsonx Project ID available then add, otherwise keep empty   |
 | `ORCHESTRATE_ENV_URL`          | Watsonx Orchestrate Service Instance URL           | Log in to watsonx orchestrate. Navigate to `settings`, copy the service instance URL from `API Details` tab     |
 | `ORCHESTRATE_ENV_TYPE`          | Watsonx Orchestrate Instance Type           | ibm_iam(for cloud), mcsp(AWS saas), cpd (on-prem)     |
 | `EXTERNAL_WATSONX_API_KEY`          | Watsonx API Key(Optional)         | CPD API Key, required  only when External/Internal IFM is configured for WxO with model gateway |
