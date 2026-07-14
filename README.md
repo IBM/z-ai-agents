@@ -33,6 +33,7 @@ Orchestrates the deployment of multiple IBM z/OS‑focused agents. It’s design
 ├─ cr.yaml # Custom Resource Definition (CRD)
 ├─ LICENSE # License file
 README.md # Overall README file
+LICENSE # License file
 ```
 ---
 
@@ -186,7 +187,7 @@ README.md # Overall README file
 ---
 
 
-## 2. Per Agent Configuration
+## 2. Agent Configuration
 
 ### Connecting to LLM via AI Gateway
 
