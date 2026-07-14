@@ -105,6 +105,9 @@ LICENSE # License file
 
 ## Quick Start
 
+## ⚠️ Attention
+> **If agents were deployed with a version older than 3.3, please uninstall them first and then reinstall using the CR-based approach.**
+
 ### 1. Global settings
 
 ***Create Shared Variables(Create once, reuse everywhere)***
