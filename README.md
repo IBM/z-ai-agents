@@ -144,7 +144,7 @@ LICENSE # License file
    kind: Secret
    metadata:
      name: wxa4z-watsonx-credentials
-     namespace: <your-namespace>  # Replace with comman service namespace
+     namespace: <your-namespace>  # Replace with common service namespace
    type: Opaque
    stringData:
      ORCHESTRATE_ENV_TYPE: "cpd"  # Set to "cpd" for on-prem, "ibm_iam" for IBM Cloud
