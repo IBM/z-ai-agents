@@ -101,8 +101,6 @@ LICENSE # License file
 
 - For **Prebuilt IBM Z product agents**: Refer to agent specific [README](#prebuilt-ibm-z-product-agents)
 
-> **License Acceptance:** Each Prebuilt IBM Z product agent’s [values.yaml](/wxa4z-agent-suite/values.yaml) includes `acceptLicense: false` by default. Set `true` to proceed with installation, indicating acceptance of the associated license terms.
-
 ---
 
 ## Quick Start
@@ -117,7 +115,7 @@ LICENSE # License file
 | `WATSONX_ML_URL`              | Base URL of the **Watson Machine Learning / CPD** instance.           | CPD  Instance url or WML Endpoint(Cloud Only)           |
 | `CPD_USERNAME`                | Username for **Cloud Pak for Data** authentication.                   | CPD Username           |
 | `CPD_INSTANCE_API_KEY`             | API key used to access CPD/Watsonx services.            |   [Create CPD_INSTANCE_API_KEY](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys)      |
-| `WATSONX_PROJECT_ID`          | watsonx.ai **Project** identifier used for assets and jobs.           | [Watsonx.ai Projects](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project)    |
+| `WATSONX_PROJECT_ID`          | watsonx.ai **Project** identifier used for assets and jobs. (Optional)          | [Watsonx.ai Projects](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project) if Watsonx Project ID available then add, otherwise keep empty   |
 | `ORCHESTRATE_ENV_URL`          | Watsonx Orchestrate Service Instance URL           | Log in to watsonx orchestrate. Navigate to `settings`, copy the service instance URL from `API Details` tab     |
 | `ORCHESTRATE_ENV_TYPE`          | Watsonx Orchestrate Instance Type           | ibm_iam(for cloud), mcsp(AWS saas), cpd (on-prem)     |
 | `EXTERNAL_WATSONX_API_KEY`          | Watsonx API Key(Optional)         | CPD API Key, required  only when External/Internal IFM is configured for WxO with model gateway |
@@ -142,12 +140,11 @@ LICENSE # License file
 
 
    ```yaml
-   ```yaml
    apiVersion: v1
    kind: Secret
    metadata:
      name: wxa4z-watsonx-credentials
-     namespace: <your-namespace>  # Replace with your target namespace
+     namespace: <your-namespace>  # Replace with common service namespace
    type: Opaque
    stringData:
      ORCHESTRATE_ENV_TYPE: "cpd"  # Set to "cpd" for on-prem, "ibm_iam" for IBM Cloud
@@ -166,14 +163,15 @@ LICENSE # License file
      WRAPPER_USERNAME: ""  # Wrapper service username (optional) keep this empty, on tenant NS it will be auto-populated with username
      WRAPPER_URL: ""  # Wrapper service URL (optional) keep this empty, on tenant NS it will be auto-populated with URL, make sure to add "/v1/query" at the end of the URL once data is populated
      WRAPPER_PASSWORD: ""  # Wrapper service password (optional) keep this empty
-     TENANT_ID: ""  # Tenant identifier (optional)
-     INGESTION_URL: ""  # Document ingestion service URL (optional)
-     INGESTION_PASSWORD: ""  # Document ingestion password (optional)
+     TENANT_ID: ""  # Tenant identifier (optional) Tenant ID will be auto-populated on tenant namespace. Keep this value empty
+     INGESTION_URL: ""  # Document ingestion service URL (optional) CI URL will be auto-populated on tenant namespace. Keep this value empty
+     INGESTION_PASSWORD: ""  # Document ingestion password (optional) CI Password will be auto-populated on tenant namespace. Keep this value empty
    ```
 
    **Note:** 
-   1. All values in `stringData` are automatically base64-encoded by Kubernetes. Replace placeholder values with your actual configuration.
-   2. After the tenant is created, append "/v1/query" to the WRAPPER_URL endpoint in the "wxa4z-watsonx-credentials" secret within the tenant namespace.
+   1. wxa4z-watsonx-credentials secret will be auto-created in the tenant namespace.This secret only needs to be created in the common service namespace.
+   2. All values in `stringData` are automatically base64-encoded by Kubernetes. Replace placeholder values with your actual configuration.
+   3. After the tenant is created, append "/v1/query" to the WRAPPER_URL endpoint in the "wxa4z-watsonx-credentials" secret within the tenant namespace.
 
    Apply the secret:
    ```bash
