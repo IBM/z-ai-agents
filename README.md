@@ -28,12 +28,12 @@ Orchestrates the deployment of multiple IBM z/OS‑focused agents. It’s design
 
 ## Repo Layout
 ```
-<agent-folder>/ # 
+<agent-folder>/ #
 ├─ README.md # Readme to guide users on how to use the agent
 ├─ cr.yaml # Custom Resource Definition (CRD)
-├─ License
-License file
-READEME overall README file
+├─ LICENSE # License file
+README.md # Overall README file
+LICENSE # License file
 ```
 ---
 
@@ -52,7 +52,7 @@ READEME overall README file
 
 ### Prebuilt IBM Z product agents
 
-| Name                           | Chart name                     | Category         |  Reference.      |
+| Name                           | Chart name                     | Category         |  Reference       |
 | ------------------------------ | ------------------------------ | -----------------| -----------------|
 | IBM CICS Transaction Server agents for Z                     | `cics-agent`                   | Product  |[README](./cics-agent/README.md)|
 | IBM Db2 for z/OS Agent             | `db2z-agent`                   | Product  |[README](./db2z-agent/README.md)|
@@ -82,12 +82,12 @@ READEME overall README file
     - Check: `oc whoami && oc version`
 - **Network access:**
   - Online mode: pull images from registries (e.g., `icr.io`) or
-  - Air‑gapped mode: mirror images into a private registry and configure `global.registry.*`
+  - Air-gapped mode: mirror images into a private registry and configure `global.registry.*`
 - **Architectures:** `amd64` and `s390x`
 
 ## Preflight Checklist
 
-- **Prerequisite product installed**: IBM watsonx Assistant for Z (foundation). Install steps: IBM Docs → [Install watsonx Assistant for Z”](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z).
+- **Prerequisite product installed**: IBM watsonx Assistant for Z (foundation). Install steps: IBM Docs → [Install watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=install-premises-watsonx-orchestrate-watsonx-assistant-z).
 
 - **Entitlement(s) available for all agents being installed**:
 
@@ -97,7 +97,7 @@ READEME overall README file
 
 ### Where do I get the entitlement key?
 
-- For **IBM watsonx Assistant for Z**: During the installation process of watsonx Assistant for Z, you would have acquired the entitlement key. However, if you need to retrieve it again, follow the steps in [Get wxa4z entitlement key](https://www.ibm.com/docs/en/watsonx/waz/3.2.0?topic=z-update-global-pull-secret)
+- For **IBM watsonx Assistant for Z**: During the installation process of watsonx Assistant for Z, you would have acquired the entitlement key. However, if you need to retrieve it again, follow the steps in [Get wxa4z entitlement key](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-update-global-pull-secret)
 
 - For **Prebuilt IBM Z product agents**: Refer to agent specific [README](#prebuilt-ibm-z-product-agents)
 
@@ -113,24 +113,24 @@ READEME overall README file
 
 | Key                           | What it is                                                            | Reference                    |
 | ----------------------------- | --------------------------------------------------------------------- | ---------------------------- |
-| `WATSONX_DEPLOYMENT_SPACE_ID` | ID of the watsonx.ai **Deployment Space** used for model deployments. | [Watsonx.ai Deployment Spaces](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=spaces-creating-deployment)|
+| `WATSONX_DEPLOYMENT_SPACE_ID` | ID of the watsonx.ai **Deployment Space** used for model deployments. (Optional) | [Watsonx.ai Deployment Spaces](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=spaces-creating-deployment) if Watsonx deployment space ID available then add, otherwise keep empty|
 | `WATSONX_ML_URL`              | Base URL of the **Watson Machine Learning / CPD** instance.           | CPD  Instance url or WML Endpoint(Cloud Only)           |
 | `CPD_USERNAME`                | Username for **Cloud Pak for Data** authentication.                   | CPD Username           |
 | `CPD_INSTANCE_API_KEY`             | API key used to access CPD/Watsonx services.            |   [Create CPD_INSTANCE_API_KEY](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=tutorials-generating-api-keys)      |
 | `WATSONX_PROJECT_ID`          | watsonx.ai **Project** identifier used for assets and jobs.           | [Watsonx.ai Projects](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.2.x?topic=projects-creating-project#create-a-project)    |
-| `ORCHESTRATE_ENV_URL`          | Watsonx Orchestrate Service Instance URL           | Log In to watsonx orchestrate. Navigate to `settings`, copy the service instance url from `API Details` tab     |
+| `ORCHESTRATE_ENV_URL`          | Watsonx Orchestrate Service Instance URL           | Log in to watsonx orchestrate. Navigate to `settings`, copy the service instance URL from `API Details` tab     |
 | `ORCHESTRATE_ENV_TYPE`          | Watsonx Orchestrate Instance Type           | ibm_iam(for cloud), mcsp(AWS saas), cpd (on-prem)     |
 | `EXTERNAL_WATSONX_API_KEY`          | Watsonx API Key(Optional)         | CPD API Key, required  only when External/Internal IFM is configured for WxO with model gateway |
 | `MODEL_RUNTIME`          | Model runtime environment type (Required)         | Use "on-prem" for watsonx.ai on CPD, "cloud" for watsonx.ai on SaaS, or "openai_protocol" for OpenAI-compatible inference runtimes |
 | `LLM_BASE_URL`          | Inferencing stack URL (Optional)         | Required only when `MODEL_RUNTIME` is set to "openai_protocol" |
 | `LLM_API_KEY`          | Inferencing stack API key (Optional)         | Required only when `MODEL_RUNTIME` is set to "openai_protocol" |
 | `LANGFUSE_SECRET_KEY`  | Langfuse secret key for observability (Optional) | Used for LLM observability and tracing |
-| `WRAPPER_USERNAME`     | Username for wrapper service authentication (Optional) | Required for agents using wrapper services |
-| `WRAPPER_URL`          | Wrapper service endpoint URL (Optional) | Required for agents using wrapper services |
-| `WRAPPER_PASSWORD`     | Password for wrapper service authentication (Optional) | Required for agents using wrapper services |
-| `TENANT_ID`            | Tenant identifier for multi-tenancy support | Unique identifier for the tenant |
-| `INGESTION_URL`        | Document ingestion service URL (Optional) | Required for agents with document ingestion capabilities |
-| `INGESTION_PASSWORD`   | Password for document ingestion service (Optional) | Required for agents with document ingestion capabilities |
+| `WRAPPER_USERNAME`     | Username for wrapper service authentication (Optional) | Required for agents using wrapper services. Wrapper Username will be auto-populated on tenant namespace. Keep this value empty |
+| `WRAPPER_URL`          | Wrapper service endpoint URL (Optional) | Required for agents using wrapper services. Wrapper URL will be auto-populated on tenant namespace. Keep this value empty. Once values are updated on Tenant NS, please append "/v1/query" to the WRAPPER_URL endpoint |
+| `WRAPPER_PASSWORD`     | Password for wrapper service authentication (Optional) | Required for agents using wrapper services. Wrapper Password will be auto-populated on tenant namespace. Keep this value empty |
+| `TENANT_ID`            | Tenant identifier for multi-tenancy support | Unique identifier for the tenant. Tenant ID will be auto-populated on tenant namespace. Keep this value empty   |
+| `INGESTION_URL`        | Document ingestion service URL (Optional) | Required for agents with document ingestion capabilities. CI URL will be auto-populated on tenant namespace. Keep this value empty |
+| `INGESTION_PASSWORD`   | Password for document ingestion service (Optional) | Required for agents with document ingestion capabilities. CI Password will be auto-populated on tenant namespace. Keep this value empty  |
 | `LANGFUSE_HOST`        | Langfuse host URL for observability (Optional) | Host URL for Langfuse observability platform |
 
 ---
@@ -151,22 +151,21 @@ READEME overall README file
    type: Opaque
    stringData:
      ORCHESTRATE_ENV_TYPE: "cpd"  # Set to "cpd" for on-prem, "ibm_iam" for IBM Cloud
-     WATSONX_API_KEY: ""  # CPD API key (on-prem) or IBM Cloud IAM API key
      ORCHESTRATE_ENV_URL: ""  # Watsonx Orchestrate service instance URL
      CPD_USERNAME: ""  # CPD Username (required for on-prem deployments)
-     CPD_INSTANCE_API_KEY: ""  # CPD Instance API Key (required for on-prem deployments)
-     WATSONX_DEPLOYMENT_SPACE_ID: ""  # Watsonx deployment space ID
-     WATSONX_ML_URL: ""  # CPD Instance FQDN (for on-prem) or WML endpoint (for cloud)
+     CPD_INSTANCE_API_KEY: ""  # CPD Instance API Key (required for register agent to orchestrate)
+     WATSONX_DEPLOYMENT_SPACE_ID: ""  # Watsonx deployment space ID (Optional) if Watsonx deployment space ID available then add, otherwise keep empty
+     WATSONX_ML_URL: ""  # CPD Instance FQDN (for on-prem) or WML endpoint (for cloud) (when MODEL_RUNTIME is "cloud/on-prem")
      EXTERNAL_WATSONX_API_KEY: ""  # CPD API Key to connect to instance where llm is hosted
-     WATSONX_PROJECT_ID: ""  # Watsonx project ID
+     WATSONX_PROJECT_ID: ""  # Watsonx project ID (Optional) if Watsonx project ID available then add, otherwise keep empty
      MODEL_RUNTIME: ""  # Required: "on-prem", "cloud", or "openai_protocol"
      LLM_BASE_URL: ""  # Inferencing stack URL (when MODEL_RUNTIME is "openai_protocol")
      LLM_API_KEY: ""  # Inferencing stack API key (when MODEL_RUNTIME is "openai_protocol")
      LANGFUSE_SECRET_KEY: ""  # Langfuse secret key (optional)
      LANGFUSE_HOST: ""  # Langfuse host URL (optional)
-     WRAPPER_USERNAME: ""  # Wrapper service username (optional)
-     WRAPPER_URL: ""  # Wrapper service URL (optional)
-     WRAPPER_PASSWORD: ""  # Wrapper service password (optional)
+     WRAPPER_USERNAME: ""  # Wrapper service username (optional) keep this empty, on tenant NS it will be auto-populated with username
+     WRAPPER_URL: ""  # Wrapper service URL (optional) keep this empty, on tenant NS it will be auto-populated with URL, make sure to add "/v1/query" at the end of the URL once data is populated
+     WRAPPER_PASSWORD: ""  # Wrapper service password (optional) keep this empty
      TENANT_ID: ""  # Tenant identifier (optional)
      INGESTION_URL: ""  # Document ingestion service URL (optional)
      INGESTION_PASSWORD: ""  # Document ingestion password (optional)
@@ -188,9 +187,11 @@ READEME overall README file
 ---
 
 
-## 2. Connecting to LLM via AI Gateway 
+## 2. Agent Configuration
 
-> **Note** Use this configuration only if your agents must connect to an **instance with LLMs hosted** through an AI Gateway.
+### Connecting to LLM via AI Gateway
+
+> **Note:** Use this configuration only if your agents must connect to an **instance with LLMs hosted** through an AI Gateway.
 
 ---
 
@@ -200,35 +201,14 @@ READEME overall README file
 
 ---
 
-##### 2. Configure External_WATSONX_API_KEY or LLM_API_KEY in the wxa4z-watsonx-credentials secret
-- Update your EXTERNAL_WATSONX_API_KEY with the **CPD API key** or **IBM Cloud API key** if MODEL_RUNTIME is set to **cloud** or **on-prem** and LLM_API_KEY with the **CPD API key** or **IBM Cloud API key** if MODEL_RUNTIME is set to  **openai_protocol**
+##### 2. Configure EXTERNAL_WATSONX_API_KEY or LLM_API_KEY in the wxa4z-watsonx-credentials secret
+- Update your EXTERNAL_WATSONX_API_KEY with the **CPD API key** or **IBM Cloud API key** if MODEL_RUNTIME is set to **cloud** or **on-prem**, and LLM_API_KEY with the **CPD API key** or **IBM Cloud API key** if MODEL_RUNTIME is set to **openai_protocol**
 
-- Set the `WATSONX_ML_URL` to point to the **CPD instance with llm running**.
+- Set the `WATSONX_ML_URL` to point to the **CPD instance with LLM running**.
 
-```yaml
+#### 3. Deploy Agents using AgentService Custom Resource
 
-   apiVersion: v1
-   kind: Secret
-   metadata:
-     name: wxa4z-watsonx-credentials
-     namespace: <your-namespace>  # Replace with your target namespace
-   type: Opaque
-   stringData:
-      WATSONX_ML_URL: "https://<cpd-instance-with-llm>"
-      EXTERNAL_WATSONX_API_KEY: "<cpd-instance-with-llm-api-key>"
-      MODEL_RUNTIME: ""  # Required: "on-prem", "cloud", or "openai_protocol"
-      LLM_BASE_URL: ""  # Inferencing stack URL (when MODEL_RUNTIME is "openai_protocol")
-      LLM_API_KEY: ""  # Inferencing stack API key (when MODEL_RUNTIME is "openai_protocol")
-      ...
-
-
-
----
-```
-
-### 3. Deploy Agents using AgentService Custom Resource
-
-For detailed deployment instructions using the `AgentService` custom resource, refer to the [Deployment Guide](DEPLOYMENT_GUIDE.md).
+For detailed deployment instructions using the `AgentService` custom resource, refer to the [Deployment Guide](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-deploy-agents).
 
 #### Quick Start
 
@@ -261,7 +241,7 @@ For detailed deployment instructions using the `AgentService` custom resource, r
    oc logs -n <tenant-namespace> -l app=<agent-name> --tail=100
    ```
 
-#### Subscribe and Deploy Agent on Watsonx Orchestrate
+#### Subscribe and Deploy Agent on watsonx Orchestrate
 
 After successfully deploying the agent, you need to subscribe to it and deploy it in watsonx Orchestrate to make it available for use.
 
@@ -270,7 +250,7 @@ After successfully deploying the agent, you need to subscribe to it and deploy i
 1. Open the Cloud Pak for Data (CPD) home page.
    - Example: `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
 
-2. Click on the **Launch WXA4Z console** tab.
+2. Click on the **Launch WXA4Z Console** tab.
    - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
    - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
 
