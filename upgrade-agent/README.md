@@ -65,7 +65,7 @@ Create a secret with the following structure. **All values must be base64-encode
 apiVersion: v1
 kind: Secret
 metadata:
-  name: wxa4z-upgrade-agent-secrets
+  name: upgrade-agent-secrets
   namespace: ""  # REQUIRED: Must match the agent namespace
 type: Opaque
 data:
@@ -76,6 +76,7 @@ data:
   ZOSMF_ENDPOINT: ""  # REQUIRED: z/OSMF endpoint URL
   ZOSMF_USERNAME: ""  # REQUIRED: z/OSMF username (requires TSO logon permission)
   ZOSMF_PASSWORD: ""  # REQUIRED: z/OSMF password
+  INIT_KEY: "" # REQUIRED: Authrization upgrade agent key
 ```
 
 > **Important:**
