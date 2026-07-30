@@ -76,7 +76,7 @@ data:
   ZOSMF_ENDPOINT: ""  # REQUIRED: z/OSMF endpoint URL
   ZOSMF_USERNAME: ""  # REQUIRED: z/OSMF username (requires TSO logon permission)
   ZOSMF_PASSWORD: ""  # REQUIRED: z/OSMF password
-  INIT_KEY: ""
+  INIT_KEY: "" # REQUIRED: Authrization upgrade agent key
 ```
 
 > **Important:**
