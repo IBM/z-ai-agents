@@ -7,8 +7,6 @@ The CICS agent provides the following agents:
 - CICS topology agent.
 - CICS problem determination agent.
 - CICS tool calling agent.
-- CICS followup agent.
-- CICS routing agent(installed as part of the watsonx Assistant for Z set up).
 
 For information about CICS TS for z/OS, see https://www.ibm.com/docs/en/cics-ts/6.x
 
@@ -27,11 +25,11 @@ For information about CICS TS for z/OS, see https://www.ibm.com/docs/en/cics-ts/
 
 | Agent capability | Description |
 |------------------|-------------|
-| Problem determination Support | Helps to diagnose issues in the user's CICS system by using various data sources, including live system data and IBM product documentation. It explains error codes (for example, DFHAC messages), identifies likely causes, and recommends next steps that are tailored to the user's environment. |
+| Problem determination Support | Helps to diagnose issues in the user's CICS system by using various data sources, including live system data and IBM product documentation. It explains error codes (for example, DFH messages), identifies likely causes, and recommends next steps that are tailored to the user's environment. |
 | Z RAG Capabilities | Uses ingested IBM documentation from Z RAG to support problem determination. |
 | Interacts with live CICS systems | Executes read-only commands to retrieve real-time system data that supports analysis. |
 | Tool Integration | Provides visibility into live CICS system behavior through MCP, including information about transaction and programs. This helps to maintain situational awareness and to support informed decision-making during investigations. |
-| Extracts DFHAC message | Parses and interprets DFHAC error messages to support troubleshooting. |
+| Extracts DFH messages | Parses and interprets DFH error messages to support troubleshooting. |
 | Adaptive response strategy | Dynamically responds using live system data when this data is available, or falls back to static documentation when it is not, depending on server availability. |
 
 ### CICS tool calling agent
@@ -44,31 +42,12 @@ For information about CICS TS for z/OS, see https://www.ibm.com/docs/en/cics-ts/
 | Context-Aware Responses | Generates summaries of live data with explanations of field values and their implications, helping users understand the current state of their CICS environment. |
 | Multi-Resource Support | Handles queries about multiple resources simultaneously, processing each resource and consolidating results into a comprehensive response. |
 
-### CICS followup agent
-
-| Agent capability | Description |
-|------------------|-------------|
-| Follow-up Question Handling | Processes follow-up questions by analyzing conversation history to resolve ambiguous references and maintain context across multi-turn conversations. |
-| Relevance Checking | Validates that queries are CICS-related before processing, ensuring the agent stays focused on its domain expertise. |
-| Documentation Retrieval | Uses RAG (Retrieval-Augmented Generation) to search and rank relevant CICS documentation based on user queries and conversation context. |
-| Context Resolution | Resolves pronouns and implicit references (e.g., "it", "that value") by examining conversation history to identify specific CICS terms and concepts. |
-| Intent-Aware Search | Classifies query intent (informational, clarification, troubleshooting, comparison) to optimize documentation search strategies. |
-
-### CICS routing agent
-
-| Agent capability | Description |
-|------------------|-------------|
-| Question routing | Identifies the theme of the user's query and directs it to the most appropriate agent, ensuring the question is handled by the agent best suited to resolve it. |
-
-
 ## Prerequisites
 Ensure the following:
 - [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z) is installed
 - The minimum version of z/OSMF is 3.1
-- The agents require a watsonx Project ID.
-  - This should be used as WATSONX_PROJECT_ID as an environment variable.
 
-Additionally, the CICS problem determination agent requires:
+Additionally, the CICS agent requires:
 - CICS Transaction Server for z/OS version 6.3 or later, with APAR PH68212 applied.
 - MCP server running in CICS. See [Configuring CICS MCP server](https://www.ibm.com/docs/en/cics-ts/6.x?topic=configuring-cics-mcp-server)
   - **Important**: The MCP_SERVER_URL must include the full endpoint path with toolbox suffix. Format: `http://<hostname>:<port>/mcp/<toolbox>/shttp`
@@ -158,45 +137,122 @@ oc get secret cics-image-pull-secret -n <namespace>
 
 The CICS agent is deployed as a single unified container that provides all agent capabilities (topology, problem determination, tool calling, and followup questions). This section describes how to configure the agent.
 
-### Create Shared Variables
+### Secret Configuration
 
-Some variables are common across all agents. To configure these shared variables, refer to [Create shared variables](https://github.com/IBM/z-ai-agents/blob/main/README.md#1-global-settings).
-However, if any of these shared variables are also defined in your agent-specific [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file, the values that you specify in the values.yaml file will override the shared ones.
+The agent requires Kubernetes Secrets containing sensitive configuration values. **Never commit secrets to version control.**
 
-### Configure the values.yaml file
+#### Secret Types
 
-To enable the CICS agent, you need to configure agent-specific values in the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file.
+The agent uses two types of secrets:
 
-In the values.yaml file, scroll down to the CICS Agent section and update the keys as outlined in the following table.
+1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents. For the full list of variables and how to configure them, refer to [Create shared variables](https://github.com/IBM/z-ai-agents/blob/main/README.md#1-global-settings).
+2. **Agent-Specific Secrets** (`wxa4z-cics-agent-secrets`): Unique to this agent
 
-| Key       |            Description                  |
-|------------------------------|-----------------------------------|
-**Environment variables**
-WATSONX_MODEL_ID | Default model to use in LLM calls.
-MODEL_CATALOG_PATH | File path to the YAML configuration file.
-MCP_SERVER_URL | Full URL endpoint for the MCP Server within CICS, including toolbox suffix (e.g., `http://hostname:port/mcp/allTools/shttp`). See Prerequisites section for details on endpoint format.
-APPLID| The VTAM Generic APPLID for the target CICS system that hosts the MCP Server
-MODEL_RUNTIME | Runtime environment for the model (e.g., "openai_protocol").
-ORCHESTRATE_STYLE | Orchestration style for the agent (e.g., "react").
-**Secrets**
-WATSONX_API_KEY| Your watsonx API key.
-WRAPPER_USERNAME| The username for the Z RAG instance in your cluster.
-WRAPPER_PASSWORD| The password for the Z RAG instance in your cluster.
-WRAPPER_URL| The URL for the Z RAG instance in your cluster.
-INGESTION_URL| Endpoint URL for the data ingestion.
-INGESTION_PASSWORD| Password that is used to authenticate with the ingestion service.
-AGENT_ID| Unique identifier for the Agent instance, used to distinguish it within the watsonx Orchestrate.
-AGENT_AUTH_SERVICE_KEY | Authorization key used to authenticate with the wxa4z authorization service (not the CPD API key).
-WATSONX_PROJECT_URL| Your watsonx URL.
-WATSONX_PROJECT_ID| Identifier for your watsonx Project ID.
-SERVICE_ENDPOINT | Service endpoint URL for agent registration.
-> DO NOT CHANGE VALUES IN `secrets` SECTION of  `values.yaml`
+#### Agent-Specific Secret Reference
+
+The following table describes the fields required in the agent-specific secret:
+
+| Key | Description |
+|-----|-------------|
+| `MCP_SERVER_URL` | Full URL endpoint for the MCP Server within CICS, including toolbox suffix (e.g., `http://hostname:port/mcp/allTools/shttp`). See Prerequisites section for details on endpoint format. |
+| `APPLID` | The VTAM Generic APPLID for the target CICS system that hosts the MCP Server. |
+| `AGENT_ID` | Unique identifier for this agent instance (e.g., `wxa4z:cics-agent:agent`), used to distinguish it within watsonx Orchestrate. |
+| `SERVICE_ENDPOINT` | The agent's backend/service URL — where registration or service calls for this agent are sent. |
+| `AUTH_SERVICE_BASE_URL` | The authentication server base URL — where the wxa4z auth service is reached to validate agent tokens. To obtain this value, copy `AUTH_SERVICE_BASE_URL` from the `wxa4z-authorization-secrets` resource in your cluster. |
+| `AGENT_AUTH_TOKEN` | Token used by the agent-controller to register this agent with watsonx Orchestrate. Use a CPD API key of your watsonx project for on-prem clusters, or a watsonx API key for cloud. See [Generating API keys](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.4.x?topic=tutorials-generating-api-keys). |
+| `WATSONX_PROJECT_URL` | URL of your watsonx.ai project endpoint. For SaaS: regional endpoint (e.g., `https://us-south.ml.cloud.ibm.com`). For on-prem CPD: your CPD instance FQDN. Found in your watsonx.ai project settings under API details. |
+| `LANGFUSE_SECRET_KEY` | (Optional) Langfuse secret key (e.g., `sk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`). Required only for Langfuse observability and traceability. |
+| `LANGFUSE_PUBLIC_KEY` | (Optional) Langfuse public key (e.g., `pk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`). Required only for Langfuse observability and traceability. |
+
+Create agent-specific secret with the following structure. **All values must be base64-encoded.**
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: wxa4z-cics-agent-secrets
+  namespace: ""  # REQUIRED: Must match the agent namespace
+type: Opaque
+data:
+  # MCP Configuration (REQUIRED for problem determination and tool calling capabilities)
+  MCP_SERVER_URL: ""  # REQUIRED: Full MCP Server URL with toolbox suffix
+                       # (e.g., http://hostname:port/mcp/allTools/shttp)
+  APPLID: ""  # REQUIRED: VTAM Generic APPLID for the target CICS system
+
+  # Agent Registration (REQUIRED)
+  # The following values are unique to this agent and must be set here.
+  AGENT_ID: ""  # REQUIRED: Unique identifier for this agent instance (e.g., "wxa4z:cics-agent:agent"),
+                # used to distinguish it within watsonx Orchestrate.
+  SERVICE_ENDPOINT: ""  # REQUIRED: The agent's backend/service URL — where registration or
+                         # service calls for this agent are sent.
+  AUTH_SERVICE_BASE_URL: ""  # REQUIRED: The authentication server base URL — where the wxa4z
+                              # auth service is reached to validate agent tokens.
+                              # To obtain this value, copy AUTH_SERVICE_BASE_URL from the
+                              # wxa4z-authorization-secrets resource in your cluster.
+  AGENT_AUTH_TOKEN: ""  # REQUIRED: Token used by the agent-controller to register this agent
+                         # with watsonx Orchestrate. Use a CPD API key of your watsonx project
+                         # for on-prem clusters, or a watsonx API key for cloud.
+                         # See: https://www.ibm.com/docs/en/cloud-paks/cp-data/5.4.x?topic=tutorials-generating-api-keys
+
+  # Watsonx Configuration (REQUIRED)
+  # Note: WATSONX_PROJECT_ID is read from the global wxa4z-watsonx-credentials secret, not here.
+  WATSONX_PROJECT_URL: ""  # REQUIRED: URL of your watsonx.ai project endpoint.
+                            # For SaaS: regional endpoint (e.g., https://us-south.ml.cloud.ibm.com).
+                            # For on-prem CPD: your CPD instance FQDN.
+                            # Found in your watsonx.ai project settings under API details.
+
+  # Langfuse Observability (OPTIONAL — required only for traceability)
+  LANGFUSE_SECRET_KEY: ""  # OPTIONAL: Langfuse secret key (e.g., sk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+                            # Required only for Langfuse observability and traceability.
+  LANGFUSE_PUBLIC_KEY: ""  # OPTIONAL: Langfuse public key (e.g., pk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
+                            # Required only for Langfuse observability and traceability.
+
+  # The following keys are NOT set here — they are read from other secrets automatically:
+  #
+  # From global wxa4z-watsonx-credentials secret:
+  #   WRAPPER_USERNAME, WRAPPER_PASSWORD, WRAPPER_URL  (Z RAG credentials)
+  #   INGESTION_URL, INGESTION_PASSWORD                (ingestion service credentials)
+  #   WATSONX_PROJECT_ID                               (watsonx project identifier)
+  #
+  # From wxa4z-authorization-secrets secret:
+  #   AGENT_AUTH_SERVICE_KEY  (read as CICS_AGENT_TOKEN)
+```
+
+#### Creating the Secret
+
+Apply the secret:
+
+```bash
+oc apply -f secret.yaml
+```
 
 ### Self signed certificates
 
-If you are connecting to services that use self-signed certificates (such as Z RAG or MCP server), the agent will not communicate with those services without first providing it with the certificates to validate all requests.
+This section applies only if any of the services the agent connects to — such as your Z RAG server, WxA Endpoint, or CMCI — have been configured to use self-signed certificates. When CMCI (or another service) is configured to use SSL with a self-signed certificate, the agent needs a copy of that service's public certificate to validate the trust chain during the SSL handshake. This is not a user or agent identity certificate — it is used solely to verify the server's certificate when establishing a secure connection.
 
-You will need your endpoints certificates content. To update the certificate secret, use the following commands:
+Without providing these certificates, the agent will not be able to communicate with the affected services.
+
+For background on how CMCI uses SSL and how clients authenticate, refer to:
+- [Configuring CICS to use SSL](https://www.ibm.com/docs/en/cics-ts/6.x?topic=layers-configuring-cics-use-ssl)
+- [CMCI security features: How CMCI authenticates clients](https://www.ibm.com/docs/en/cics-ts/6.x?topic=cmci-security-features-how-authenticates-clients)
+
+To obtain the public certificate, export it from the SSL configuration of the service.
+
+For OpenShift-hosted services, you can retrieve it from the serving secret in the service's namespace:
+
+```bash
+oc get secret <service-tls-secret> -n <namespace> -o jsonpath='{.data.tls\.crt}' | base64 --decode > service.crt
+```
+
+For the CICS MCP Server, you can retrieve this with:
+
+```bash
+echo quit | openssl s_client -showcerts -servername "$HOST" -connect "$HOST:$PORT" > "certs/$CA.pem"
+```
+
+Where `$HOST` and `$PORT` refer to the values that form your `MCP_SERVER_URL`.
+
+Once you have the certificate file, update the certificate secret using the following commands:
 
 Encode the certificate to base64 and remove newlines
 ```bash
@@ -222,20 +278,8 @@ ENCODED DATA IN HERE
 
 You can then run the above commands by pointing to the combined certificate file (`combined.crt`).
 
-### Install or upgrade the wxa4z-agent-suite
-
-> <div class="note note"><span class="notetitle">Note:</span> If you're installing multiple agents, you can configure the <a href="https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml">values.yaml</a> file for all the agents you wish to install. After the file is updated, run the command below to install them all at once.</div>
-
-Use the following command to install or upgrade the wxa4z_agent_suite:
-
-```yaml
-helm upgrade --install wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path_to>/values.yaml --wait
-```
-
 > Ensure there are no extra lines or white space between certificates and avoid adding white space after the last certificate.
+
 ### Custom Resource (CR) Configuration
 
 The CICS Agent can be deployed using a Custom Resource (CR) definition. The CR provides a declarative way to manage the agent deployment through the agent operator.
@@ -261,62 +305,12 @@ The Custom Resource consists of the following main sections:
 
 #### CR Reference
 
-Below is the complete Custom Resource definition for the unified CICS Agent. Update the placeholder values according to your environment:
-
-```yaml
-apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
-kind: AgentService
-metadata:
-  name: cics-agent
-  namespace: ""  # REQUIRED: Target namespace (e.g., wxa4z-agents)
-  labels:
-    wxa4z.watsonx.ibm.com/managed-by: agent-operator
-
-spec:
-  releaseName: cics-agent
-  namespace: ""  # REQUIRED: Must match metadata.namespace
-  tenantId: ""  # REQUIRED: Tenant identifier for multi-tenancy support
-  wxa4z-core-services-namespace: wxa4z-zad  # Namespace where wxa4z core services are deployed
-
-  agentDetails:
-    - agentName: cics-agent
-      agentId: wxa4z:cics-agent:agent
-      displayName: IBM CICS Transaction Server agents for Z
-      description: 'The CICS (Customer Information Control System) Transaction Server agent can take queries about CICS concepts, such as topologies and also provide problem determination assistance for transaction error codes.'
-      bootstrapConfig:
-        name: "cics-agent-bootstrap-config"
-        fileName: cics_agent_bootstrap_config.yaml
-
-  chart:
-    repository: oci://icr.io/wxa4z-dev-container-registry
-    name: cics-agent
-    version: 1.3.0
-    # pullSecrets:
-    #   - name: pull-secret
-
-  values:
-    replicaCount: 1
-
-    global:
-      secrets:
-        name: wxa4z-watsonx-credentials  # Global secrets shared across agents
-
-    secrets:
-      name: wxa4z-cics-agent-secrets  # Agent-specific secrets
-
-    env:
-      # LLM Configuration
-      WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct"
-      MODEL_RUNTIME: "cloud"
-      
-      # Add other environment variables as needed for your deployment
-```
+The complete Custom Resource definition is provided in [`cr.yaml`](./cr.yaml) in this directory. Update the placeholder values according to your environment before applying.
 
 #### Applying the CR
 
-1. Save the CR configuration to a file (e.g., `cics-agent-cr.yaml`) or use the provided `cr.yaml` file
-2. Update all placeholder values marked as `REQUIRED`
-3. Apply the CR to your cluster:
+1. Open [`cr.yaml`](./cr.yaml) and update all required placeholder values
+2. Apply the CR to your cluster:
 
 ```bash
 oc apply -f cics-agent-cr.yaml
@@ -333,79 +327,6 @@ oc get pods -n <namespace> -l app=cics-agent
 
 # View agent logs
 oc logs -n <namespace> -l app=cics-agent --tail=100
-```
-
-#### Secret Configuration
-
-The agent requires Kubernetes Secrets containing sensitive configuration values. **Never commit secrets to version control.**
-
-##### Secret Types
-
-The agent uses two types of secrets:
-
-1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
-2. **Agent-Specific Secrets** (`wxa4z-cics-agent-secrets`): Unique to this agent
-
-##### Agent-Specific Secret Reference
-
-Create a secret with the following structure. **All values must be base64-encoded.**
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: wxa4z-cics-agent-secrets
-  namespace: ""  # REQUIRED: Must match the agent namespace
-type: Opaque
-data:
-  # MCP Configuration (base64-encoded, REQUIRED for problem determination and tool calling capabilities)
-  MCP_SERVER_URL: ""  # REQUIRED: Full MCP Server URL with toolbox suffix (e.g., http://hostname:port/mcp/allTools/shttp or https://hostname:port/mcp/sysprog/shttp)
-  APPLID: ""  # REQUIRED: VTAM Generic APPLID for target CICS system
-  
-  # Z RAG Configuration (base64-encoded, REQUIRED for topology, problem determination, and followup capabilities)
-  WRAPPER_USERNAME: ""  # REQUIRED: Username for Z RAG instance
-  WRAPPER_PASSWORD: ""  # REQUIRED: Password for Z RAG instance
-  WRAPPER_URL: ""  # REQUIRED: URL for Z RAG instance
-  
-  # Agent Registration (base64-encoded, REQUIRED)
-  AGENT_ID: ""  # REQUIRED: Unique identifier for the agent (e.g., "wxa4z:cics:agent")
-  AGENT_AUTH_SERVICE_KEY: ""  # REQUIRED: Authorization key for wxa4z authorization service authentication
-  SERVICE_ENDPOINT: ""  # REQUIRED: Service endpoint URL for agent registration
-  AUTH_SERVICE_BASE_URL: ""  # REQUIRED: Base URL for authentication service
-  AGENT_AUTH_TOKEN: ""  # REQUIRED: Authentication token for the agent
-  
-  # Watsonx Configuration (base64-encoded, REQUIRED)
-  WATSONX_PROJECT_URL: ""  # REQUIRED: Watsonx project URL
-  WATSONX_PROJECT_ID: ""  # REQUIRED: Watsonx project ID
-```
-
-**Important:**
-- All secret values must be base64-encoded before adding to the secret
-- The CICS entitlement key is required and can be obtained from IBM Support
-- MCP configuration is required for problem determination and tool calling capabilities
-- Z RAG configuration is required for topology and problem determination capabilities
-- All agent registration fields are required for proper integration with watsonx Orchestrate
-
-##### Creating the Secret
-
-Apply the secret:
-
-```bash
-oc apply -f secret.yaml
-```
-
-
-### Install or upgrade the wxa4z-agent-suite
-
-> <div class="note note"><span class="notetitle">Note:</span> If you're installing multiple agents, you can configure the <a href="https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml">values.yaml</a> file for all the agents you wish to install. After the file is updated, run the command below to install them all at once.</div>
-
-Use the following command to install or upgrade the wxa4z_agent_suite:
-
-```yaml
-helm upgrade --install wxa4z-agent-suite \
-  ./wxa4z-agent-suite \
-  -n <wxa4z-namespace> \
-  -f <path_to>/values.yaml --wait
 ```
 
 ## Deploy the agent
