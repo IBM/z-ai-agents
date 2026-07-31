@@ -6,10 +6,10 @@ The IBM IMS Agents is a unified agent solution that combines question-answering 
 
 ## Agent capabilities
 
-| Agent capability            | Description                                                                                          | Tool Name                                           |
+| Agent capability            | Description                                                                                          | Tool name                                           |
 | --------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | **General IMS Q/A**         | Answers general IMS related questions and provides documentation search.                             | ims_documentation_search<br/>ims_performance_search |
-| **IMS commands**            | Explains syntax for IMS type-1 and type-2 commands.                                                  | get_command_syntax                                  |
+| **IMS commands**            | Explains syntax for IMS type-1, type-2, Connect WTOR, Connect zos, and DBRC commands.                                                  | get_command_syntax                                  |
 | **IMS system**              | Displays active regions and data communication (DC) information for the IMS system.                  | ims_get_system_info                                 |
 | **OTMA**                    | Displays IMS Open Transaction Manager Access (OTMA) status and connectivity.                         | ims_get_otma_info                                   |
 | **TMEMBER**                 | Displays information about OTMA transaction members (TMEMBERs) and their transaction pipes (TPIPEs). | ims_get_tmember_info                                |
@@ -36,27 +36,36 @@ The IBM IMS Agents is a unified agent solution that combines question-answering 
 | **Overflow queue**          | Displays queue names that are in overflow mode for coupling facility structures.                     | ims_dis_overflowq                                   |
 | **Area**                    | Displays data sets, status conditions, and databases associated with Fast Path DEDB areas.           | ims_dis_area                                        |
 
-## Check prerequisites
+## Prerequisites
 
-Ensure that the following software is installed:
+Review the [Deployment Guide](https://github.com/IBM/z-ai-agents/blob/main/README.md) to ensure IBM watsonx Assistant for Z is installed correctly.
 
-- [IBM watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/2.0.0?topic=install-watsonx-assistant-z)
-- IMS 15.5 or later
-  - You will need to order IMS 15.6 from Shopz to get the required entitlement key, but you do not need to install 15.6.
-  - In the IMS configuration requirements, ensure that `CMDMCS=B, C, R or Y` is set in the DFSPBxxx member that is used to start IMS. Additionally, you can use these sources about [mcs-console](https://www.ibm.com/docs/en/ims/15.6.0?topic=commands-using-multiple-console-support-mcs-consoles) and [cmdmcs](https://www.ibm.com/docs/en/ims/15.6.0?topic=parameters-cmdmcs-parameter-procedures) to set up IMS properly.
-- z/OSMF is 3.1 or later
+> **Important:** All prerequisites listed below are required for correct agent operation. Missing or misconfigured dependencies will result in degraded functionality, failed tool calls, or responses that do not reflect the actual state of your z/OS environment.
 
-> Optional: Verify image signatures
+Ensure the following are in place before installing the agent:
+
+- [ ] **IMS 15.5 or later** installed. See [Installing IMS](https://www.ibm.com/docs/en/ims/latest?topic=installing-ims)
+  - [ ] Order IMS 15.6 from Shopz to get the required entitlement key (installation of 15.6 is not required).
+  - [ ] Ensure `CMDMCS` is not set to `N` in the DFSPBxxx member used to start IMS. Valid values that enable MCS/E-MCS console commands are `Y`, `R`, `C`, or `B`. See [mcs-console](https://www.ibm.com/docs/en/ims/15.6.0?topic=commands-using-multiple-console-support-mcs-consoles) and [cmdmcs](https://www.ibm.com/docs/en/ims/15.6.0?topic=parameters-cmdmcs-parameter-procedures).
+- [ ] **z/OSMF 3.1 or later** installed and configured with a valid TLS certificate. See [IBM z/OS Management Facility](https://www.ibm.com/docs/en/zos/latest?topic=zos-management-facility)
+- [ ] **IBM watsonx Assistant for Z** (ZAssistantDeploy) deployed to your OpenShift cluster. See [Deploying ZAssistantDeploy on your cluster](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-deploying-configuring-zassistantdeploy-your-cluster)
+- [ ] **Multitenancy** configured with tenants created, users added, agents deployed, and agent subscriptions set up in the IBM watsonx Assistant for Z management console. See [Multitenancy in watsonx Assistant for Z](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-multitenancy-in-watsonx-assistant)
+  - [ ] Before installing the IBM IMS Agents, ensure the target namespace (`wxa4z-<tenant_id>`) exists.
+- [ ] **OpenSearch** deployed and running in your cluster (provisioned by ZAssistantDeploy). Required for the agent's question-answering capabilities. [Verify your ZAssistantDeploy Connection](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=cluster-testing-your-zassistantdeploy-connection).
+- [ ] **Content ingestion** service deployed and running in your cluster (provisioned by ZAssistantDeploy). Required for ingesting documents into the search database. Credentials secret (`wxa4z-ingestion-credentials`) and NATS credentials (`nats-sys-account-credentials`, `nats-operator-credentials`) must be created before deployment. See [Ingesting your content](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-ingesting-your-content)
+- [ ] **Authorization Service** deployed and running in your cluster (provisioned by ZAssistantDeploy). Required for all MCP tool calls to z/OS. See [Deploying the Authorization Service](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=cluster-deploying-zassistantdeploy-your#task_dth_5ns_pgc)
+  - [ ] **Multi-SAF authorization** configured in the Authorization Service with your agent ID, context key, and z/OS connection details (URL, port, client cert, and key). See [Integrated authorization with multi-SAF support](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-integrated-authorization-multisaf-support)
+- [ ] **Token Exchange Service** deployed and configured for PassTicket generation for your IMS APPL ID. See [Deploying the Token Exchange Service](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-deploying-token-exchange-service-passticket-generation)
 
 ## Optional: Verify image signatures
 
-You can verify the container image signatures by setting a pull policy for your transport method. You must install Skopeo to use the examples in this guide.
+You can verify the container image signatures by setting a pull policy for your transport method. You must install Skopeo to use the examples in this documentation.
 
 You can verify the signature for the following manifest:
 
 - `icr.io/ibm-ims-ai/ims-agent:1.1.0`
 
-Under the `ims-agent` directory, find the folder named `imagesign`, which contains a file named `public.pub.asc`. Place this file in a location of your choice. Then, copy the Docker container policy `policy.json` file into the`/etc/containers/policy.json` and update the `keyPath` field to reflect the location of your `public.pub.asc`.
+Under the `ims-agent` directory, find the folder named `imagesign`, which contains a file named `public.pub.asc`. Place this file in a location of your choice. Then, copy the Docker container policy `policy.json` file into the `/etc/containers/policy.json` and update the `keyPath` field to reflect the location of your `public.pub.asc`.
 
 ```json
 {
@@ -99,27 +108,25 @@ Under the `ims-agent` directory, find the folder named `imagesign`, which contai
    skopeo copy docker://icr.io/ibm-ims-ai/ims-agent:1.1.0 dir:temp1
    ```
 
-If the image signature is valid and verified by `public.pub.asc`, then the image pull will be successful. Otherwise, it will fail.
-
-1. Import `public.pub.asc` into your local keyring:
+3. Import `public.pub.asc` into your local keyring:
 
    ```bash
    gpg --import /path/to/public_key.asc
    ```
 
-2. Extract the fingerprint:
+4. Extract the fingerprint:
 
    ```bash
    export FINGERPRINT=$(gpg --fingerprint --with-colons | grep fpr | tr -d 'fpr:')
    ```
 
-3. Validate the signature:
+5. Validate the signature:
 
    ```bash
    skopeo standalone-verify ./temp1/manifest.json icr.io/ibm-ims-ai/ims-agent:1.1.0 $FINGERPRINT ./temp1/signature-1
    ```
 
-If the validation is successful, you should see the following message:
+If the image signature is valid and verified by `public.pub.asc`, the copy in step 2 will succeed. If the validation in step 5 is successful, you should see the following message:
 
 ```bash
 Signature verified using fingerprint...
@@ -133,140 +140,115 @@ FATA[0000] Error verifying signature: ...
 
 ## Install the IBM IMS Agents
 
-### Retrieve the entitlement key
+The IBM IMS Agent is deployed using a Custom Resource (CR) definition. The CR provides a declarative way to manage the agent deployment through the [watsonx Assistant for Z operator](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=s390x-install-watsonx-assistant-z-operator).
+
+### Before you begin
+
+#### Check prerequisites
+
+- Ensure the [watsonx Assistant for Z operator](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=s390x-install-watsonx-assistant-z-operator) is installed and running in the `wxa4z-zad` namespace/project on your cluster.
+- Ensure the target namespace (`wxa4z-<tenant_id>`) exists.
+
+#### Retrieve the entitlement key
 
 When you install watsonx Assistant for Z, you should have acquired the entitlement key. However, if you need to retrieve it again, follow these steps:
 
-1. Sign in to [IBM Shopz](https://www.ibm.com/software/shopzseries/ShopzSeries_public.wss).
+1. Log in to [IBM Shopz](https://www.ibm.com/software/shopzseries/ShopzSeries_public.wss).
 2. Place an order for IMS 15.6 in IBM Shopz to obtain the entitlement key, which is in the PDF document.
-3. Set the following product `entitlementKey` field by using the IBM IMS Agents entitlement key.
 
-```yaml
-ims-agent:
-  enabled: false # Must be set to true to install.
-  acceptLicense: false # Must be set to true to install.
-  registry:
-    name: ims-image-pull-secret
-    server: icr.io
-    username: iamapikey
-    entitlementKey: ""
-```
+Create an instance from the CPD UI. It should give a tenant-id and also create a namespace with `wxa4z-<tenant-id>`.
 
-Ensure that `global.registry.entitlementKey` is set to the watsonx Assistant for Z entitlement key.
+#### Understand the required secret types
 
+The agent uses several secrets of which there are two types: global and agent-specific.
 
-## Deploying agents
-
-The IBM Z Support Agent is deployed using a Custom Resource (CR) definition. The CR provides a declarative way to manage the agent deployment through the agent operator.
-
-### Prerequisites
-
-Before deploying the agent, ensure:
-
-1. The agent operator is installed and running in your cluster.
-2. The target namespace exists.
-
-Create an instance from CPD UI. It should give a tenant-id and also create a namespace with wxa4z-<tenant-id>
+- **Global secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
+  - See [Global settings](https://github.com/IBM/z-ai-agents/tree/main#1-global-settings). Ensure that this secret is present in the `wxa4z-zad` namespace and all of its fields are populated with valid values. When you deploy the IMS Agent it will draw values from this secret.
+  - Optional: Certain variables are common across all agents. However, if any of these shared variables are also defined in your agent-specific configuration, the values specified in the values.env section of the custom resource file will override the shared ones. Additionally, the wxa4z-watsonx-credentials secret in the `wxa4z-<tenant-id>` namespace can be edited manually to update any value.
+- **Agent-specific secrets** (`wxa4z-ims-agent-secrets`): Unique to this agent.
+- **Agent pull secret** (`ims-image-pull-secret`): Unique to this agent. It contains the entitlement key and is used to pull the ims-agent image from the `icr.io` registry.
 
 ### Step 1: Create secrets
 
-The agent requires Kubernetes Secrets containing sensitive configuration values. **Never commit secrets to version control.**
+The agent requires Kubernetes Secrets that contain sensitive configuration values.
 
-#### Secret types
+**Important**:
 
-The agent uses two types of secrets:
+- Store certificates and secrets securely.
+- Rotate tokens and secrets regularly.
+- Never commit secrets to version control.
 
-1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
-2. **Agent-Specific Secrets** (`wxa4z-ims-agent-secrets`): Unique to this agent
-3. **Agent Pull Secret** (`ims-image-pull-secret`): Unique to this agent
+#### Agent-specific secret reference (`wxa4z-ims-agent-secrets`)
 
+1. Create a yaml file (for example, `ims-agent-secret.yaml`) with the following structure:
 
-#### Agent-specific secret reference
+    ```yaml
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: wxa4z-ims-agent-secrets
+      namespace: ""  # REQUIRED: Must match the agent namespace
+    type: Opaque
+    data:
+      AGENT_AUTH_TOKEN: ""  # REQUIRED: Agent auth token for registration with WxO
+    ```
 
-Create a secret with the following structure. **All values must be base64-encoded.**
+2. Deploy the secret to OpenShift:
 
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: wxa4z-ims-agent-secrets
-  namespace: ""  # REQUIRED: Must match the agent namespace
-type: Opaque
-data:
-  # Agent Authentication (base64-encoded, REQUIRED)
-  AGENT_AUTH_TOKEN: ""  # REQUIRED: Agent auth token for registration with WxO
-  LANGFUSE_API_KEY: ""  # REQUIRED: Langfuse API key for translation
-  LANGFUSE_API_SECRET: ""  # REQUIRED: Langfuse API secret for translation
-  
-```
+    ```bash
+    oc apply -f ims-agent-secret.yaml
+    ```
 
-> **Important:**
-> - **AGENT_AUTH_TOKEN is required** for agent registration with watsonx Orchestrate.
+3. Verify the secret was created:
 
-#### Creating the Secret
+    ```bash
+    oc get secret wxa4z-ims-agent-secrets -n wxa4z-<tenant_id>
+    ```
 
-1. Save the secret configuration to a file (for example, `ims-agent-secret.yaml`).
-2. Update the namespace and base64-encode all secret values.
-3. Apply the secret:
-
-```bash
-oc apply -f ims-agent-secret.yaml
-```
-
-4. Verify the Secret was created:
-
-```bash
-oc get secret wxa4z-ims-agent-secrets -n <namespace>
-```
-
-#### Creating the ICR Pull Secret
+#### Creating the ICR pull secret (`ims-image-pull-secret`)
 
 Run the following command to create an image pull secret for IBM Cloud Container Registry (ICR):
 
 ```bash
-oc create secret -n <your-namespace> docker-registry ims-image-pull-secret \
+oc create secret -n wxa4z-<tenant_id> docker-registry ims-image-pull-secret \
   --docker-server=icr.io \  #replace this with container registry
   --docker-username=iamapikey \ # replace this with container registry username
   --docker-password=<your-api-key> # replace this with container registry entitlement key
 ```
 
+### Step 2: Configure the cr.yaml file parameters and install agents
 
-### Step 2: Install Agents by using Custom Resource (CR)
+#### Configure the parameters (required)
 
-#### Configuration parameters
+The following table outlines the key configuration parameters in the cr.yaml file:
 
-The following table outlines the key configuration parameters:
+| Parameter | Description |
+| ----------- | ------------- |
+| **metadata.namespace** | Target namespace for agent deployment. |
+| **spec.tenantId** | Tenant identifier for multi-tenancy support. |
+| **spec.chart.version** | Helm chart version to deploy. |
+| **spec.values.env.WATSONX_MODEL_ID** | LLM Model ID (for example, "meta-llama/llama-3-3-70b-instruct"). |
+| **spec.values.env.MODEL_RUNTIME** | MODEL RUNTIME (for example, "openai_protocol"). |
+| **spec.values.secrets.name** | Name of agent-specific secrets. |
+| **spec.values.global.secrets.name** | Name of global shared secrets. |
+| **spec.values.env.AUTHZ_BASE_URL** | Authentication service route in OCP wxa4z-zad namespace. |
+| **spec.values.env.DEPLOYMENT_TYPE** | DEPLOYMENT TYPE (for example, "on-prem/openai_protocol"). |
+| **spec.values.registry.entitlementKey** | Entitlement Key for pulling the agent image and helm package. |
 
-| Parameter | Description | Required |
-|-----------|-------------|----------|
-| **metadata.namespace** | Target namespace for agent deployment | Yes |
-| **spec.tenantId** | Tenant identifier for multi-tenancy support | Yes |
-| **spec.chart.version** | Helm chart version to deploy | Yes |
-| **spec.values.env.WATSONX_MODEL_ID** | LLM Model ID (for example, "meta-llama/llama-3-3-70b-instruct") | Yes |
-| **spec.values.env.MODEL_RUNTIME** | MODEL RUNTIME (for example, "openai_protocol") | Yes |
-| **spec.values.secrets.name** | Name of agent-specific secrets | Yes |
-| **spec.values.global.secrets.name** | Name of global shared secrets | Yes |
-| **spec.values.env.AUTHZ_BASE_URL** | Authentication service route in OCP wxa4z-zad namespace | Yes |
-| **spec.values.env.DEPLOYMENT_TYPE** | DEPLOYMENT TYPE (for example, "on-prem/openai_protocol")  | Yes |
-| **spec.values.registry.entitlementKey** | Entitlement Key for pulling the agent image and helm package  | Yes |
-
-
-#### CR definition
-
-The following code is the complete Custom Resource definition. Update the placeholder values according to your environment:
+Update all placeholder values marked as `REQUIRED` and save the configuration to a file (for example, `cr.yaml`):
 
 ```yaml
 apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
 kind: AgentService
 metadata:
   name: ims-agent
-  namespace: ""  # REQUIRED: Target namespace (for example, wxa4z-agents)
+  namespace: ""  # REQUIRED: Target namespace (for example, wxa4z-<tenant_id>)
   labels:
     wxa4z.watsonx.ibm.com/managed-by: agent-operator
 spec:
   releaseName: ims-agent
   namespace: ""  # REQUIRED: Must match metadata.namespace
-  tenantId: ""  # REQUIRED: Tenant identifier for multi-tenancy support
+  tenantId: ""   # REQUIRED: Tenant identifier for multi-tenancy support
   wxa4z-core-services-namespace: wxa4z-zad  # Namespace where wxa4z core services are deployed
   
   agentDetails:
@@ -279,9 +261,9 @@ spec:
         fileName: ims_agent_bootstrap_config.yaml
   
   chart:
-    repository: oci://icr.io/wxa4z-dev-container-registry
+    repository: oci://icr.io/ibm-ims-ai
     name: ims-agent
-    version: "1.1.0"  # Update to the desired chart version
+    version: "v1.1.0"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret
@@ -294,185 +276,102 @@ spec:
         name: wxa4z-watsonx-credentials  # Global secrets shared across agents
     
     secrets:
-      name: wxa4z-ims-agent-secrets  # Agent-specific secrets
+      name: wxa4z-ims-agent-secrets      # Agent-specific secrets
     
     env:
       # LLM Configuration
-      WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct"
-      MODEL_RUNTIME: "openai_protocol"
-      AUTHZ_BASE_URL: ""  # REQUIRED: Auth service route
-      DEPLOYMENT_TYPE: ""  # REQUIRED: on-prem/openai_protocol/cloud
+      WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct" # REQUIRED: The id of the model you've configured to use
+      MODEL_RUNTIME: "on_prem" # REQUIRED: Options are "on_prem", "openai_protocol", and "cloud"
+      DEPLOYMENT_TYPE: ""      # REQUIRED: Options are "on_prem", "openai_protocol", and "cloud" (Must match MODEL_RUNTIME value)
+      AUTHZ_BASE_URL: ""       # REQUIRED: Authorization Service route. Can be found in the `wxa4z-zad` namespace under "Routes"
     registry:
-      entitlementKey: ""
+      entitlementKey: ""       # REQUIRED: The entitlement key you retrieved from Shop Z
 ```
 
-#### Installing the Agent
+#### Deploy the agent to OpenShift
 
-1. Save the CR configuration to a file (for example, `cr.yaml`).
-2. Update all placeholder values marked as `REQUIRED`.
-3. Apply the CR to your cluster:
+1. Apply the cr.yaml file to your cluster:
 
-```bash
-oc apply -f cr.yaml
-```
+    ```bash
+    oc apply -f cr.yaml
+    ```
 
-4. Verify the deployment:
+2. Verify the deployment:
 
-```bash
-# Check CR status
-oc get agentservice ims-agent -n <namespace>
+    ```bash
+    # Check CR status
+    oc get agentservice ims-agent -n wxa4z-<tenant_id>
 
-# Check the agent pods:
-oc get pods -n <namespace> -l app=ims-agent
+    # Check the agent pods:
+    oc get pods -n wxa4z-<tenant_id> -l app=ims-agent
 
-# View the agent logs:
-oc logs -n <namespace> -l app=ims-agent --tail=100
-```
+    # View the agent logs:
+    oc logs -n wxa4z-<tenant_id> -l app=ims-agent --tail=100
+    ```
 
-### Step 3: Subscribe to the agent
+    A successful CR deployment looks like this:
 
-After successfully deploying the agent, you need to subscribe to it to make it available in watsonx Orchestrate.
+    ![Successful CR deployment](ims-agent-successful-cr-deploy.png)
 
-1. Open the Cloud Pak for Data (CPD) home page, for example: 
+### Step 3: Subscribe to the agent in the WXA4Z Management Console
+
+After deploying the agent, wait 10 to 15 minutes for it to finish starting up. Once you confirm the deployment is successful, you need to subscribe to it in the WXA4Z Management Console to make it available in watsonx Orchestrate.
+
+1. Open the Cloud Pak for Data (CPD) home page using your LDAP mapped credentials, for example:
    - `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
 
-2. Click the **Launch WXA4Z console** tab.
-   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
-   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+2. Click the **Launch the WXA4Z Management Console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page), for example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
 
-3. On the Tenant Overview page, click your **Tenant name**.
+3. On the Tenant Overview page, click your **Tenant name** and navigate to the **Subscriptions** tab.
+   - You see a list of deployed agents with a **Subscribe** button next to each.
 
-4. Navigate to the **Subscriptions** tab.
-   - You will see a list of deployed agents with a **Subscribe** button next to each.
-
-5. Click the **Subscribe** button next to the **IBM Z IMS Agent**.
+4. Click the **Subscribe** button next to the **IBM Z IMS Agent**.
    - This action adds the agent to watsonx Orchestrate (WXO) and makes it available for deployment.
 
 ### Step 4: Deploy the agent
 
-1. Log in to watsonx Orchestrate.
-2. From the main menu, navigate to **Build** > **Agent Builder**.
-3. Select the **IBM IMS Agent** tile.
-4. In the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
-5. Click **Deploy** to activate the agent and make it available in the live environment.
+1. Log in to watsonx Orchestrate. From the main menu, click **Build** > **Agent Builder**.
+2. Select the **IBM IMS Agent** tile and in the AI Assistant window, enter a query to confirm that the response aligns with your expectations.
+3. Click **Deploy** to activate the agent and make it available in the live environment.
 
-### Step 5: Upgrade the agent
+### Configure the IMS connections
 
-To upgrade the agent to a new version:
+You can use several API endpoints to connect to z/OS systems that an agent can pull information from:
 
-> **Note:** If the agent was previously subscribed to watsonx Orchestrate, first unsubscribe to it before upgrading. After the upgrade is complete, re-subscribe the agent. See the [Uninstall the Agent](#step-6-uninstall-the-agent) section for unsubscribe steps and the [Subscribe to the agent](#step-3-subscribe-to-the-agent) section for subscribe steps.
+- Endpoint for creating connections to IMS systems. This allows you to establish secure connections for executing IMS commands and operations.
+- Endpoint for configuring agent settings, including z/OS system details and certificates.
 
-1. Update the `spec.chart.version` field in your CR file:
+**Important:** Always use HTTPS for API requests.
 
-```yaml
-spec:
-  chart:
-    version: "1.1.0"  # Update to the new version
+#### Create a connection for the z/OS system
+
+You can add a connection for a z/OS system via REST API request to the authorization service URL (`AUTHZ_BASE_URL`). This URL can be found in the `wxa4z-zad` namespace in your OpenShift cluster under "Routes".
+
+```text
+POST <AUTHZ_BASE_URL>/api/v2/tenants/{tenant_id}/agents/{agent_id}/connections
 ```
 
-2. Apply the updated CR:
+**Path parameters:**
 
-```bash
-oc apply -f cr.yaml
-```
-
-3. Monitor the upgrade progress:
-
-```bash
-# Watch the agent pods rolling update
-oc get pods -n <namespace> -l app=ims-agent -w
-
-# Check the CR status:
-oc describe agentservice ims-agent -n <namespace>
-```
-
-The agent operator will automatically handle the upgrade process, including rolling updates of the agent pods.
-
-### Step 6: Uninstall the Agent
-
-To uninstall the agent:
-
-**If the agent was previously subscribed to watsonx Orchestrate**, first unsubscribe it:
-
-1. Open the Cloud Pak for Data (CPD) home page, for example:
-   - `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
-
-2. Click the **Launch WXA4Z console** tab.
-   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page).
-   - Example: `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
-
-3. On the Tenant Overview page, click on your **Tenant name**.
-
-4. Navigate to the **Subscriptions** tab.
-   - You will see a list of deployed agents with an **Unsubscribe** button next to each.
-
-5. Click the **Unsubscribe** button next to the **IBM Z IMS Agent**.
-   - This action removes the agent from watsonx Orchestrate (WXO).
-
-**Delete the agent resources:**
-
-1. Delete the Custom Resource:
-
-```bash
-oc delete agentservice ims-agent -n <namespace>
-```
-
-2. Verify the agent resources are removed:
-
-```bash
-# Check that the agent pods are terminated
-oc get pods -n <namespace> -l app=ims-agent
-
-# Verify the CR is deleted
-oc get agentservice -n <namespace>
-```
-
-3. Optional: Clean up Secrets if no longer needed:
-
-```bash
-# Delete agent-specific secrets
-oc delete secret wxa4z-ims-agent-secrets -n <namespace>
-
-# Note: Do not delete global secrets if other agents are using them
-```
-
-> **Tip:** The agent operator will automatically clean up all resources created by the agent, including deployments, services, and configmaps. However, secrets must be manually deleted if they are no longer needed.
-
-
-### Optional: Configure shared variables
-
-Certain variables are common across all agents. To configure these shared variables, see [Create shared variables](https://github.com/IBM/z-ai-agents?tab=readme-ov-file#1-global-settings).
-However, if any of these shared variables are also defined in your agent-specific configuration, the values specified in the values.env section of the custom resource file will override the shared ones. Additionally, the wxa4z-watsonx-credentials secret in the `wxa4z-<tenant-id>` namespace can be edited manually to update any value.
-
-
-### Configure the IMS connections - z/OS machines an agent can pull information from
-
-The IMS Agent provides an API endpoint for creating connections to IMS systems. This allows clients to establish secure connections for executing IMS commands and operations.
-
-#### Endpoint
-
-```
-POST <AUTH_URL>/api/v2/tenants/{tenant_id}/agents/{agent_id}/connections
-```
-
-**Path Parameters:**
-- `tenant_id` - Your tenant identifier (for example, `17700000005109`)
-- `agent_id` - The agent identifier (for example, `wxa4z:ims:agent`, URL-encoded as `wxa4z%3Aims%3Aagent`)
+- `tenant_id`: Your tenant identifier (for example, `17700000005109`)
+- `agent_id`: The agent identifier `wxa4z:ims:agent`, URL-encoded as `wxa4z%3Aims%3Aagent`.
 
 **Variables:**
-- `<AUTH_URL>` - Your authorization service base URL (for example, `https://wxa4z-authorization-route-namespace.apps.domain.com`)
 
-#### Authentication
+- `<AUTHZ_BASE_URL>`: Your authorization service base URL that you get from wxa4z-zad namespace, (for example: `https://wxa4z-authorization-route-namespace.apps.domain.com`)
 
-Before creating a connection, you must obtain a bearer token from the authentication endpoint:
+#### Authentication: getting a bearer token to authenticate
 
-```
-GET <AUTH_URL>/api/v1/agents/{agent_id}/token
+Before you create a connection, you must obtain a bearer token from the authentication endpoint:
+
+```text
+GET <AUTHZ_BASE_URL>/api/v1/agents/{agent_id}/token
 ```
 
 Include the bearer token in the `Authorization` header of your connection request:
 
-```
+```text
 Authorization: Bearer <your_token>
 ```
 
@@ -486,7 +385,7 @@ The request body must be a JSON object with the following structure:
     "agent_id": "wxa4z:ims:agent",
     "zos_url": "https://ec0000a.example.ibm.com",
     "application_id": "IZUDFLT",
-    "port": 0000,
+    "port": 5443,
     "context": "ec0000a",
     "client_cert": "<base64_encoded_certificate>",
     "client_key": "<base64_encoded_key>",
@@ -495,10 +394,10 @@ The request body must be a JSON object with the following structure:
 }
 ```
 
-**Field Descriptions:**
+**Field descriptions:**
 
 | Field | Type | Required | Description |
-|-------|------|----------|-------------|
+| ------- | ------ | ---------- | ------------- |
 | `agent_id` | string | Yes | The unique identifier for the IMS agent |
 | `zos_url` | string | Yes | The base URL of your z/OS system |
 | `application_id` | string | Yes | z/OSMF application ID (typically `IZUDFLT`) |
@@ -512,16 +411,16 @@ The request body must be a JSON object with the following structure:
 
 ```bash
 # Set your authorization URL:
-export AUTH_URL="https://wxa4z-authorization-route-namespace.apps.domain.com"
+export AUTHZ_BASE_URL="https://wxa4z-authorization-route-namespace.apps.domain.com"
 
 # Step 1: Obtain bearer token:
 curl -X GET \
-  "${AUTH_URL}/api/v1/agents/wxa4z%3Aims%3Aagent/token" \
+  "${AUTHZ_BASE_URL}/api/v1/agents/wxa4z%3Aims%3Aagent/token" \
   -H 'Content-Type: application/json'
 
 # Step 2: Create connection:
 curl -X POST \
-  "${AUTH_URL}/api/v2/tenants/17700000005109/agents/wxa4z%3Aims%3Aagent/connections" \
+  "${AUTHZ_BASE_URL}/api/v2/tenants/17700000005109/agents/wxa4z%3Aims%3Aagent/connections" \
   -H 'Authorization: Bearer <your_token>' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -529,7 +428,7 @@ curl -X POST \
       "agent_id": "wxa4z:ims:agent",
       "zos_url": "https://ec0000a.example.ibm.com",
       "application_id": "IZUDFLT",
-      "port": 0000,
+      "port": 5443,
       "context": "ec0000a",
       "client_cert": "...",
       "client_key": ".....",
@@ -538,32 +437,34 @@ curl -X POST \
   }'
 ```
 
-The wxa4z Authentication service also provides an endpoint for configuring agent settings, including z/OS system details and certificates.
+#### Create a configuration for the previous endpoint
 
-#### Endpoint
+The wxa4z Authentication service also provides an endpoint for configuring agent settings, including z/OS system details and certificates:
 
-```
-POST <AUTH_URL>/api/v2/tenants/{tenant_id}/agents/{agent_id}/configs
+```text
+POST <AUTHZ_BASE_URL>/api/v2/tenants/{tenant_id}/agents/{agent_id}/configs
 ```
 
 **Path parameters:**
-- `tenant_id` - Your tenant identifier (for example, `17700000005109`)
-- `agent_id` - The agent identifier (for example, `wxa4z:ims:agent`, URL-encoded as `wxa4z%3Aims%3Aagent`)
+
+- `tenant_id`: Your tenant identifier (for example, `17700000005109`)
+- `agent_id`: The agent identifier `wxa4z:ims:agent`, URL-encoded as `wxa4z%3Aims%3Aagent`.
 
 **Variables:**
-- `<AUTH_URL>` - Your authorization service base URL
 
-#### Authentication
+- `<AUTHZ_BASE_URL>`: Your authorization service base URL
+
+#### Authentication: getting a bearer token to authenticate
 
 This endpoint requires the same bearer token authentication as the connections endpoint. Obtain a token from:
 
-```
-GET <AUTH_URL>/api/v1/agents/{agent_id}/token
+```text
+GET <AUTHZ_BASE_URL>/api/v1/agents/{agent_id}/token
 ```
 
-#### Request Body
+#### Request body
 
-The request body must be a JSON object with the following structure:
+The request body must be a JSON object with the following structure. For information on the 'cert' value, see [Configuring your z/OSMF certificate](https://github.com/IBM/z-ai-agents/blob/main/ims-agent/README.md#configuring-your-zosmf-certificate).
 
 ```json
 {
@@ -582,9 +483,9 @@ The request body must be a JSON object with the following structure:
 **Field descriptions:**
 
 | Field | Type | Required | Description |
-|-------|------|----------|-------------|
+| ------- | ------ | ---------- | ------------- |
 | `agent_id` | string | Yes | The unique identifier for the IMS agent |
-| `context` | string | Yes | A context identifier for this configuration should be the **same value** as context in connection|
+| `context` | string | Yes | A context identifier for this configuration should be the **same value** as context in connection |
 | `config.host` | string | Yes | The base URL of your z/OS system |
 | `config.console_name` | string | Yes | The z/OS console name (for example, `oadm000a`) |
 | `config.subsystem_id` | string | Yes | IMS subsystem instance ID (for example, `IMS1`) |
@@ -595,16 +496,16 @@ The request body must be a JSON object with the following structure:
 
 ```bash
 # Set your authorization URL:
-export AUTH_URL="https://wxa4z-authorization-route-namespace.apps.domain.com"
+export AUTHZ_BASE_URL="https://wxa4z-authorization-route-namespace.apps.domain.com"
 
 # Step 1: Obtain the bearer token (if it is not already obtained):
 curl -X GET \
-  "${AUTH_URL}/api/v1/agents/wxa4z%3Aims%3Aagent/token" \
+  "${AUTHZ_BASE_URL}/api/v1/agents/wxa4z%3Aims%3Aagent/token" \
   -H 'Content-Type: application/json'
 
-# Step 2: Configure agent settings:
+# Step 2: Configure agent settings. For information on the 'cert' value, see [Configuring your z/OSMF certificate](https://github.com/IBM/z-ai-agents/blob/main/ims-agent/README.md#configuring-your-zosmf-certificate).
 curl -X POST \
-  "${AUTH_URL}/api/v2/tenants/17700000005109/agents/wxa4z%3Aims%3Aagent/configs" \
+  "${AUTHZ_BASE_URL}/api/v2/tenants/17700000005109/agents/wxa4z%3Aims%3Aagent/configs" \
   -H 'Authorization: Bearer <your_token>' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -624,7 +525,6 @@ curl -X POST \
 
 A successful connection creation returns a `201 Created` status code with connection details in the response body.
 
-
 #### Security guidelines
 
 - Always use HTTPS for API requests
@@ -637,10 +537,9 @@ A successful connection creation returns a `201 Created` status code with connec
 
 After deployment, the agent becomes active and is available for selection in the live environment.
 
-1. Log in to watsonx Orchestrate.
-2. From the main menu, click **Chat**.
-3. Choose your agent from the list.
-4. Enter queries using the AI Assistant, for example:
+1. Log in to watsonx Orchestrate. From the main menu, click **Chat**.
+2. Choose your agent from the list.
+3. Enter queries using the AI Assistant, for example:
 
    ```text
    What is IMS TM?
@@ -650,35 +549,25 @@ After deployment, the agent becomes active and is available for selection in the
    Show me the status of my IMS system.
    ```
 
-5. Verify that the responses returned by the AI Assistant are accurate.
+4. Verify that the responses returned by the AI assistant are accurate.
 
+![Agent successfully running](ims-agent-successfully-running.png)
 
-
-
-### Additional configuration steps
+### Post-installation configuration
 
 #### Ensure OpenSearch is deployed to your cluster
 
-The IMS Agent relies on an instance of an OpenSearch vector database for question-answering capabilities. If OpenSearch is not already deployed to your cluster, [follow instructions on how to deploy an instance.](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=cluster-deploying-zassistantdeploy-your)
-
-#### Configure local embeddings
-
-The agent can use local embedding models for specific operations. The image references two available models:
-
-- `ibm-granite/granite-embedding-278m-multilingual`
-- `ibm-granite/granite-embedding-107m-multilingual`
-
-You can explicitly select which model to use by adding and setting the `LOCAL_EMBEDDING_MODEL` environment variable to one of the options above. If this variable is not set, the system defaults to `ibm-granite/granite-embedding-278m-multilingual`. Although the default 278 million parameter model might offer enhanced performance, it could result in longer processing times depending on your cluster's allotted resources.
+The IMS Agent relies on an instance of an OpenSearch vector database for question-answering capabilities. If OpenSearch is not already deployed to your cluster, follow instructions on how to [deploy an instance](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=cluster-deploying-zassistantdeploy-your). Additionally, follow instructions to enable [PassTicket generation](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-deploying-token-exchange-service-passticket-generation) for a specified APPL ID.
 
 #### Ensure the Authorization service is deployed to your cluster
 
-The agent's MCP tools rely on the Authorization service to communicate with your z/OS system. If the Authorization service is not deployed to your cluster, [follow instructions to deploy it.](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=cluster-deploying-zassistantdeploy-your) Additionally, [follow instructions to enable pass-ticket generation](https://www.ibm.com/docs/en/watsonx/waz/3.0.0?topic=deploying-token-exchange-service-passticket-generation) for a specified APPL ID.
+The agent's MCP tools rely on the Authorization service to communicate with your z/OS system. If the Authorization service is not deployed to your cluster, [follow instructions to deploy it.](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=cluster-deploying-zassistantdeploy-your) Additionally, [follow instructions to enable pass-ticket generation](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-deploying-token-exchange-service-passticket-generation) for a specified APPL ID.
 
 #### Configuring your z/OSMF certificate
 
 The agent's MCP tools rely on z/OSMF to communicate with your z/OS system. Note that z/OSMF console setup is required. A valid certificate is also required for secure, TLS communication.
 
-To set up a z/OS Operator Console, [follow these instructions](https://www.ibm.com/docs/en/zos/latest?topic=consoles-completing-console-setup#zuCNhpOperatorConsolesSettingUp). To allow a specified TSO/E user to issue the CONSOLE commands, [follow these instructions](https://www.ibm.com/docs/en/zos/2.4.0?topic=racf-allowing-tsoe-user-issue-console-command) or run the following command with a given user, for example, `USRT001`:
+See [z/OS Operator Console](https://www.ibm.com/docs/en/zos/latest?topic=consoles-completing-console-setup#zuCNhpOperatorConsolesSettingUp) to set up a console. Also, see [Allowing a TSO/E user to issue the CONSOLE command](https://www.ibm.com/docs/en/zos/2.4.0?topic=racf-allowing-tsoe-user-issue-console-command) or run the following command with a given user, for example, `USRT001`:
 
 ```jcl
 SETROPTS CLASSACT(TSOAUTH)
@@ -706,7 +595,7 @@ To create a certificate, run the following JCL within a JOB on your system:
 
 The CN and SAN domain (your.zos.system.com in this example) must exactly match the hostname used in your `ZOSMF_ENDPOINT` environment variable.
 
-> The previous JCL assumes the APPL ID is `IZUDFLT`. You might need to stop and restart z/OSMF for changes to take effect. For example, run `/P IZUSVR1` and `/S IZUSVR1`and modify as needed.
+> The previous JCL assumes the APPL ID is `IZUDFLT`. You might need to stop and restart z/OSMF for changes to take effect. For example, run `/P IZUSVR1` and `/S IZUSVR1` and modify as needed.
 
 Save the certificate information to a file by using the following commands:
 
@@ -719,7 +608,11 @@ openssl s_client -connect ${SITE}:443 -servername ${SITE} -showcerts </dev/null 
 
 After deployment, an opaque secret named `service-endpoint-cert-secret` (with a placeholder certificate value) is automatically created and mounted to the `ims-agent` container. You must update the value of this secret to reflect the value of the certificate that you just created. Either update the secret in the `mcpCertSecret` section of the `values.yaml` file before running the helm-install command or manually update the secret after deployment.
 
-**Important**: If you update the `values.yaml` file, remember to never store or commit secrets to Git.
+**Important**:
+
+- If you update the `values.yaml` file, remember to never store or commit secrets to Git.
+- Store certificates and secrets securely.
+- Rotate tokens and secrets regularly.
 
 To manually update the secret after deployment, you can use a graphical user interface, such as the OpenShift® console, or you can use the OpenShift® CLI patch command after logging in:
 
@@ -755,17 +648,17 @@ For organizations requiring end-to-end encryption, you can enable TLS re-encrypt
 
 To enable TLS re-encryption:
 
-1. Add service annotation to auto-generate certificates:
-2. Update route termination from `edge` to `reencrypt` in the route configuration.
-3. Mount the certificate secret to the pod at `/etc/tls/`:
+1. Add a service annotation to auto-generate certificates.
+2. Update the route termination from `edge` to `reencrypt` in the route configuration.
+3. Mount the certificate secret to the pod at `/etc/tls/`.
 
 The agent automatically detects certificates at the expected paths (`/etc/tls/tls.key` and `/etc/tls/tls.crt`) and enables TLS on the server.
 
-For detailed instructions, see [OpenShift documentation on service-serving certificates](https://docs.redhat.com/en/documentation/openshift_container_platform/4.9/html/security_and_compliance/configuring-certificates#add-service-certificate).
+For more information, see [OpenShift documentation on service-serving certificates](https://docs.redhat.com/en/documentation/openshift_container_platform/4.9/html/security_and_compliance/configuring-certificates#add-service-certificate).
 
 ### Install or upgrade the ims-agent using the wxa4z-agent-suite
 
-> **Tip**: If you're installing multiple agents, you can configure the [values.yaml](https://github.com/IBM/z-ai-agents/blob/main/wxa4z-agent-suite/values.yaml) file for all the agents that you want to install. After the file is updated, run the following command to install them all at the same time.
+> **Tip**: If you're installing multiple agents, you can configure the values.yaml file for all the agents that you want to install. After the file is updated, run the following command to install them all at the same time.
 
 Use the following command to install or upgrade the agent using the wxa4z_agent_suite:
 
@@ -776,18 +669,87 @@ helm upgrade --install wxa4z-agent-suite \
   -f <path_to>/values.yaml --wait
 ```
 
-> You can choose to configure the IBM IMS agents' NetworkPolicies.
-> By default, all traffic is allowed for simplicity, which ensures connectivity out of the box. If your organization requires stricter security, you can customize NetworkPolicies in the Helm charts.
-> For example, you can restrict ingress to trusted namespaces and limit egress to required services (for example, HTTPS and DNS). [Learn more about configuring ingress/egress rules.](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/network_security/network-policy)
+> You can configure the IBM IMS agents' NetworkPolicies.
+> By default, NetworkPolicies restrict pod ingress traffic to the OpenShift Ingress Controller namespace (see the "Security: Internal pod communication" section). If your organization requires different rules, you can customize NetworkPolicies in the Helm charts. For example, you can restrict ingress to trusted namespaces and limit egress to required services (for example, HTTPS and DNS). For more information, see [Network policy](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html/network_security/network-policy).
 
+## Upgrade the agent
 
-## Troubleshooting installation errors
+To upgrade the agent to a new version:
 
-If you experience errors during installation, see [Troubleshooting](../../README.md#troubleshooting) for troubleshooting steps.
+> **Requirement:** If the agent was previously subscribed to watsonx Orchestrate, first unsubscribe from it before upgrading. After the upgrade is complete, re-subscribe the agent. See [Uninstall the agent](#uninstall-the-agent) for unsubscribe steps.
 
-## Uninstalling the agent
+1. Update the `spec.chart.version` field in your CR file:
 
-For uninstallation instructions, see [Uninstall specific agent](../../README.md#uninstall-specific-agent).
+    ```yaml
+    spec:
+      chart:
+        version: "1.1.0"  # Update to the new version
+    ```
+
+2. Apply the updated CR:
+
+    ```bash
+    oc apply -f cr.yaml
+    ```
+
+3. Monitor the upgrade progress:
+
+    ```bash
+    # Watch the agent pods rolling update
+    oc get pods -n <namespace> -l app=ims-agent -w
+
+    # Check the CR status:
+    oc describe agentservice ims-agent -n <namespace>
+    ```
+
+The agent operator will automatically handle the upgrade process, including rolling updates of the agent pods.
+
+## Uninstall the agent
+
+To uninstall the agent:
+
+If the agent was previously subscribed to watsonx Orchestrate, unsubscribe it before you uninstall it:
+
+1. Open the Cloud Pak for Data (CPD) home page, for example:
+   - `https://cpd-<instance>.apps.<cluster-domain>/zen/?context=icp4data#/homepage`
+
+2. Click the **Launch the WXA4Z Management Console** tab.
+   - This opens the WXA4Z Content Ingestion UI (Tenant Overview page), for example:  `https://wxa4z-content-ingestion-ui-route-wxa4z-zad.apps.<cluster-domain>/en`
+
+3. On the Tenant Overview page, click your **Tenant name** and navigate to the **Subscriptions** tab.
+   - You will see a list of deployed agents with an **Unsubscribe** button next to each.
+
+4. Click the **Unsubscribe** button next to the **IBM Z IMS Agent**.
+   - This action removes the agent from watsonx Orchestrate (WXO).
+
+**Delete the agent resources:**
+
+1. Delete the Custom Resource:
+
+    ```bash
+    oc delete agentservice ims-agent -n <namespace>
+    ```
+
+2. Verify that the agent resources are removed:
+
+    ```bash
+    # Check that the agent pods are terminated
+    oc get pods -n <namespace> -l app=ims-agent
+
+    # Verify the CR is deleted:
+    oc get agentservice -n <namespace>
+    ```
+
+3. Optional: Clean up secrets if they are no longer needed. Do not delete global secrets if other agents are using them.
+
+    ```bash
+    # Delete agent-specific secrets
+    oc delete secret wxa4z-ims-agent-secrets -n <namespace>
+
+    # Note: Do not delete global secrets if other agents are using them
+    ```
+
+> **Tip:** The agent operator automatically cleans up all resources created by the agent, including deployments, services, and configmaps. However, secrets must be manually deleted if they are no longer needed.
 
 ## Troubleshooting
 
@@ -807,25 +769,26 @@ The agent relies on the OpenSearch pod for retrieval-augmented generation (RAG).
 
       **Recommendation:** It is recommended that you use a hostname instead of an IP address in the `ZOSMF_ENDPOINT` and `SERVICE_ENDPOINT` environment variables because using an IP address might cause issues.
 
-2. Validate `wxa4z-authorization` and Token Exchanger service 
+2. Validate `wxa4z-authorization` and Token Exchanger service.
    - **Authorization Pod**
 
-     Check whether the wxa4z-authorization pod is deployed and is running on the target cluster.
+     Check that the wxa4z-authorization pod is deployed and is running on the target cluster.
 
    - **Token Exchanger Service**
 
      **Tip:** You can check that the token-exchanger service is running by using SSH to access your z/OS system. For example, enter `ssh username@your.zos.system.com` and then run this command to see whether the process is running:
      `ps -ef | grep java`  
 
-      If you see `java -jar token-exchange-mtls.jar` in the results list, the token-exchanger service is running. If it is not running, [deploy and start the service](https://github.ibm.com/wxa4z/tokenexchange/releases/tag/v0.1.0).
-     
-     You can also check the logs from the token-exchanger service by using this command:
-     `scp username@your.zos.system.com:path/to/passticket-mtls/nohup.out ~/Download/log.txt`
-     This command will download the logs to your local workstation and place them here: `~/Download/log.txt`
+      If you see `java -jar token-exchange-mtls.jar` in the results list, the token-exchanger service is running. If it is not running, [deploy and start the service](https://www.ibm.com/docs/en/watsonx/waz/3.3.0?topic=z-deploying-token-exchange-service-passticket-generation).
 
-3. Check the z/OSMF and Operator Console
+     You can also check the logs from the token-exchanger service by using this command:
+     `scp username@your.zos.system.com:path/to/passticket-mtls/nohup.out ~/Downloads/log.txt`
+
+  This command downloads the logs to your local workstation and places them here: `~/Downloads/log.txt`
+
+3. Check the z/OSMF and Operator Console.
    - Ensure that z/OSMF is running and an Operator Console is set up and active.
-   - Ensure that the z/OSMF Certificate was created and the corresponding secret (`service-endpoint-cert-secret`) was updated in OpenShift.
+   - Ensure that the z/OSMF certificate was created and the corresponding secret (`service-endpoint-cert-secret`) was updated in OpenShift.
 
    **Tip:** Consoles often shut down due to inactivity. If the MCP Agent attempts to communicate with an inactive console, errors will occur. Periodically verify that the console is active.
 
