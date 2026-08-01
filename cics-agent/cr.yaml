@@ -41,3 +41,7 @@ spec:
     env: # below are samples of configurable environment variables
       WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct"
       MODEL_RUNTIME: "cloud"
+
+      # Langfuse Observability (optional — required only for traceability)
+      # LANGFUSE_HOST: "https://<langfuse-host>.<domain>/"  # Langfuse UI endpoint
+      # LANGFUSE_TRACING_ENABLED: "False"  # Set to "True" to enable Langfuse tracing
