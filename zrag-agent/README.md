@@ -54,56 +54,15 @@ User Query
 | WatsonX LLM | HTTPS POST `/ml/v1/text/chat[_stream]` | Bearer Token | Decomposition, sufficiency checks, answer generation |
 | Langfuse (optional) | HTTPS | API Key pair | LLM observability |
 
-## Quick Start
-
-### Prerequisites
-
-- Python 3.11+
-- Access to a zRAG retriever backend (OpenSearch Wrapper)
-- IBM WatsonX AI credentials (SaaS API key or CPD username/password)
-- Knowledge base is ingested into OpenSearch with appropriate indices
-
-### Local Setup
-
-```bash
-# Clone and enter the repo
-cd zrag_external_agent
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Configure environment
-cp .env.example .env   # if .env.example exists, otherwise edit .env directly
-# Edit .env with your credentials (see Configuration below)
-
-# Validate configuration
-python main.py --validate-config
-
-```
-
-### Docker
-
-```bash
-# Build and run
-docker compose up --build
-
-# Or build manually
-docker build -t zrag-agent .
-docker run --env-file .env -p 8000:8000 zrag-agent
-```
-
 ## Usage
 
 ### Install ZRAG Agent
-- ZRAG ext agent should be deployed as part of operator installation
-- Once the latest operator is deployed, log in to Watsonx Orchestrate
-- Create a service instance (tenant) on the Orcehstrate, and you should see a namespace with a tenant id getting provisioned in the Openshift Console
+- ZRAG ext agent and the components should be deployed as part of operator installation
+- Once the latest operator is deployed, log in to Watsonx Orchestrate console 
+- Create a service instance (tenant) on the Orchestrate, and you should see a namespace with a tenant id getting provisioned in the Openshift Console
 - Navigate to the pods section of that tenant namespace in Openshift Console
 - You should see tenant specific ZRAG Agent pod coming up
+- Once you see the tenant being provisioned completely, you can navigate to the chat option in Orchestrate UI and from the agent selection dropdown, select ZRAG Agent to proceed.
 
 ### Sequence Flow
 
@@ -116,7 +75,7 @@ docker run --env-file .env -p 8000:8000 zrag-agent
 
 ## Configuration
 
-All configuration is via environment variables (loaded from `.env`).
+All configurations are via environment variables in ConfigMap and Secrets of that tenant specific instance of ZRAG Agent
 
 ### Required
 
@@ -204,6 +163,13 @@ ZRAG_DEFAULT_CUSTOMER_INDICES=
 ZRAG_METADATA_PRODUCT_WEIGHT=1
 ZRAG_METADATA_CUSTOMER_WEIGHT=0
 ZRAG_METADATA_AGENT_WEIGHT=0
+ZRAG_METADATA_PROVIDER_WEIGHT=0
+ZRAG_METADATA_TENANT_WEIGHT=0
+
+ZRAG_FILTER_PRODUCT_WEIGHT=
+ZRAG_FILTER_CUSTOMER_WEIGHT=
+ZRAG_FILTER_PROVIDER_WEIGHT=
+ZRAG_FILTER_TENANT_WEIGHT=
 ```
 
 ## Key Features
@@ -296,13 +262,6 @@ matched against the answer text), scored using a blended formula (40% phrase len
 with a references section.
 Note: Citations may not come for queries not related to Z or for the queries, where parametric knowledge of the inferencing model is entirely used rather than retrieved docs to give results
 
-## Troubleshooting
-
-### Configuration Issues
-
-```bash
-python main.py --validate-config
-```
 
 ### Common Errors
 
@@ -314,15 +273,6 @@ python main.py --validate-config
 | Connection timeout to retriever | Retriever backend unreachable | Check `ZRAG_RETRIEVER_URL` and network access |
 | `SSL: CERTIFICATE_VERIFY_FAILED` | CPD with self-signed certs | Set `WATSONX_VERIFY_SSL=false` |
 
-### Logging
-
-```bash
-# Default: INFO level
-python main.py
-
-# Debug level (verbose LLM payloads, HTTP requests)
-LOG_LEVEL=DEBUG python main.py
-```
 
 ## Security Notes
 
