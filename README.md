@@ -71,6 +71,8 @@ LICENSE # License file
 
 > For **Prebuilt IBM Z product agents**, a separate entitlement must be obtained for each corresponding product.
 
+> **Note:** ZRAG Agent and ZRAG components gets deployed as part of the operator installation in shared as well as tenant namespace by default. No specific deployment steps are required for ZRAG Agent. For further information on how to get started with ZRAG Agent, refer to the [ZRAG Agent README](./zrag-agent/README.md).
+
 ---
 
 ## Compatibility & Requirements
