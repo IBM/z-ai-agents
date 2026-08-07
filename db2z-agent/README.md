@@ -258,6 +258,7 @@ data:
   # Optional: Observability (base64-encoded)
   LANGFUSE_SECRET_KEY: ""
   LANGFUSE_PUBLIC_KEY: ""
+  ZOWE_ENABLED: ""
 ```
 
 #### Creating the Secret
