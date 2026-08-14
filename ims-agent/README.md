@@ -178,6 +178,26 @@ The agent requires Kubernetes Secrets that contain sensitive configuration value
 - Rotate tokens and secrets regularly.
 - Never commit secrets to version control.
 
+
+The agent supports two authentication modes for z/OSMF connections, controlled by `ZOSMF_AUTH_MODE`.
+
+| Variable          | Default      | Description                                                                 |
+| ----------------- | ------------ | --------------------------------------------------------------------------- |
+| `ZOSMF_AUTH_MODE` | `basic`      | Authentication mode for z/OSMF: `basic` or `passticket`.                    |
+| `ZOSMF_USERNAME`  | _(required)_ | z/OSMF user name. This is required when `ZOSMF_AUTH_MODE=basic`.                     |
+| `ZOSMF_PASSWORD`  | _(required)_ | z/OSMF password. This is required when `ZOSMF_AUTH_MODE=basic`.                     |
+
+**`basic` mode (default):** The agent authenticates to z/OSMF using a static
+user name and password supplied by `ZOSMF_USERNAME` and `ZOSMF_PASSWORD`. Both
+variables must be set; otherwise, startup will fail with an error if either is missing.
+
+**`passticket` mode:** The agent obtains a one-time PassTicket at runtime for each
+z/OS connection. `ZOSMF_USERNAME` and `ZOSMF_PASSWORD` are not required in this mode.
+Use this mode in environments where static credentials are not permitted.
+
+> **Important:** `ZOSMF_AUTH_MODE` is case-insensitive and defaults to `passticket` if an
+> unrecognized value is provided.
+
 #### Agent-specific secret reference (`wxa4z-ims-agent-secrets`)
 
 1. Create a yaml file (for example, `ims-agent-secret.yaml`) with the following structure:
@@ -191,7 +211,12 @@ The agent requires Kubernetes Secrets that contain sensitive configuration value
     type: Opaque
     data:
       AGENT_AUTH_TOKEN: ""  # REQUIRED: Agent auth token for registration with WxO
+      ZOSMF_AUTH_MODE: "passticket"  # change to basic to use basic authentication
+      ZOSMF_USERNAME: ""             # fill in when ZOSMF_AUTH_MODE=basic
+      ZOSMF_PASSWORD: ""             # fill in when ZOSMF_AUTH_MODE=basic  
     ```
+
+  
 
 2. Deploy the secret to OpenShift:
 
@@ -210,11 +235,10 @@ The agent requires Kubernetes Secrets that contain sensitive configuration value
 Run the following command to create an image pull secret for IBM Cloud Container Registry (ICR):
 
 ```bash
-oc create secret -n wxa4z-<tenant_id> docker-registry ims-image-pull-secret \
-  --docker-server=icr.io \  #replace this with container registry
-  --docker-username=iamapikey \ # replace this with container registry username
-  --docker-password=<your-api-key> # replace this with container registry entitlement key
+oc create secret docker-registry ims-image-pull-secret -n wxa4z-<tenandID> --docker-server=icr.io --docker-username=iamapikey --docker-password=‘<->’
 ```
+
+Update the *docker-password* with the entitlement key and also update the *tenandID*.
 
 ### Step 2: Configure the cr.yaml file parameters and install agents
 
@@ -401,7 +425,7 @@ The request body must be a JSON object with the following structure:
 | `agent_id` | string | Yes | The unique identifier for the IMS agent |
 | `zos_url` | string | Yes | The base URL of your z/OS system |
 | `application_id` | string | Yes | z/OSMF application ID (typically `IZUDFLT`) |
-| `port` | integer | Yes | The port number for secure communication (typically `5443`) |
+| `port` | integer | Yes | The port number for secure communication with the token exchange service (typically `5443`) |
 | `context` | string | Yes | The context identifier for the z/OS system |
 | `client_cert` | string | Yes | Base64-encoded client certificate for mTLS authentication |
 | `client_key` | string | Yes | Base64-encoded client private key |
@@ -472,6 +496,7 @@ The request body must be a JSON object with the following structure. For informa
   "context": "ec0000a",
   "config": {
     "host": "https://ec0000a.example.ibm.com",
+    "port": 10443,
     "console_name": "console name",
     "subsystem_id": "id value",
     "connect_jobname": "job name",
@@ -487,6 +512,7 @@ The request body must be a JSON object with the following structure. For informa
 | `agent_id` | string | Yes | The unique identifier for the IMS agent |
 | `context` | string | Yes | A context identifier for this configuration should be the **same value** as context in connection |
 | `config.host` | string | Yes | The base URL of your z/OS system |
+| `config.port` | integer | Yes | The port where the z/OSMF service is running on your z/OS system |
 | `config.console_name` | string | Yes | The z/OS console name (for example, `oadm000a`) |
 | `config.subsystem_id` | string | Yes | IMS subsystem instance ID (for example, `IMS1`) |
 | `config.connect_jobname` | string | Yes | The job name of IMS Connect (for example, `HWS1`) |
@@ -513,6 +539,7 @@ curl -X POST \
     "context": "ec0000a",
     "config": {
       "host": "https://ec0000a.vmec.svl.ibm.com",
+      "port": 10443,
       "console_name": "val",
       "subsystem_id": "id",
       "connect_jobname": "jobname",
