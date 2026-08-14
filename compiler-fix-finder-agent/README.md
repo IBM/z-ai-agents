@@ -150,7 +150,7 @@ spec:
   chart:
     repository: oci://icr.io/zoscp/ibm-z-compilers-fix-finder
     name: compiler-fix-finder-agent
-    version: "1.1.3"  # Update to the desired chart version
+    version: "1.1.4"  # Update to the desired chart version
     pullSecrets: # pullSecrets is used to pull image from registry
       - name: z-compiler-fix-finder-image-pull-secret
 
