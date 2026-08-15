@@ -39,9 +39,9 @@ spec:
       name: wxa4z-ims-agent-secrets # upgrade-agent-secrets (this secret is about each agent)
 
     env: # below are samples of configurable environment variables
-      DEPLOYMENT_TYPE: "on-prem"
-      WATSONX_MODEL_ID: ibm/granite-4.1-8b #openai/gpt-oss-120b #"ibm/granite-3-3-8b-instruct"
-      AUTHZ_BASE_URL: ""  #openshift authorization route from wxa4z-zad namespace
-      MODEL_RUNTIME: "openai_protocol"
+      DEPLOYMENT_TYPE: "openai-protocol" # Options: cloud, on-prem, openai-protocol. It should match MODEL_RUNTIME value.
+      WATSONX_MODEL_ID: ibm/granite-4.1-8b # openai/gpt-oss-120b #"ibm/granite-3-3-8b-instruct"
+      AUTHZ_BASE_URL: "" # openshift authorization route from wxa4z-zad namespace
+      MODEL_RUNTIME: "openai-protocol" # Options: cloud, on-prem, openai-protocol. It should match DEPLOYMENT_TYPE value.
 
     
