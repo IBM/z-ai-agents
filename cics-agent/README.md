@@ -161,6 +161,7 @@ The following table describes the fields required in the agent-specific secret:
 | `AUTH_SERVICE_BASE_URL` | The authentication server base URL — where the wxa4z auth service is reached to validate agent tokens. To obtain this value, copy `AUTH_SERVICE_BASE_URL` from the `wxa4z-authorization-secrets` resource in your cluster. |
 | `AGENT_AUTH_TOKEN` | Token used by the agent-controller to register this agent with watsonx Orchestrate. Use a CPD API key of your watsonx project for on-prem clusters, or a watsonx API key for cloud. See [Generating API keys](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.4.x?topic=tutorials-generating-api-keys). |
 | `WATSONX_PROJECT_URL` | URL of your watsonx.ai project endpoint. For SaaS: regional endpoint (e.g., `https://us-south.ml.cloud.ibm.com`). For on-prem CPD: your CPD instance FQDN. Found in your watsonx.ai project settings under API details. |
+| `WATSONX_MODEL_ID` | The watsonx model to use (e.g., `meta-llama/llama-3-3-70b-instruct`). |
 | `LANGFUSE_SECRET_KEY` | (Optional) Langfuse secret key (e.g., `sk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`). Required only for Langfuse observability and traceability. |
 | `LANGFUSE_PUBLIC_KEY` | (Optional) Langfuse public key (e.g., `pk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`). Required only for Langfuse observability and traceability. |
 
@@ -200,6 +201,8 @@ data:
                             # For SaaS: regional endpoint (e.g., https://us-south.ml.cloud.ibm.com).
                             # For on-prem CPD: your CPD instance FQDN.
                             # Found in your watsonx.ai project settings under API details.
+  WATSONX_MODEL_ID: ""  # REQUIRED: The watsonx model ID to use
+                         # (e.g., meta-llama/llama-3-3-70b-instruct).
 
   # Langfuse Observability (OPTIONAL — required only for traceability)
   LANGFUSE_SECRET_KEY: ""  # OPTIONAL: Langfuse secret key (e.g., sk-lf-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).
