@@ -132,7 +132,7 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: omegamon-insights-agent
-    version: "1.3.0"  # Update to the desired chart version
+    version: "1.3.2"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret
