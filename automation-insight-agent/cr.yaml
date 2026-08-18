@@ -20,7 +20,7 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: automation-insights-agent
-    version: "1.3.0"
+    version: "1.3.2"
     #pullSecrets:
      # - name: pull-secret
 
