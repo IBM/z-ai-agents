@@ -162,7 +162,7 @@ The agent requires Kubernetes Secrets containing sensitive configuration values.
 The agent uses two types of secrets:
 
 1. **Global Secrets** (`wxa4z-watsonx-credentials`): Shared across all agents
-2. **Agent-Specific Secrets** (`wxa4z-support-agent-secrets`): Unique to this agent
+2. **Agent-Specific Secrets** (`wxa4z-support-agent-agent-secrets`): Unique to this agent
 
 #### Agent-Specific Secret Reference
 
@@ -172,7 +172,7 @@ Create a secret with the following structure. **All values must be base64-encode
 apiVersion: v1
 kind: Secret
 metadata:
-  name: wxa4z-support-agent-secrets
+  name: wxa4z-support-agent-agent-secrets
   namespace: ""  # REQUIRED: Must match the agent namespace
 type: Opaque
 data:
@@ -210,7 +210,7 @@ oc apply -f support-agent-secret.yaml
 4. Verify the secret was created:
 
 ```bash
-oc get secret wxa4z-support-agent-secrets -n <namespace>
+oc get secret wxa4z-support-agent-agent-secrets -n <namespace>
 ```
 
 ### Step 2: Deploy Agent using Custom Resource (CR)
@@ -273,7 +273,7 @@ spec:
         name: wxa4z-watsonx-credentials  # Global secrets shared across agents
     
     secrets:
-      name: wxa4z-support-agent-secrets  # Agent-specific secrets
+      name: wxa4z-support-agent-agent-secrets  # Agent-specific secrets
     
     env:
       # LLM Configuration
@@ -412,7 +412,7 @@ oc get agentservice -n <namespace>
 
 ```bash
 # Delete agent-specific secrets
-oc delete secret wxa4z-support-agent-secrets -n <namespace>
+oc delete secret wxa4z-support-agent-agent-secrets -n <namespace>
 
 # Note: Do not delete global secrets if other agents are using them
 ```
