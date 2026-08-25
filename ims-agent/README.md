@@ -183,17 +183,17 @@ The agent supports two authentication modes for z/OSMF connections, controlled b
 
 | Variable          | Default      | Description                                                                 |
 | ----------------- | ------------ | --------------------------------------------------------------------------- |
-| `ZOSMF_AUTH_MODE` | `basic`      | Authentication mode for z/OSMF: `basic` or `passticket`.                    |
+| `ZOSMF_AUTH_MODE` | `passticket`      | Authentication mode for z/OSMF: `basic` or `passticket`.                    |
 | `ZOSMF_USERNAME`  | _(required)_ | z/OSMF user name. This is required when `ZOSMF_AUTH_MODE=basic`.                     |
 | `ZOSMF_PASSWORD`  | _(required)_ | z/OSMF password. This is required when `ZOSMF_AUTH_MODE=basic`.                     |
 
-**`basic` mode (default):** The agent authenticates to z/OSMF using a static
-user name and password supplied by `ZOSMF_USERNAME` and `ZOSMF_PASSWORD`. Both
-variables must be set; otherwise, startup will fail with an error if either is missing.
-
-**`passticket` mode:** The agent obtains a one-time PassTicket at runtime for each
+**`passticket` mode (default):** The agent obtains a one-time PassTicket at runtime for each
 z/OS connection. `ZOSMF_USERNAME` and `ZOSMF_PASSWORD` are not required in this mode.
 Use this mode in environments where static credentials are not permitted.
+
+**`basic` mode:** The agent authenticates to z/OSMF using a static
+user name and password supplied by `ZOSMF_USERNAME` and `ZOSMF_PASSWORD`. Both
+variables must be set; otherwise, startup will fail with an error if either is missing.
 
 > **Important:** `ZOSMF_AUTH_MODE` is case-insensitive and defaults to `passticket` if an
 > unrecognized value is provided.
@@ -209,7 +209,7 @@ Use this mode in environments where static credentials are not permitted.
       name: wxa4z-ims-agent-secrets
       namespace: ""  # REQUIRED: Must match the agent namespace
     type: Opaque
-    data:
+    stringData:
       AGENT_AUTH_TOKEN: ""  # REQUIRED: Agent auth token for registration with WxO
       ZOSMF_AUTH_MODE: "passticket"  # change to basic to use basic authentication
       ZOSMF_USERNAME: ""             # fill in when ZOSMF_AUTH_MODE=basic
@@ -279,7 +279,7 @@ spec:
     - agentName: ims
       agentId: wxa4z:ims:agent
       displayName: "IBM Z IMS Agent"
-      description: "IMS AGENT helps to answer all IMS related questions"
+      description: "IMS Agent is an AI assistant for IBM IMS on z/OS, covering both IMS DB and IMS TM. It answers questions about DL/I, command syntax, database administration, system operations, and troubleshooting. When connected to a live system, it can also inspect real-time resource status and help diagnose issues."
       bootstrapConfig:
         name: ims-agent-bootstrap-config
         fileName: ims_agent_bootstrap_config.yaml
@@ -287,10 +287,9 @@ spec:
   chart:
     repository: oci://icr.io/ibm-ims-ai
     name: ims-agent
-    version: "v1.1.0"  # Update to the desired chart version
-    # Uncomment if using a private registry:
-    # pullSecrets:
-    #   - name: wxa4z-image-pull-secret
+    version: "v1.1.0"  # Update to the desired chart version. Note: Chart version prepends a 'v' while the image version does not.
+    pullSecrets:
+      - name: wxa4z-image-pull-secret
 
   values:
     replicaCount: 1
