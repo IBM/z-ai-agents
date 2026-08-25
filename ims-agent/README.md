@@ -265,16 +265,17 @@ Update all placeholder values marked as `REQUIRED` and save the configuration to
 apiVersion: wxa4z.watsonx.ibm.com/v1alpha1
 kind: AgentService
 metadata:
-  name: ims-agent
-  namespace: ""  # REQUIRED: Target namespace (for example, wxa4z-<tenant_id>)
+  name: ims-agent # eg: upgrade-agent-test
+  namespace: wxa4z-<>
   labels:
     wxa4z.watsonx.ibm.com/managed-by: agent-operator
+
 spec:
   releaseName: ims-agent
-  namespace: ""  # REQUIRED: Must match metadata.namespace
-  tenantId: ""   # REQUIRED: Tenant identifier for multi-tenancy support
-  wxa4z-core-services-namespace: wxa4z-zad  # Namespace where wxa4z core services are deployed
-  
+  tenantId: ""
+  namespace: wxa4z-<>
+  wxa4z-core-services-namespace: wxa4z-zad # namespace in which the opensearch-client, authorization etc are deployed
+
   agentDetails:
     - agentName: ims
       agentId: wxa4z:ims:agent
@@ -283,32 +284,31 @@ spec:
       bootstrapConfig:
         name: ims-agent-bootstrap-config
         fileName: ims_agent_bootstrap_config.yaml
-  
+
   chart:
-    repository: oci://icr.io/ibm-ims-ai
-    name: ims-agent
-    version: "v1.1.0"  # Update to the desired chart version. Note: Chart version prepends a 'v' while the image version does not.
-    pullSecrets:
-      - name: wxa4z-image-pull-secret
+    repository: oci://icr.io/ibm-ims-ai  # (oci://icr.io/wxa4z-dev-container-registry)
+    name: ims-agent # (upgrade-agent)
+    version: v1.1.0 # Update to the desired chart version. Note: Chart version prepends a 'v' while the image version does not.
+    pullSecrets: # if not mentioned in CR, by default will search in the secret - pull-secret
+      - name: ims-image-pull-secret # Create this secret in the namespace (wxa4z-<tenant-id>) with entilement key containing the credentials for the image repo of the agent and charts so that the tar.gz can be pulled
 
   values:
     replicaCount: 1
-    
+
     global:
       secrets:
-        name: wxa4z-watsonx-credentials  # Global secrets shared across agents
-    
+        name: wxa4z-watsonx-credentials # this should be provided in the CR so that the global variables can be referenced
+
     secrets:
-      name: wxa4z-ims-agent-secrets      # Agent-specific secrets
+      name: wxa4z-ims-agent-secrets # upgrade-agent-secrets (this secret is about each agent)
+
+    env: # below are samples of configurable environment variables
+      DEPLOYMENT_TYPE: "openai-protocol" # Options: cloud, on-prem, openai-protocol. It should match MODEL_RUNTIME value.
+      WATSONX_MODEL_ID: ibm/granite-4.1-8b # openai/gpt-oss-120b #"ibm/granite-3-3-8b-instruct"
+      AUTHZ_BASE_URL: "" # openshift authorization route from wxa4z-zad namespace
+      MODEL_RUNTIME: "openai-protocol" # Options: cloud, on-prem, openai-protocol. It should match DEPLOYMENT_TYPE value.
+
     
-    env:
-      # LLM Configuration
-      WATSONX_MODEL_ID: "meta-llama/llama-3-3-70b-instruct" # REQUIRED: The id of the model you've configured to use
-      MODEL_RUNTIME: "on_prem" # REQUIRED: Options are "on_prem", "openai_protocol", and "cloud"
-      DEPLOYMENT_TYPE: ""      # REQUIRED: Options are "on_prem", "openai_protocol", and "cloud" (Must match MODEL_RUNTIME value)
-      AUTHZ_BASE_URL: ""       # REQUIRED: Authorization Service route. Can be found in the `wxa4z-zad` namespace under "Routes"
-    registry:
-      entitlementKey: ""       # REQUIRED: The entitlement key you retrieved from Shop Z
 ```
 
 #### Deploy the agent to OpenShift
