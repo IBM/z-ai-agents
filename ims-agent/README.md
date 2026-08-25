@@ -279,7 +279,7 @@ spec:
   agentDetails:
     - agentName: ims
       agentId: wxa4z:ims:agent
-      displayName: "IBM Z IMS Agent"
+      agentDisplayName: "IBM Z IMS Agent"
       description: "IMS Agent is an AI assistant for IBM IMS on z/OS, covering both IMS DB and IMS TM. It answers questions about DL/I, command syntax, database administration, system operations, and troubleshooting. When connected to a live system, it can also inspect real-time resource status and help diagnose issues."
       bootstrapConfig:
         name: ims-agent-bootstrap-config
