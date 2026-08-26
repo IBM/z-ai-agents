@@ -235,7 +235,7 @@ variables must be set; otherwise, startup will fail with an error if either is m
 Run the following command to create an image pull secret for IBM Cloud Container Registry (ICR):
 
 ```bash
-oc create secret docker-registry ims-image-pull-secret -n wxa4z-<tenandID> --docker-server=icr.io --docker-username=iamapikey --docker-password=‘<->’
+oc create secret docker-registry ims-image-pull-secret -n wxa4z-<tenandID> --docker-server=icr.io --docker-username=iamapikey --docker-password=<->
 ```
 
 Update the *docker-password* with the entitlement key and also update the *tenandID*.
