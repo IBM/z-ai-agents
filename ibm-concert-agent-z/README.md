@@ -181,36 +181,22 @@ In the values.yaml file, scroll down to the IBM Concert for Z Agent section and 
 **SET VALUES FOR BELOW KEYS IN `env` SECTION of `values.yaml` as required**
 
 #### Secrets (configured in mcpSecrets section)
-| Key                          | Description                                                                 |
-|------------------------------|-----------------------------------------------------------------------------|
-| `WATSONX_ML_URL`             | Watsonx ML service URL                                                      |
-| `WATSONX_DEPLOYMENT_SPACE_ID`| Watsonx deployment space ID                                                 |
-| `WATSONX_PROJECT_ID`         | Watsonx project ID                                                          |
-| `EXTERNAL_WATSONX_API_KEY`   | Watsonx API key                                                             |
-| `CPD_USERNAME`               | CPD username (for on-prem deployments)                                      |
-| `AGENT_AUTH_TOKEN`           | Token used by the agent-controller to register this agent with wxo (API_KEY or Bearer)  |
-| `UNITE_CLIENT_ID`            | Client ID for Unite API access                                              |
-| `UNITE_CLIENT_SECRET`        | Client secret for Unite API access                                          |
-| `UNITE_GRANT_TYPE`           | OAuth2 grant type (e.g. `client_credentials`)                               |
-| `UNITE_API_URL`              | Unite API base URL                                                          |
-| `UNITE_TOKEN_URL`            | URL to retrieve the Unite token                                             |
-| `LANGFUSE_SECRET_KEY`        | Secret key for Langfuse tracing                                             |
-| `LANGFUSE_PUBLIC_KEY`        | Public key for Langfuse tracing                                             |
-| `WRAPPER_URL`                | Wrapper URL for OpenSearch queries                                          |
-| `WRAPPER_USERNAME`           | Wrapper username                                                            |
-| `WRAPPER_PASSWORD`           | Wrapper password                                                            |
-| `EMBEDDING_MODEL_PATH`       | Path to embedding model                                                     |
-| `TOOL_EMBEDDING_PATH`        | Path to tool embeddings                                                     |
-| `CONCERT_MCP_SERVER_URL`     | MCP server URL endpoint (internal service URL)                              |
-| `CONCERT_MCP_SERVER_HOST`    | MCP server host (default: `0.0.0.0`)                                        |
-| `CONCERT_MCP_SERVER_PATH`    | MCP server path (default: `/mcp`)                                           |
-| `CONCERT_MCP_SERVER_PORT`    | MCP server port (default: `9002`)                                           |
-| `OMEGAMON_MCP_URL`           | OMEGAMON MCP URL (optional)                                                 |
-| `WORKLOAD_MCP_URL`           | Workload MCP URL (optional)                                                 |
-| `AUTOMATION_MCP_URL`         | Automation MCP URL (optional)                                               |
-| `UNITE_LEGACY_API_URL`       | Unite Legacy API URL (optional)                                             |
-| `UNITE_AGENTIC_API_URL`      | Unite Agentic API URL (optional)                                            |
-| `CONCERT_UI_BASE_URL`        | Base URL for Concert UI (used for generating dashboard links in responses)  |
+
+| Key                    | Description                                                                                      |
+|------------------------|--------------------------------------------------------------------------------------------------|
+| `CONCERT_HOST`         | **Required.** Base URL of your Concert for Z deployment (e.g. `https://cpd.example.com`). All product API paths are derived automatically from this value. |
+| `UNITE_CLIENT_ID`      | **Required.** Client ID for Unite API access.                                                    |
+| `UNITE_CLIENT_SECRET`  | **Required.** Client secret for Unite API access.                                                |
+| `AGENT_AUTH_TOKEN`     | **Required.** Token used by the agent-controller to register this agent with watsonx Orchestrate (`API_KEY` or Bearer). A default value `WXA4Z_SAMPLE_API_KEY` is set if not provided, but you should configure a proper token. |
+| `WRAPPER_USERNAME`     | **Required.** Username for the OpenSearch wrapper service.                                       |
+| `WRAPPER_PASSWORD`     | **Required.** Password for the OpenSearch wrapper service.                                       |
+| `OMEGAMON_MCP_URL`     | OMEGAMON MCP URL (optional).                                                                     |
+| `WORKLOAD_MCP_URL`     | Workload MCP URL (optional).                                                                     |
+| `AUTOMATION_MCP_URL`   | Automation MCP URL (optional).                                                                   |
+| `EMBEDDING_MODEL_PATH` | Path to the embedding model (optional).                                                          |
+| `TOOL_EMBEDDING_PATH`  | Path to tool embeddings (optional).                                                              |
+| `LANGFUSE_SECRET_KEY`  | Secret key for Langfuse tracing (optional, required only when `LANGFUSE_TRACING_ENABLED=true`).  |
+| `LANGFUSE_PUBLIC_KEY`  | Public key for Langfuse tracing (optional, required only when `LANGFUSE_TRACING_ENABLED=true`).  |
 
 #### Other keys
 | Key                       | Description                                                            |
@@ -352,60 +338,24 @@ metadata:
   namespace: ""  # REQUIRED: Must match the agent namespace
 type: Opaque
 data:
-  # Agent Authentication (base64-encoded, REQUIRED)
-  AGENT_AUTH_TOKEN: ""  # REQUIRED: Agent auth token for registration with WxO. A default value "WXA4Z_SAMPLE_API_KEY" is set if not provided, but you should configure a proper token.
-
-  # Unite API Configuration (base64-encoded, REQUIRED)
-  UNITE_CLIENT_ID: ""  # REQUIRED: Client ID for Unite API access
+  CONCERT_HOST: ""         # REQUIRED: Base URL of your Concert for Z deployment (e.g. https://cpd.example.com)
+  UNITE_CLIENT_ID: ""      # REQUIRED: Client ID for Unite API access
   UNITE_CLIENT_SECRET: ""  # REQUIRED: Client secret for Unite API access
-  UNITE_GRANT_TYPE: ""  # REQUIRED: OAuth2 grant type (e.g., "client_credentials")
-  UNITE_API_URL: ""  # REQUIRED: Unite API base URL
-  UNITE_TOKEN_URL: ""  # REQUIRED: URL to retrieve the Unite token
-
-  # Wrapper Configuration (base64-encoded, REQUIRED)
-  WRAPPER_URL: ""  # REQUIRED: Wrapper URL for OpenSearch queries
-  WRAPPER_USERNAME: ""  # REQUIRED: Wrapper username
-  WRAPPER_PASSWORD: ""  # REQUIRED: Wrapper password
-
-  # MCP Server Configuration (base64-encoded, REQUIRED)
-  CONCERT_MCP_SERVER_URL: ""  # REQUIRED: MCP server URL endpoint (internal service URL)
-  CONCERT_MCP_SERVER_HOST: ""  # REQUIRED: MCP server host (default: "0.0.0.0")
-  CONCERT_MCP_SERVER_PATH: ""  # REQUIRED: MCP server path (default: "/mcp")
-  CONCERT_MCP_SERVER_PORT: ""  # REQUIRED: MCP server port (default: "9002")
-
-  # LLM Model (base64-encoded, REQUIRED)
-  LLM_MODEL: ""  # REQUIRED: LLM model to use (e.g., "meta-llama/llama-3-3-70b-instruct")
-
-  # Embedding Model Configuration (base64-encoded, optional)
-  EMBEDDING_MODEL_PATH: ""  # Optional: Path to embedding model
+  AGENT_AUTH_TOKEN: ""     # REQUIRED: Agent auth token for registration with watsonx Orchestrate (API_KEY or Bearer)
+  WRAPPER_USERNAME: ""     # REQUIRED: Username for the OpenSearch wrapper service
+  WRAPPER_PASSWORD: ""     # REQUIRED: Password for the OpenSearch wrapper service
+  OMEGAMON_MCP_URL: ""     # Optional: OMEGAMON MCP URL
+  WORKLOAD_MCP_URL: ""     # Optional: Workload MCP URL
+  AUTOMATION_MCP_URL: ""   # Optional: Automation MCP URL
+  EMBEDDING_MODEL_PATH: "" # Optional: Path to embedding model
   TOOL_EMBEDDING_PATH: ""  # Optional: Path to tool embeddings
-
-  # Additional MCP URLs (base64-encoded, optional)
-  OMEGAMON_MCP_URL: ""  # Optional: OMEGAMON MCP URL
-  WORKLOAD_MCP_URL: ""  # Optional: Workload MCP URL
-  AUTOMATION_MCP_URL: ""  # Optional: Automation MCP URL
-  UNITE_LEGACY_API_URL: ""  # Unite Legacy API URL
-  UNITE_AGENTIC_API_URL: ""  # Unite Agentic API URL
-  CONCERT_UI_BASE_URL: ""  # Optional: Base URL for Concert UI (used for generating dashboard links)
-
-  # Watsonx Configuration (base64-encoded, optional - required only when dev_mode is enabled)
-  WATSONX_ML_URL: ""  # Optional: Watsonx ML service URL (required if dev_mode=true)
-  WATSONX_DEPLOYMENT_SPACE_ID: ""  # Optional: Watsonx deployment space ID (required if dev_mode=true)
-  WATSONX_PROJECT_ID: ""  # Optional: Watsonx project ID (required if dev_mode=true)
-  EXTERNAL_WATSONX_API_KEY: ""  # Optional: Watsonx API key (required if dev_mode=true)
-  CPD_USERNAME: ""  # Optional: CPD username (required if dev_mode=true for on-prem deployments)
-
-  # Langfuse Tracing (base64-encoded, optional - required only if LANGFUSE_TRACING_ENABLED=true)
-  LANGFUSE_PUBLIC_KEY: ""  # Optional: Public key for Langfuse tracing (required if tracing enabled)
-  LANGFUSE_SECRET_KEY: ""  # Optional: Secret key for Langfuse tracing (required if tracing enabled)
+  LANGFUSE_PUBLIC_KEY: ""  # Optional: Public key for Langfuse tracing (required if LANGFUSE_TRACING_ENABLED=true)
+  LANGFUSE_SECRET_KEY: ""  # Optional: Secret key for Langfuse tracing (required if LANGFUSE_TRACING_ENABLED=true)
 ```
 
 **Important:**
-- `AGENT_AUTH_TOKEN` is required for agent registration with watsonx Orchestrate.
-- Unite API credentials (`UNITE_CLIENT_ID`, `UNITE_CLIENT_SECRET`, `UNITE_GRANT_TYPE`, `UNITE_API_URL`, `UNITE_TOKEN_URL`) are required for accessing Concert data.
-- Wrapper credentials (`WRAPPER_URL`, `WRAPPER_USERNAME`, `WRAPPER_PASSWORD`) are required for OpenSearch queries.
-- MCP Server configuration (`CONCERT_MCP_SERVER_URL`, `CONCERT_MCP_SERVER_HOST`, `CONCERT_MCP_SERVER_PATH`, `CONCERT_MCP_SERVER_PORT`) is required for the dual-deployment architecture.
-- `LLM_MODEL` is required to specify which language model to use.
+- All other secrets (`UNITE_API_URL`, `UNITE_TOKEN_URL`, `UNITE_GRANT_TYPE`, `CONCERT_MCP_SERVER_URL`, `WRAPPER_URL`, and related values) are set automatically by the chart and do not need to be supplied.
+- `AGENT_AUTH_TOKEN` defaults to `WXA4Z_SAMPLE_API_KEY` if not set — configure a proper token before production use.
 
 ### Creating the Secret
 
