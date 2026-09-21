@@ -166,12 +166,16 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: upgrade-agent
-    version: "1.3.2"  # Update to the desired chart version
+    version: "1.4.0"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret
 
   values:
+    # Note: For WXO version 5.4.2+, the route.tls section below is required with enableTlsCertMount: false. For versions prior to WXO 5.4.2, it is not required.
+    route:
+      tls:
+        enableTlsCertMount: false
     replicaCount: 1
     
     global:

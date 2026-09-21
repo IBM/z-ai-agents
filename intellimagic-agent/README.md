@@ -135,6 +135,10 @@ spec:
     #   - name: intellimagic-image-pull-secret
 
   values:
+    # Note: For WXO version 5.4.2+, the route.tls section below is required with enableTlsCertMount: false. For versions prior to WXO 5.4.2, it is not required.
+    route:
+      tls:
+        enableTlsCertMount: false
     replicaCount: 1
     
     global:
