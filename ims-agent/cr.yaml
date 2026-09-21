@@ -29,6 +29,10 @@ spec:
       - name: ims-image-pull-secret # Create this secret in the namespace (wxa4z-<tenant-id>) with entilement key containing the credentials for the image repo of the agent and charts so that the tar.gz can be pulled
 
   values:
+    # Note: For WXO version 5.4.2+, the route.tls section below is required with enableTlsCertMount: false. For versions prior to WXO 5.4.2, it is not required.
+    route:
+      tls:
+        enableTlsCertMount: false
     replicaCount: 1
 
     global:

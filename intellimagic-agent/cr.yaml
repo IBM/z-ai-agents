@@ -29,6 +29,10 @@ spec:
       - name: intellimagic-cr-pull-secret # The name of the secret containing the credentials for pulling the charts
 
   values:
+    # Note: For WXO version 5.4.2+, the route.tls section below is required with enableTlsCertMount: false. For versions prior to WXO 5.4.2, it is not required.
+    route:
+      tls:
+        enableTlsCertMount: false
     replicaCount: 1
 
     global:

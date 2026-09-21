@@ -29,6 +29,10 @@ spec:
       - name: db2-image-pull-secret # the name of the secret containing the credentials for the image repo of the agent so that the tar.gz can be pulled
 
   values:
+    # Note: For WXO version 5.4.2+, the route.tls section below is required with enableTlsCertMount: false. For versions prior to WXO 5.4.2, it is not required.
+    route:
+      tls:
+        enableTlsCertMount: false
     replicaCount: 1
 
     global:
