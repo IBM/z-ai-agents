@@ -123,14 +123,17 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: automation-insights-agent
-    version: "1.3.2"  # Update to the desired chart version
+    version: "1.4.0"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret
 
   values:
     replicaCount: 1
-    
+    # Note: For WXO version 5.4.2+, the route.tls section below is required. For versions prior to WXO 5.4.2, it is not required.
+    route:
+      tls:
+        enableTlsCertMount: false
     global:
       secrets:
         name: wxa4z-watsonx-credentials  # Global secrets shared across agents
