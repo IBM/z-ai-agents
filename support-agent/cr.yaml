@@ -21,11 +21,15 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: support-agent
-    version: "1.3.2"
+    version: "1.4.0"
     # pullSecrets:
     #   - name: pull-secret
 
   values:
+    # Note: For WXO version 5.4.2+, the route.tls section below is required with enableTlsCertMount: false. For versions prior to WXO 5.4.2, it is not required.
+    route:
+      tls:
+        enableTlsCertMount: false
     replicaCount: 1
     global:
         secrets:
