@@ -70,7 +70,7 @@ metadata:
 type: Opaque
 data:
   # Agent Authentication (base64-encoded, REQUIRED)
-  AGENT_AUTH_TOKEN: ""  # REQUIRED: Agent auth token for registration with WxO
+  AGENT_AUTH_TOKEN: ""  # REQUIRED: Base64-encoded string of the fixed token value ("wxa4z-upgrade-agent-api-key")
   
   # z/OSMF Configuration (base64-encoded, REQUIRED)
   ZOSMF_ENDPOINT: ""  # REQUIRED: z/OSMF endpoint URL
@@ -80,7 +80,7 @@ data:
 ```
 
 > **Important:**
-> - **AGENT_AUTH_TOKEN is required** for agent registration with watsonx Orchestrate.
+> - **AGENT_AUTH_TOKEN is required** for agent registration with watsonx Orchestrate. Provide the base64-encoded string of `wxa4z-upgrade-agent-api-key`.
 > - z/OSMF credentials are required for upgrade operations.
 > - The z/OSMF user must have TSO logon permission.
 
@@ -116,6 +116,7 @@ The following table outlines the key configuration parameters:
 | **spec.values.secrets.name** | Name of agent-specific secrets | Yes |
 | **spec.values.global.secrets.name** | Name of global shared secrets | Yes |
 | **spec.values.env.HOST_NAME** | Cluster endpoint where the image is deployed | Yes |
+| **spec.values.env.AGENT_ID** | Unique identifier for the agent (e.g., `wxa4z:upgrade-agent:agent`). Must match the Agent ID configured in the authorization service and `spec.agentDetails[].agentId`. | Yes |
 | **spec.values.env.PDS_NAME** | Partitioned Dataset Name for storing REXX script | Yes |
 
 #### Additional Configuration Parameters
@@ -188,6 +189,7 @@ spec:
       
       # Cluster Configuration
       HOST_NAME: ""  # REQUIRED: Cluster endpoint
+      AGENT_ID: ""   # REQUIRED: Unique identifier for the agent (must match the Agent ID configured in the authorization service and spec.agentDetails[].agentId)
       
       # z/OS Configuration
       PDS_NAME: ""  # REQUIRED: Partitioned Dataset Name (format: {USERNAME}.REXX)
@@ -378,7 +380,6 @@ If you run into any errors during installation, see [Troubleshooting](../../READ
 
 5. Click the **Unsubscribe** button next to the **IBM Z Upgrade Agent**.
    - This action removes the agent from watsonx Orchestrate (WXO).
-
 
 ## Troubleshooting agent runtime errors
 

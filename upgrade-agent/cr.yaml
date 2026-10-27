@@ -38,3 +38,4 @@ spec:
       HOST_NAME: ""
       WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
       MODEL_RUNTIME: "openai_protocol"
+      AGENT_ID: "" # REQUIRED: Unique identifier for the agent (must match the Agent ID configured in the authorization service and spec.agentDetails[].agentId)
