@@ -381,7 +381,6 @@ If you run into any errors during installation, see [Troubleshooting](../../READ
 5. Click the **Unsubscribe** button next to the **IBM Z Upgrade Agent**.
    - This action removes the agent from watsonx Orchestrate (WXO).
 
-
 ## Troubleshooting agent runtime errors
 
 Follow these steps to troubleshoot agent runtime errors:
