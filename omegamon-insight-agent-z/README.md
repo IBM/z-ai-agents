@@ -127,7 +127,7 @@ spec:
       description: 'Enables system programmers to retrieve and analyze OMEGAMON system information'
       bootstrapConfig:
         name: "omegamon-insights-agent-bootstrap-config"
-        fileName: "omegamon_insights_agent_bootstrap_config.yaml"  
+        fileName: "omegamon_insights_agent_bootstrap_config.yaml"
   
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
