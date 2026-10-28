@@ -114,7 +114,7 @@ spec:
   
   agentDetails:
     - agentName: automation-insights-agent
-      agentId: wxa4z:automation-insights-agent:agent
+      agentId: wxa4z:automation-agent-z:agent
       description: 'Enables system programmers to retrieve and analyze Automation and Netview domain information'
       bootstrapConfig:
         name: "automation-insights-agent-bootstrap-config"
