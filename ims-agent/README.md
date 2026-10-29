@@ -1,5 +1,9 @@
 # IBM IMS Agents
 
+To get the latest installation and configuration documentation for IMS Agents 1.1.0, see [IMS Agents](https://www.ibm.com/docs/en/ims/15.6.0?topic=administration-ims-agents).
+
+The following readme information is being deprecated.
+
 ## Overview
 
 The IBM IMS Agents is a unified agent solution that combines question-answering capabilities with real-time system interaction. IMS Agents can answer general IMS command-related questions, such as the format or syntax of commands, and can provide insights into the operational state of IMS systems, which can help accelerate troubleshooting by streamlining diagnostics.
