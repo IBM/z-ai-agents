@@ -114,7 +114,7 @@ spec:
   
   agentDetails:
     - agentName: automation-insights-agent
-      agentId: wxa4z:automation-insights-agent:agent
+      agentId:  wxa4z:automation-agent-z:agent
       description: 'Enables system programmers to retrieve and analyze Automation and Netview domain information'
       bootstrapConfig:
         name: "automation-insights-agent-bootstrap-config"
@@ -123,7 +123,7 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: automation-insights-agent
-    version: "1.4.0"  # Update to the desired chart version
+    version: "1.5.0"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret

@@ -116,6 +116,7 @@ The following table outlines the key configuration parameters:
 | **spec.values.secrets.name** | Name of agent-specific secrets | Yes |
 | **spec.values.global.secrets.name** | Name of global shared secrets | Yes |
 | **spec.values.env.HOST_NAME** | Cluster endpoint where the image is deployed | Yes |
+| **spec.values.env.AGENT_ID** | Unique identifier for the agent (e.g., `wxa4z:upgrade-agent:agent`). Must match the Agent ID configured in the authorization service and `spec.agentDetails[].agentId`. | Yes |
 | **spec.values.env.PDS_NAME** | Partitioned Dataset Name for storing REXX script | Yes |
 
 #### Additional Configuration Parameters
@@ -166,7 +167,7 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
     name: upgrade-agent
-    version: "1.4.0"  # Update to the desired chart version
+    version: "1.5.0"  # Update to the desired chart version
     # Uncomment if using a private registry:
     # pullSecrets:
     #   - name: wxa4z-image-pull-secret
@@ -192,6 +193,7 @@ spec:
       
       # Cluster Configuration
       HOST_NAME: ""  # REQUIRED: Cluster endpoint
+      AGENT_ID: ""   # REQUIRED: Unique identifier for the agent (must match the Agent ID configured in the authorization service and spec.agentDetails[].agentId)
       
       # z/OS Configuration
       PDS_NAME: ""  # REQUIRED: Partitioned Dataset Name (format: {USERNAME}.REXX)

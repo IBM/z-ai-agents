@@ -24,7 +24,7 @@ spec:
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z # OCI registry where the helm chart is stored
     name: upgrade-agent # name of the helm chart
-    version: "1.4.0" # version of the helm chart
+    version: "1.5.0" # version of the helm chart
     # pullSecrets: # pullSecrets is used to pull image from registry
     #   - name: pull-secret
   values:
@@ -42,3 +42,4 @@ spec:
       HOST_NAME: ""
       WATSONX_MODEL_ID: "ibm/granite-4.1-8b"
       MODEL_RUNTIME: "openai_protocol"
+      AGENT_ID: "" # REQUIRED: Unique identifier for the agent (must match the Agent ID configured in the authorization service and spec.agentDetails[].agentId)
