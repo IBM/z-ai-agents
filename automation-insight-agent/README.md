@@ -113,12 +113,13 @@ spec:
   wxa4z-core-services-namespace: wxa4z-zad  # Namespace where wxa4z core services are deployed
   
   agentDetails:
-    - agentName: automation-insights-agent
-      agentId: wxa4z:automation-agent-z:agent
-      description: 'Enables system programmers to retrieve and analyze Automation and Netview domain information'
-      bootstrapConfig:
-        name: "automation-insights-agent-bootstrap-config"
-        fileName: "automation_insight_agent_bootstrap_config.yaml"
+      - agentName: automation-insights-agent
+        agentId: wxa4z:automation-agent-z:agent
+        description: 'Enables system programmers to retrieve and analyze Automation and Netview domain information'
+        bootstrapConfig:
+          name: "automation-insights-agent-bootstrap-config"
+          fileName: "automation_insight_agent_bootstrap_config.yaml"  
+
   
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
