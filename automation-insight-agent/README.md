@@ -119,6 +119,7 @@ spec:
         bootstrapConfig:
           name: "automation-insights-agent-bootstrap-config"
           fileName: "automation_insight_agent_bootstrap_config.yaml"  
+
   
   chart:
     repository: oci://cp.icr.io/cp/ibm-watsonx-assistant-for-z
