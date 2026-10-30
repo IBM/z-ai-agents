@@ -194,7 +194,7 @@ spec:
       HOST_NAME: ""  # REQUIRED: Cluster endpoint
       # z/OS Configuration
       PDS_NAME: ""  # REQUIRED: Partitioned Dataset Name (format: {USERNAME}.REXX)
-      
+      AGENT_ID: "" # Optional Unique identifier for the agent (if added, must match the Agent ID configured in the authorization service )
       # Add additional PTF job configuration as needed
 ```
 
